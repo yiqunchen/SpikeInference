@@ -171,6 +171,11 @@ PiecewiseBiSquareLosses fpop_2d_custom_start(double *data_vec, int data_count,
   collection.piece_list.clear();
   collection.piece_list.emplace_back(start);
 
+  if(verbose) {
+    collection.print();
+  }
+
+
   // build cost functions for each data point, starting with start_cost cost function
   for(int data_i=0; data_i < data_count; data_i++){
     min_over_mu = collection.min_u();
@@ -191,6 +196,13 @@ PiecewiseBiSquareLosses fpop_2d_custom_start(double *data_vec, int data_count,
 
     if (forward) {
       collection.rescale(forward, decay_rate);
+
+      if (verbose) {
+        printf("after rescaling\n");
+        collection.print();
+      }
+
+
       double decay_rate2 = decay_rate * decay_rate;
       double c1 =  decay_rate*(decay_rate2-1)/(decay_rate2-pow(decay_rate,(-2*(effective_window_size-1)))) / norm_constant;
 

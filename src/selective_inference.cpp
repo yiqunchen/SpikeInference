@@ -61,20 +61,6 @@ double construct_vTy(double * y, double * v, int data_count, int thj, int window
   return(result);
 }
 
-// TODO: do we need these?
-//double construct_left_shift(double phi, int n_sub_f, int n_sub_r, double vTy) {
-//  double D = 1 + (double) n_sub_f / n_sub_r;
-//  double left_shift = (phi - vTy) / D;
-//  return left_shift;
-//}
-//
-//
-//double construct_right_shift(double phi, int n_sub_f, int n_sub_r, double vTy) {
-//  double D = 1 + (double) n_sub_r / n_sub_f;
-//  double right_shift = -(phi - vTy) / D;
-//  return right_shift;
-//}
-
 PiecewiseSquareLoss thj_in_model(
         PiecewiseSquareLosses *cost_fwd,
         PiecewiseSquareLosses *cost_rev,

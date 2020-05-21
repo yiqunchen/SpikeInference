@@ -10,6 +10,7 @@
 #include "fpop.h"
 #include "utils.h"
 #include "selective_inference.h"
+#include "fpop_inference.h"
 #include "test_utils.h" // for unit test purposes
 
 typedef std::vector<double> VecDouble;
@@ -83,9 +84,50 @@ double naive_nuTy (double * vec_a, double * vec_b, int data_count) {
 
 //printf("%d tests, %d passed, %d failed\n", tests_total, tests_total - tests_fail, tests_fail);
 
-
-
 int main(int argc, char *argv[]) {
+  const int data_count = 4; // # of data points
+//  const std::string filename = "/Users/jewellsean/Desktop/test.csv";
+//  VecDouble y = read_data_vec_double(filename, data_count);
+
+  double y[data_count] = {8, 4, 2, 5};
+  double penalty = 1;
+  for (auto x : y) {printf("%f \t", x);}
+  printf("\n");
+
+  int thj = 2;
+  int window_size = 2;
+  double decay_rate = 0.5;
+  const double sig = 1;
+
+  // forward pass
+  PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty, 0, INFINITY);
+
+// backward pass
+  double *data_vec_rev = reverse_data(y, data_count);
+  PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, 0, INFINITY);
+  FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig);
+
+  double * v_test = construct_v(data_count, thj, window_size, decay_rate);
+  double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
+
+  printf("Cost on original data = \t %f\n", out.model.findCost(vTy));
+
+  printf("cost as a function of phi\n");
+  double phi = 0;
+  double eps = 0.5;
+  int n = 5;
+  for (int i = 0; i < n; i++) {
+    printf("%f \t %f\n", phi, out.model.findCost(phi));
+    phi = phi + eps;
+  }
+
+
+  return 0;
+}
+
+
+
+int main2(int argc, char *argv[]) {
   const int data_count = 11; // # of data points
 //  const std::string filename = "/Users/jewellsean/Desktop/test.csv";
 //  VecDouble y = read_data_vec_double(filename, data_count);
