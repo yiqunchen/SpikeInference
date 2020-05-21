@@ -162,9 +162,6 @@ PiecewiseSquareLoss thj_in_model(
 
 }
 
-// TODO: Update check_selective_inference function
-//
-
 void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
         int thj, // changepoint of interest
         int window_size, // size of window around thj
@@ -213,36 +210,6 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
     }
   }
 }
-
-
-// functions from change in mean
-// TODO: possibly delete these
-//double construct_vTy(int thj, int window_size, double * data_vec, int data_count) {
-//  int sub_f_start = std::max(thj - window_size + 1, 0);
-//  int n_sub_f = thj - sub_f_start + 1;
-//  int sub_r_end = std::min(data_count - 1, thj + window_size);
-//  int n_sub_r = sub_r_end - thj;
-//
-//  double vTy = 0;
-//  for (int i = 0; i < data_count; i++) {
-//    if (i >= sub_f_start && i <= thj) {
-//      vTy += data_vec[i] / n_sub_f;
-//    } if (i > thj && i <= sub_r_end) {
-//      vTy -= data_vec[i] / n_sub_r;
-//    }
-//  }
-//
-//
-//  return vTy;
-//}
-//
-//double construct_nu2(int thj, int window_size, int data_count) {
-//  int sub_f_start = std::max(thj - window_size + 1, 0);
-//  int n_sub_f = thj - sub_f_start + 1;
-//  int sub_r_end = std::min(data_count - 1, thj + window_size);
-//  int n_sub_r = sub_r_end - thj;
-//  return ((1.0 / n_sub_f) + (1.0 / n_sub_r));
-//}
 
 double calc_p_value(PiecewiseSquareLoss * analytic_phi,
                     int thj, // changepoint of interest
