@@ -29,7 +29,7 @@ void check_min_operation(PiecewiseSquareLoss *cost, PiecewiseSquareLoss *min_pre
   }
 }
 
-PiecewiseSquareLoss * fpop_update_i(PiecewiseSquareLoss *cost, PiecewiseSquareLoss *cost_prev, double data, double gam, double penalty, int data_i, bool fwd, int verbose) {
+PiecewiseSquareLoss * fpop_update_i(PiecewiseSquareLoss *cost, PiecewiseSquareLoss *cost_prev, double data, double decay_rate, double penalty, int data_i, bool fwd, int verbose) {
 
   PiecewiseSquareLoss min_prev_cost;
   PiecewiseSquareLoss scaled_cost;
@@ -39,9 +39,9 @@ PiecewiseSquareLoss * fpop_update_i(PiecewiseSquareLoss *cost, PiecewiseSquareLo
   min_prev_cost.add(0, 0, penalty);
 
   if (fwd) {
-    scaled_cost.set_to_scaled_fwd(cost_prev, gam);
+    scaled_cost.set_to_scaled_fwd(cost_prev, decay_rate);
   } else {
-    scaled_cost.set_to_scaled_rev(cost_prev, gam);
+    scaled_cost.set_to_scaled_rev(cost_prev, decay_rate);
   }
   cost -> set_to_min_env_of(&min_prev_cost, &scaled_cost, verbose);
   check_min_operation(cost, &min_prev_cost, &scaled_cost, penalty, data_i);
@@ -51,7 +51,7 @@ PiecewiseSquareLoss * fpop_update_i(PiecewiseSquareLoss *cost, PiecewiseSquareLo
 
 
 PiecewiseSquareLosses fpop
-        (double *data_vec, int data_count, double gam, double penalty, double min_mean, double max_mean) {
+        (double *data_vec, int data_count, double decay_rate, double penalty, double min_mean, double max_mean) {
 
   PiecewiseSquareLoss *cost, *cost_prev;
   PiecewiseSquareLoss min_prev_cost;
@@ -64,7 +64,7 @@ PiecewiseSquareLosses fpop
       cost -> piece_list.emplace_back(0.5, - data_vec[0], data_vec[0] * data_vec[0] / 2, min_mean, max_mean, -1, false);
       cost_prev = cost;
     }else {
-      cost_prev = fpop_update_i(&cost_model_mat[data_i], cost_prev, data_vec[data_i], gam, penalty, data_i, 1, verbose);
+      cost_prev = fpop_update_i(&cost_model_mat[data_i], cost_prev, data_vec[data_i], decay_rate, penalty, data_i, 1, verbose);
     }
   }
   return cost_model_mat;
@@ -73,7 +73,7 @@ PiecewiseSquareLosses fpop
 PiecewiseSquareLosses fpop_custom
         (double *data_vec, int data_count,
          PiecewiseSquareLoss *start_cost,
-         double gam,
+         double decay_rate,
          double penalty,
          bool fwd,
          int verbose
@@ -86,7 +86,7 @@ PiecewiseSquareLosses fpop_custom
 
   // build cost functions for each data point, starting with start_cost cost function
   for(int data_i=0; data_i < data_count; data_i++){
-    cost_prev = fpop_update_i(&cost_model_mat[data_i], cost_prev, data_vec[data_i], gam, penalty, data_i, fwd, verbose);
+    cost_prev = fpop_update_i(&cost_model_mat[data_i], cost_prev, data_vec[data_i], decay_rate, penalty, data_i, fwd, verbose);
   }
   return cost_model_mat;
 }
@@ -97,7 +97,7 @@ void decode_fpop(PiecewiseSquareLosses cost_model_mat,
                  int *end_vec,
                  double *mean_vec,
                  int *intervals_mat,
-                 double gam) {
+                 double decay_rate) {
 
   PiecewiseSquareLoss *cost;
   double best_cost, best_mean, prev_mean;
@@ -131,10 +131,10 @@ void decode_fpop(PiecewiseSquareLosses cost_model_mat,
               (&best_cost, &best_mean,
                &prev_seg_end, &prev_mean);
     }
-    double last_mean = best_mean * gam;
+    double last_mean = best_mean * decay_rate;
     for (int t = prev_seg_old; t > prev_seg_end; t--){
-      mean_vec[out_i] = last_mean / gam;
-      last_mean = last_mean / gam;
+      mean_vec[out_i] = last_mean / decay_rate;
+      last_mean = last_mean / decay_rate;
       end_vec[out_i] = prev_seg_end;
       out_i++;
     }

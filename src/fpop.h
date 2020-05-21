@@ -5,7 +5,7 @@ PiecewiseSquareLosses fpop(double *, int, double, double, double, double);
 
 PiecewiseSquareLosses fpop_custom(double *, int, PiecewiseSquareLoss *, double, double, bool, int);
 
-void decode_fpop(PiecewiseSquareLosses, int, double *, int *, double *, int *, double gam);
+void decode_fpop(PiecewiseSquareLosses, int, double *, int *, double *, int *, double decay_rate);
 
 void check_min_operation(PiecewiseSquareLoss *, PiecewiseSquareLoss *, PiecewiseSquareLoss *, double, int);
 
