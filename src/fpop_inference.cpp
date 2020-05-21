@@ -23,7 +23,6 @@ FpopInference fpop_analytic_inference_recycle(PiecewiseSquareLosses * cost_model
         int thj,
         int window_size,
         double sig) {
-
   int verbose = 0;
   double *data_vec_rev = reverse_data(data_vec, data_count);
   PiecewiseSquareLoss model = thj_in_model(

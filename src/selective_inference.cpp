@@ -19,21 +19,7 @@
  * and window_size
  *
  */
-//double construct_vTy(double * sub_data_f, int n_sub_f, double * sub_data_r, int n_sub_r) {
-//  double vTy = 0;
-//  double L_norm = 1.0 / n_sub_f;
-//  double R_norm = 1.0 / n_sub_r;
-//
-//  for (int i = 0; i < n_sub_f; i++) {
-//    vTy += sub_data_f[i] * L_norm;
-//  }
-//
-//  for (int i = 0; i < n_sub_r; i++) {
-//    vTy += -sub_data_r[i] * R_norm;
-//  }
-//
-//  return vTy;
-//}
+
 
 double * construct_v(int data_count, int thj, int window_size, double decay_rate){
   double * v = new double[data_count];
@@ -212,8 +198,9 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
       double norm_constant_r = 1 + ((double) n_sub_r / n_sub_f);
 
       double * v = construct_v(data_count, thj, window_size, decay_rate);
-      double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
-      double v_norm_2 = construct_nu_norm(data_count, thj, window_size, decay_rate);
+      double vTy = construct_vTy(data_vec, v, data_count, thj ,window_size);
+      double v_norm2 = construct_nu_norm(data_count, thj , window_size, decay_rate);
+
       // TODO: delete the following code?
 //      double vTy = 0;
 //      for (int i = 0; i < data_count; i++) {
@@ -239,11 +226,11 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
         if (data_i < sub_f_start || data_i > sub_r_end) {
           next_data_point = data_vec[data_i];
         } if (data_i >= sub_f_start && data_i <= thj) {
-          next_data_point = data_vec[data_i] + (phi_eval - vTy) / v_norm_2; //norm_constant_f;
+          next_data_point = data_vec[data_i] + (phi_eval - vTy) / v_norm2; //norm_constant_f;
         } if (data_i > thj && data_i <= sub_r_end) {
-          next_data_point = data_vec[data_i] - (phi_eval - vTy) / v_norm_2; //norm_constant_r;
+          next_data_point = data_vec[data_i] - (phi_eval - vTy) / v_norm2; //norm_constant_r;
         }
-        cost_prev = fpop_update_i(&cost_model_mat[data_i], cost_prev, next_data_point, decay_rate, penalty, data_i, fwd ,verbose);
+        cost_prev = fpop_update_i(&cost_model_mat[data_i], cost_prev, next_data_point, decay_rate, penalty, data_i, fwd, verbose);
       }
 
       manual_cost = cost_model_mat[data_count-1].getMinCost();
