@@ -118,13 +118,10 @@ int main(int argc, char *argv[]) {
   double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
   TEST(double_within_eps(test_vTy, vTy, EPS));
 
-  // TEST v_norm2
+  // TEST 3: v_norm2
   double test_vTv = naive_nuTy(v_test, v_test, data_count);
   double v_norm_2 = construct_nu_norm(data_count, thj, window_size, decay_rate);
   TEST(double_within_eps(test_vTv, v_norm_2, EPS));
-
-
-  
 
 //  for (int i = 0; i < data_count; i++){
 //    printf("%f \t", null_v_test[i]);

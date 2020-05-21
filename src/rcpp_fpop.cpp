@@ -1,4 +1,5 @@
 #include "fpop.h"
+#include "fpop_inference.h"
 #include "funPieceList.h"
 #include "utils.h"
 #include <vector>
@@ -84,8 +85,8 @@ List fpop_interface2
 // [[Rcpp::export(name = ".fpop_inference")]]
 List fpop_inference_interface_recycle
         (NumericVector data,
-         double penalty,
          double decay_rate,
+         double penalty,
          int window_size,
          double sig,
          int return_dev = 0) {
