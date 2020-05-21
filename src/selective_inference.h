@@ -62,16 +62,15 @@ PiecewiseSquareLoss thj_in_model(
 //double construct_nu2(int thj, int window_size, int data_count);
 
 double * construct_v(int data_count, int thj, int window_size, double decay_rate);
-double v_norm(int data_count, int thj ,int window_size, double gam);
 double construct_vTy(double * y, double * v, int data_count, int thj ,int window_size);
-
-void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
-                               int thj, // changepoint of interest
-                               int window_size, // size of window around thj
-                               int data_count, // number of data points
-                               double *data_vec, // original data
-                               double penalty, // tuning parameter to penalize the number of spikes
-                               int verbose);
+double construct_nu_norm(int data_count, int thj, int window_size, double decay_rate);
+//void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
+//                               int thj, // changepoint of interest
+//                               int window_size, // size of window around thj
+//                               int data_count, // number of data points
+//                               double *data_vec, // original data
+//                               double penalty, // tuning parameter to penalize the number of spikes
+//                               int verbose);
 
 
 double calc_p_value(PiecewiseSquareLoss * analytic_phi,

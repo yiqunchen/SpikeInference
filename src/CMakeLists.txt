@@ -15,4 +15,6 @@ add_executable(src
         fpop_inference.h
         fpop_inference.cpp
         utils.h
-        utils.cpp)
+        utils.cpp
+        main.cpp
+        test_utils.h)
