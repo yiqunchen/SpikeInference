@@ -188,28 +188,9 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
 
       // run fpop on yphi
 
-      int sub_f_start = std::max(thj - window_size + 1, 0); // subset data from tL to thj
-      int n_sub_f = thj - sub_f_start + 1;
-      int sub_r_end = std::min(data_count - 1, thj + window_size); // subset data from thj to tR
-      int n_sub_r = sub_r_end - thj;
-
-      // TODO: why are these defined? Shouldn't we be normalizing by the same ||v||_2^2?
-      double norm_constant_f = 1 + ((double) n_sub_f / n_sub_r);
-      double norm_constant_r = 1 + ((double) n_sub_r / n_sub_f);
-
       double * v = construct_v(data_count, thj, window_size, decay_rate);
       double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
       double v_norm2 = construct_nu_norm(data_count, thj, window_size, decay_rate);
-
-      // TODO: delete the following code?
-//      double vTy = 0;
-//      for (int i = 0; i < data_count; i++) {
-//        if (i >= sub_f_start && i <= thj) {
-//          vTy += data_vec[i] / n_sub_f;
-//        } if (i > thj && i <= sub_r_end) {
-//          vTy -= data_vec[i] / n_sub_r;
-//        }
-//      }
 
       PiecewiseSquareLoss *cost_prev;
       PiecewiseSquareLosses cost_model_mat(data_count);
@@ -219,31 +200,18 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
 
       // build cost functions for each data point, starting with start_cost cost function
       double next_data_point;
-      // TODO: Check we are using fwd = 1
-      int fwd = 1;
+      const int fwd = 1;
       for(int data_i=0; data_i < data_count; data_i++){
-
-        if (data_i < sub_f_start || data_i > sub_r_end) {
-          next_data_point = data_vec[data_i];
-        } if (data_i >= sub_f_start && data_i <= thj) {
-          next_data_point = data_vec[data_i] + (phi_eval - vTy) / v_norm2; //norm_constant_f;
-        } if (data_i > thj && data_i <= sub_r_end) {
-          next_data_point = data_vec[data_i] - (phi_eval - vTy) / v_norm2; //norm_constant_r;
-        }
-        cost_prev = fpop_update_i(&cost_model_mat[data_i], cost_prev, next_data_point, decay_rate, penalty, data_i, fwd, verbose);
+          next_data_point = data_vec[data_i] - v[data_i] / v_norm2 * (vTy - phi_eval);
+          cost_prev = fpop_update_i(&cost_model_mat[data_i], cost_prev, next_data_point, decay_rate, penalty, data_i, fwd, verbose);
       }
-
       manual_cost = cost_model_mat[data_count-1].getMinCost();
-
       if (ABS(manual_cost - analytic_cost) > DIFF_EPS) {
         printf("analytic cost incorrect. different between analytic cost and manual cost at phi (%f)= \t %.50f", phi_eval, analytic_cost - manual_cost);
         throw std::runtime_error("analytic cost incorrect. Please report!");
       }
-
     }
-
   }
-
 }
 
 
