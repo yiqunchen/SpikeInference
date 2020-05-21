@@ -182,7 +182,6 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
 
     if (phi_eval > MIN && phi_eval < MAX) {
       analytic_cost = it -> getCost(phi_eval);
-
       // run fpop on yphi
 
       double * v = construct_v(data_count, thj, window_size, decay_rate);
