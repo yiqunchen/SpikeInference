@@ -198,8 +198,8 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
       double norm_constant_r = 1 + ((double) n_sub_r / n_sub_f);
 
       double * v = construct_v(data_count, thj, window_size, decay_rate);
-      double vTy = construct_vTy(data_vec, v, data_count, thj ,window_size);
-      double v_norm2 = construct_nu_norm(data_count, thj , window_size, decay_rate);
+      double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
+      double v_norm2 = construct_nu_norm(data_count, thj, window_size, decay_rate);
 
       // TODO: delete the following code?
 //      double vTy = 0;
