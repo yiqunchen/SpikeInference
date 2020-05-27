@@ -85,11 +85,12 @@ double naive_nuTy (double * vec_a, double * vec_b, int data_count) {
 //printf("%d tests, %d passed, %d failed\n", tests_total, tests_total - tests_fail, tests_fail);
 
 int main(int argc, char *argv[]) {
-  const int data_count = 4; // # of data points
 //  const std::string filename = "/Users/jewellsean/Desktop/test.csv";
 //  VecDouble y = read_data_vec_double(filename, data_count);
+  const int data_count = 5; // # of data points
 
-  double y[data_count] = {8, 4, 2, 5};
+  double y[data_count] = {8, 4, 2, 5, 2.5};
+
   double penalty = 1;
   for (auto x : y) {printf("%f \t", x);}
   printf("\n");
@@ -109,6 +110,13 @@ int main(int argc, char *argv[]) {
 
   double * v_test = construct_v(data_count, thj, window_size, decay_rate);
   double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
+
+//  for (int i = 0; i < data_count; i++){
+//    printf("%f \t", v_test[i]);
+//  }
+
+//  printf("Cost model \n");
+//  out.model.print();
 
   printf("Cost on original data = \t %f\n", out.model.findCost(vTy));
 

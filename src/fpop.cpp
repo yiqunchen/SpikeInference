@@ -202,19 +202,18 @@ PiecewiseBiSquareLosses fpop_2d_custom_start(double *data_vec, int data_count,
         collection.print();
       }
 
-
       double decay_rate2 = decay_rate * decay_rate;
       double c1 =  decay_rate*(decay_rate2-1)/(decay_rate2-pow(decay_rate,(-2*(effective_window_size-1)))) / norm_constant;
 
       collection.add(0.5,
-                     (-c1*decay_rate * (effective_window_size-data_i-1)*nuTy) - data_vec[data_i],
+                     (-c1*pow(decay_rate, effective_window_size-data_i-1)*nuTy) - data_vec[data_i],
                      c1*pow(decay_rate, effective_window_size-data_i-1),
-                     0.5*pow(c1,2)*pow(decay_rate, -2 * (effective_window_size-data_i-1)),
-                     -pow(c1,2)*pow(decay_rate, -2*(effective_window_size-data_i-1))*nuTy -
+                     0.5*pow(c1,2)*pow(decay_rate, 2 * (effective_window_size-data_i-1)),
+                     -pow(c1,2)*pow(decay_rate, 2 * (effective_window_size-data_i-1))*nuTy -
                      c1*pow(decay_rate, effective_window_size-data_i-1)*data_vec[data_i],
                      0.5*pow(data_vec[data_i],2) + 0.5*pow(c1,2)*
-                     pow(decay_rate, -2*(effective_window_size-data_i-1))*pow(nuTy,2) +
-                     c1*pow(decay_rate, effective_window_size-data_i-1)*nuTy
+                     pow(decay_rate, 2 * (effective_window_size-data_i-1))*pow(nuTy,2) +
+                     c1*pow(decay_rate, effective_window_size-data_i-1)*nuTy*data_vec[data_i]
       );
     } else {
       collection.rescale(forward, decay_rate);
@@ -222,14 +221,15 @@ PiecewiseBiSquareLosses fpop_2d_custom_start(double *data_vec, int data_count,
       double c1 = (decay_rate2 - 1)/( pow(decay_rate, 2 * (effective_window_size)) -1) / norm_constant;
 
       collection.add(0.5,
-                     (-c1*pow(decay_rate, effective_window_size - data_i - 1)*nuTy) - data_vec[data_i],
-                     c1*pow(decay_rate, effective_window_size - data_i - 1),
+                     (c1*pow(decay_rate, effective_window_size - data_i - 1)*nuTy) - data_vec[data_i],
+                     -c1*pow(decay_rate, effective_window_size - data_i - 1),
                      0.5*pow(c1,2)*pow(decay_rate, 2 * (effective_window_size - data_i - 1)),
                      -pow(c1,2)*pow(decay_rate, 2 * (effective_window_size - data_i -1))*nuTy +
                      c1*pow(decay_rate, effective_window_size - data_i - 1)*data_vec[data_i],
                      0.5*pow(data_vec[data_i],2) + 0.5*pow(c1,2)*
                      pow(decay_rate, 2*(effective_window_size - data_i - 1))*
-                     pow(nuTy,2) - c1*pow(decay_rate, effective_window_size - data_i - 1)*nuTy);
+                     pow(nuTy,2) -
+                     c1*pow(decay_rate, effective_window_size - data_i - 1)*nuTy*data_vec[data_i]);
     }
 
     if (verbose) {
