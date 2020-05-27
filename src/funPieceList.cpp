@@ -1118,11 +1118,23 @@ PiecewiseSquareLoss BiSquareLossPiece::min_over_u() {
     return out;
   }
 
-  if (SquareU <= 0) {
+  if (SquareU < 0) {
     printf("Error with this function \n");
     print();
-    throw std::range_error("SquareU is <= 0.");
+    throw std::range_error("SquareU is < 0.");
   }
+
+  if (SquareU == 0) {
+    if (LinearU > 0) {
+      out.piece_list.emplace_back(0, 0, 0, min_p, max_p, PREV_NOT_SET, -3);
+    } else if (LinearU < 0) {
+      out.piece_list.emplace_back(0, 0, 0, min_p, max_p, PREV_NOT_SET, -3);
+    } else {
+      out.piece_list.emplace_back(0, 0, 0, min_p, max_p, PREV_NOT_SET, -3);
+    }
+    return out;
+  }
+
 
   if (LinearUP == 0) {
     double constant;
@@ -1134,12 +1146,12 @@ PiecewiseSquareLoss BiSquareLossPiece::min_over_u() {
       constant =  - LinearU * LinearU / (4 * SquareU) + Constant;
     }
 
-    if (min_p > MACHINE_MIN) {
-      out.piece_list.emplace_back(0, 0, INFINITY, MACHINE_MIN, min_p, PREV_NOT_SET, -3);
+    if (min_p > MACHINE_MIN_P) {
+      out.piece_list.emplace_back(0, 0, INFINITY, MACHINE_MIN_P, min_p, PREV_NOT_SET, -3);
     }
     out.piece_list.emplace_back(SquareP, LinearP, constant, min_p, max_p, PREV_NOT_SET, -3);
-    if (max_p < MACHINE_MAX) {
-      out.piece_list.emplace_back(0, 0, INFINITY, max_p, MACHINE_MAX, PREV_NOT_SET, -3);
+    if (max_p < MACHINE_MAX_P) {
+      out.piece_list.emplace_back(0, 0, INFINITY, max_p, MACHINE_MAX_P, PREV_NOT_SET, -3);
     }
 
 
@@ -1157,8 +1169,8 @@ PiecewiseSquareLoss BiSquareLossPiece::min_over_u() {
       region_1 = min_u;
     }
 
-      if (min_p > MACHINE_MIN) {
-        out.piece_list.emplace_back(0, 0, INFINITY, MACHINE_MIN, min_p, PREV_NOT_SET, -3);
+      if (min_p > MACHINE_MIN_P) {
+        out.piece_list.emplace_back(0, 0, INFINITY, MACHINE_MIN_P, min_p, PREV_NOT_SET, -3);
       }
       if (min_p < end_1 && max_p >= end_1) {
         out.piece_list.emplace_back(SquareP, region_1 * LinearUP + LinearP,
@@ -1181,8 +1193,8 @@ PiecewiseSquareLoss BiSquareLossPiece::min_over_u() {
       if (min_p > end_2) {
         out.piece_list.emplace_back(0, 0, INFINITY, min_p, max_p, PREV_NOT_SET, -3);
       }
-      if (max_p < MACHINE_MAX) {
-        out.piece_list.emplace_back(0, 0, INFINITY, max_p, MACHINE_MAX, PREV_NOT_SET, -3);
+      if (max_p < MACHINE_MAX_P) {
+        out.piece_list.emplace_back(0, 0, INFINITY, max_p, MACHINE_MAX_P, PREV_NOT_SET, -3);
       }
 
   }
@@ -1190,7 +1202,7 @@ PiecewiseSquareLoss BiSquareLossPiece::min_over_u() {
 
 //crude checks
 
-  double last_mean = MACHINE_MIN;
+  double last_mean = MACHINE_MIN_P;
   for(SquareLossPieceList::iterator it = out.piece_list.begin(); it != out.piece_list.end(); it++) {
 
       if (it -> min_mean != last_mean) {
@@ -1365,7 +1377,7 @@ void PiecewiseBiSquareLoss::set_to_pw_p(PiecewiseSquareLoss *f) {
   SquareLossPieceList::iterator it = f -> piece_list.begin();
   piece_list.clear();
   while(it != f -> piece_list.end()) {
-    piece_list.emplace_back(0, 0, 0, it -> Square, it -> Linear, it -> Constant, MACHINE_MIN, MACHINE_MAX, it -> min_mean, it -> max_mean);
+    piece_list.emplace_back(0, 0, 0, it -> Square, it -> Linear, it -> Constant, MACHINE_MIN_P, MACHINE_MAX_P, it -> min_mean, it -> max_mean);
     it++;
   }
  }
