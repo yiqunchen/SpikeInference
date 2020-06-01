@@ -73,7 +73,7 @@ double naive_nuTy (double * vec_a, double * vec_b, int data_count) {
 int main(int argc, char *argv[]) {
 //  const std::string filename = "/Users/jewellsean/Desktop/test.csv";
 //  VecDouble y = read_data_vec_double(filename, data_count);
-  const int data_count = 3;//3; // # of data points
+  const int data_count = 3; //3; // # of data points
 
   double y[data_count] = {8,4,6};//{8, 4, 2, 5, 2.5};
 
