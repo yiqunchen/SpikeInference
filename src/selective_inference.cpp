@@ -121,8 +121,8 @@ PiecewiseSquareLoss thj_in_model(
   c_change_at_thj.add(0, 0, penalty);
   c_change_at_thj.set_prev_seg_end(1); // there is a changepoint at thj
 
-  printf("change at thj\n");
-  c_change_at_thj.print();
+//  printf("change at thj\n");
+//  c_change_at_thj.print();
 
 //  printf("eval at baseline (change)= %f\n", c_change_at_thj.findCost(vTy));
 
