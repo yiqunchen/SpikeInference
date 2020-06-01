@@ -58,7 +58,7 @@ PiecewiseSquareLosses fpop
   PiecewiseSquareLosses cost_model_mat(data_count);
 
   int verbose=0;
-  for(int data_i=0; data_i< data_count; data_i++){
+  for(int data_i=0; data_i<data_count; data_i++){
     cost = &cost_model_mat[data_i];
     if(data_i==0){
       cost -> piece_list.emplace_back(0.5, - data_vec[0], data_vec[0] * data_vec[0] / 2, min_mean, max_mean, -1, false);

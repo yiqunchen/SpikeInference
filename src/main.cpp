@@ -69,34 +69,20 @@ double naive_nuTy (double * vec_a, double * vec_b, int data_count) {
     return(result);
 }
 
-//
-//// first write
-//void test_backward_softmax() {
-//    Matrix a = load_binary("solutions/a.bin");
-//    Matrix b = load_binary("solutions/b.bin");
-//    Matrix gt = load_binary("solutions/backward_softmax.bin");
-//    Matrix output = backward_softmax(a, b);
-//    TEST(matrix_within_eps(gt, output, EPS));
-//}
-
-
-
-
-//printf("%d tests, %d passed, %d failed\n", tests_total, tests_total - tests_fail, tests_fail);
 
 int main(int argc, char *argv[]) {
 //  const std::string filename = "/Users/jewellsean/Desktop/test.csv";
 //  VecDouble y = read_data_vec_double(filename, data_count);
-  const int data_count = 5; // # of data points
+  const int data_count = 3;//3; // # of data points
 
-  double y[data_count] = {8, 4, 2, 5, 2.5};
+  double y[data_count] = {8,4,6};//{8, 4, 2, 5, 2.5};
 
   double penalty = 1;
   for (auto x : y) {printf("%f \t", x);}
   printf("\n");
 
-  int thj = 2;
-  int window_size = 2;
+  int thj = 1;
+  int window_size = 1;
   double decay_rate = 0.5;
   const double sig = 1;
 
@@ -109,25 +95,30 @@ int main(int argc, char *argv[]) {
   FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig);
 
   double * v_test = construct_v(data_count, thj, window_size, decay_rate);
+
   double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
+  double v_norm2 = construct_nu_norm(data_count, thj, window_size, decay_rate);
+  printf("vTy %f\n",vTy);
 
-//  for (int i = 0; i < data_count; i++){
-//    printf("%f \t", v_test[i]);
-//  }
+  double phi_eval = 0;
+  for(int data_i=0; data_i < data_count; data_i++){
+      double next_data_point = y[data_i] - v_test[data_i] / v_norm2 * (vTy - phi_eval);
+      printf("%f \t", next_data_point);
+    }
 
-//  printf("Cost model \n");
-//  out.model.print();
 
+  printf("Cost model \n");
+  out.model.print();
   printf("Cost on original data = \t %f\n", out.model.findCost(vTy));
 
-  printf("cost as a function of phi\n");
-  double phi = 0;
-  double eps = 0.5;
-  int n = 5;
-  for (int i = 0; i < n; i++) {
-    printf("%f \t %f\n", phi, out.model.findCost(phi));
-    phi = phi + eps;
-  }
+//  printf("cost as a function of phi\n");
+//  double phi = 0;
+//  double eps = 0.5;
+//  int n = 10;
+//  for (int i = 0; i < n; i++) {
+//    printf("%f \t %f\n", phi, out.model.findCost(phi));
+//    phi = phi + eps;
+//  }
 
 
   return 0;

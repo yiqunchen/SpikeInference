@@ -189,6 +189,7 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
       }
       manual_cost = cost_model_mat[data_count-1].getMinCost();
       if (ABS(manual_cost - analytic_cost) > DIFF_EPS) {
+        printf("analytic cost %f, manual cost %f \n", analytic_cost, manual_cost);
         printf("analytic cost incorrect. different between analytic cost and manual cost at phi (%f)= \t %.50f", phi_eval, analytic_cost - manual_cost);
         throw std::runtime_error("analytic cost incorrect. Please report!");
       }
