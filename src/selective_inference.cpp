@@ -175,7 +175,7 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
         double penalty, // tuning parameter to penalize the number of spikes
         int verbose) {
 
-  const double MIN = -100;
+  const double MIN = 0;
   const double MAX = 100;
 
   SquareLossPieceList::iterator it;

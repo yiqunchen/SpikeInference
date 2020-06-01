@@ -12,3 +12,4 @@ fpop_inference_intervals_formatter <- function(phi_list) {
   }
   return(phi_outs) 
 }
+
