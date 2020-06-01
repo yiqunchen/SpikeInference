@@ -87,11 +87,11 @@ int main(int argc, char *argv[]) {
   const double sig = 1;
 
   // forward pass
-  PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty, 0, INFINITY);
+  PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty, -INFINITY, INFINITY);
 
 // backward pass
   double *data_vec_rev = reverse_data(y, data_count);
-  PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, 0, INFINITY);
+  PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, -INFINITY, INFINITY);
   FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig);
 
   double * v_test = construct_v(data_count, thj, window_size, decay_rate);

@@ -110,6 +110,7 @@ PiecewiseSquareLoss thj_in_model(
     cost_r_piece = &(cost_rev -> at(cost_r_start));
   }
 
+
   PiecewiseBiSquareLosses fwd_2d = fpop_2d_custom_start(sub_data_f, n_sub_f,cost_f_piece, penalty, decay_rate, 1, vTy, v_norm2, verbose);
   PiecewiseBiSquareLosses rev_2d = fpop_2d_custom_start(sub_data_r, n_sub_r,cost_r_piece, penalty, decay_rate, 0, vTy, v_norm2, verbose);
 
@@ -120,13 +121,27 @@ PiecewiseSquareLoss thj_in_model(
   c_change_at_thj.add(0, 0, penalty);
   c_change_at_thj.set_prev_seg_end(1); // there is a changepoint at thj
 
+  printf("change at thj\n");
+  c_change_at_thj.print();
+
 //  printf("eval at baseline (change)= %f\n", c_change_at_thj.findCost(vTy));
 
   PiecewiseBiSquareLosses c_no_change_at_thj;
+
+//  printf("forward 2d collection \n");
+//  fwd_2d.print();
+//
+//  printf("reverse 2d collection \n");
+//  rev_2d.print();
+
   rev_2d.rescale(0, decay_rate);
+
+//  printf("reverse collection after rescaling\n");
+//  rev_2d.print();
+
   c_no_change_at_thj.set_to_addition_of(&fwd_2d, &rev_2d, 0);
 
-//  printf("addition of fwd and reverse costs\n");
+//  printf("addition of fwd and scaled reverse costs\n");
 //  c_no_change_at_thj.print();
 
   PiecewiseSquareLoss c_no_change;
@@ -137,6 +152,9 @@ PiecewiseSquareLoss thj_in_model(
 
 //  PiecewiseBiSquareLoss c_no_change;
 //  c_no_change = c_no_change_at_thj.min_u();
+//  c_no_change.print();
+
+//  printf("no change \n");
 //  c_no_change.print();
 
   c_no_change.set_prev_seg_end(0); // there is no changepoint at thj
