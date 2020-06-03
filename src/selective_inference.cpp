@@ -175,7 +175,7 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
         double penalty, // tuning parameter to penalize the number of spikes
         int verbose) {
 
-  const double MIN = -100;
+  const double MIN = 0;
   const double MAX = 100;
 
   SquareLossPieceList::iterator it;
@@ -226,7 +226,6 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
 
   double * v = construct_v(data_count, thj, window_size, decay_rate);
   double vTy = construct_vTy(data_vec, v, data_count, thj ,window_size); //construct_vTy(sub_data_f, n_sub_f, sub_data_r, n_sub_r);
-//  double nu_norm = construct_nu2(thj, window_size, data_count);
   double nu_norm = construct_nu_norm(data_count, thj , window_size, decay_rate);
   SquareLossPieceList::iterator it;
 

@@ -73,16 +73,16 @@ double naive_nuTy (double * vec_a, double * vec_b, int data_count) {
 int main(int argc, char *argv[]) {
 //  const std::string filename = "/Users/jewellsean/Desktop/test.csv";
 //  VecDouble y = read_data_vec_double(filename, data_count);
-  const int data_count = 3; //3; // # of data points
+  const int data_count = 5; //3; // # of data points
 
-  double y[data_count] = {8,4,6};//{8, 4, 2, 5, 2.5};
+  double y[data_count] =  {8, 4, 2, 1, 5};//{8, 4, 2, 5, 2.5, 1.25};
 
   double penalty = 1;
   for (auto x : y) {printf("%f \t", x);}
   printf("\n");
 
-  int thj = 1;
-  int window_size = 1;
+  int thj = 2;
+  int window_size = 2;
   double decay_rate = 0.5;
   const double sig = 1;
 
@@ -96,20 +96,28 @@ int main(int argc, char *argv[]) {
 
   double * v_test = construct_v(data_count, thj, window_size, decay_rate);
 
-  double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
-  double v_norm2 = construct_nu_norm(data_count, thj, window_size, decay_rate);
-  printf("vTy %f\n",vTy);
+//
+//  for(int data_i=0; data_i < data_count; data_i++){
+//    printf("%f \t", v_test[data_i]);
+//    printf("\n");
+//  }
+//
+//  double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
+//  double v_norm2 = construct_nu_norm(data_count, thj, window_size, decay_rate);
+//  printf("vTy %f\n",vTy);
+//  printf("vTv %f\n",v_norm2);
 
-  double phi_eval = 0;
-  for(int data_i=0; data_i < data_count; data_i++){
-      double next_data_point = y[data_i] - v_test[data_i] / v_norm2 * (vTy - phi_eval);
-      printf("%f \t", next_data_point);
-    }
+
+//  double phi_eval = 0;
+//  for(int data_i=0; data_i < data_count; data_i++){
+//      double next_data_point = y[data_i] - v_test[data_i] / v_norm2 * (vTy - phi_eval);
+//      printf("%f \t", next_data_point);
+//    }
 
 
-  printf("Cost model \n");
-  out.model.print();
-  printf("Cost on original data = \t %f\n", out.model.findCost(vTy));
+//  printf("Cost model \n");
+//  out.model.print();
+//  printf("Cost on original data = \t %f\n", out.model.findCost(vTy));
 
 //  printf("cost as a function of phi\n");
 //  double phi = 0;
@@ -119,8 +127,6 @@ int main(int argc, char *argv[]) {
 //    printf("%f \t %f\n", phi, out.model.findCost(phi));
 //    phi = phi + eps;
 //  }
-
-
   return 0;
 }
 
@@ -131,7 +137,7 @@ int main2(int argc, char *argv[]) {
 //  const std::string filename = "/Users/jewellsean/Desktop/test.csv";
 //  VecDouble y = read_data_vec_double(filename, data_count);
 
-  double y[data_count] = {8, 4, 2, 1, 0.5, 8, 4, 2, 1, 0.5, 10};
+  double y[data_count] = {8, 4, 2, 1, 5};//{8, 4, 2, 1, 0.5, 8, 4, 2, 1, 0.5, 10};
 
 //  printf("Array length %i \n",sizeof( y )/sizeof( y[0] ));
 
@@ -139,7 +145,7 @@ int main2(int argc, char *argv[]) {
 //  for (auto x : y) {printf("%f \t", x);}
 //  printf("\n");
 
-  int thj = 4;
+  int thj = 3;
   int window_size = 2;
   double decay_rate = 0.5;
 
