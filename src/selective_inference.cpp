@@ -41,11 +41,23 @@ double * construct_v(int data_count, int thj, int window_size, double decay_rate
   return(v);
 }
 
+
+
+double naive_nuTy (double * vec_a, double * vec_b, int data_count) {
+    double result = 0;
+    for (int i = 0; i < data_count; i++) {
+        result += vec_a[i]*vec_b[i];
+    }
+    return(result);
+}
+
+//TODO: FIX THIS
 // trying to test construct v
 double construct_nu_norm(int data_count, int thj, int window_size, double decay_rate){
   double gam_2 = pow(decay_rate, 2.0);
   int tau_L = std::max(0, thj - window_size + 1);
-  int tau_R = std::min(data_count, thj + window_size);
+  int tau_R = std::min(data_count-1, thj + window_size);
+//  printf("L %i, R %i \n",tau_L,tau_R);
   double v_norm_2 = gam_2 * (gam_2 - 1)/(gam_2 - pow(decay_rate, 2 * (tau_L - thj))) + (gam_2 - 1) / (pow(decay_rate, 2 * (tau_R - thj)) - 1);
   return(v_norm_2);
 }
@@ -54,7 +66,8 @@ double construct_vTy(double * y, double * v, int data_count, int thj, int window
 
   double result = 0;
   int tau_L = std::max(0, thj-window_size+1);
-  int tau_R = std::min(data_count, thj+window_size);
+  int tau_R = std::min(data_count-1, thj+window_size);
+//  printf("L %i, R %i \n",tau_L,tau_R);
   for (int i = tau_L; i<=tau_R; i++){
     result += y[i]*v[i];
   }
@@ -87,7 +100,7 @@ PiecewiseSquareLoss thj_in_model(
 
   double * v = construct_v(data_count, thj, window_size, decay_rate);
   double vTy = construct_vTy(data_vec, v, data_count, thj ,window_size); //construct_vTy(sub_data_f, n_sub_f, sub_data_r, n_sub_r);
-  double v_norm2 = construct_nu_norm(data_count, thj , window_size, decay_rate);
+  double v_norm2 = construct_vTy(v, v, data_count, thj, window_size); //construct_nu_norm(data_count, thj , window_size, decay_rate);
 
   int cost_f_start = (int) std::max(thj - window_size, 0);
   int cost_r_start = (int) std::max(data_count - 1 - thj - window_size - 1, 0);
@@ -121,8 +134,8 @@ PiecewiseSquareLoss thj_in_model(
   c_change_at_thj.add(0, 0, penalty);
   c_change_at_thj.set_prev_seg_end(1); // there is a changepoint at thj
 
-  printf("change at thj\n");
-  c_change_at_thj.print();
+//  printf("change at thj\n");
+//  c_change_at_thj.print();
 
 //  printf("eval at baseline (change)= %f\n", c_change_at_thj.findCost(vTy));
 
@@ -175,8 +188,8 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
         double penalty, // tuning parameter to penalize the number of spikes
         int verbose) {
 
-  const double MIN = 0;
-  const double MAX = 100;
+  const double MIN = -50;
+  const double MAX = 50;
 
   SquareLossPieceList::iterator it;
   double phi_eval, analytic_cost, manual_cost;
@@ -190,7 +203,8 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
 
       double * v = construct_v(data_count, thj, window_size, decay_rate);
       double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
-      double v_norm2 = construct_nu_norm(data_count, thj, window_size, decay_rate);
+      double v_norm2 = construct_vTy(v, v, data_count, thj, window_size);
+//      printf("v_norm2 %f \n", v_norm2);
 
       PiecewiseSquareLoss *cost_prev;
       PiecewiseSquareLosses cost_model_mat(data_count);
@@ -226,7 +240,7 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
 
   double * v = construct_v(data_count, thj, window_size, decay_rate);
   double vTy = construct_vTy(data_vec, v, data_count, thj ,window_size); //construct_vTy(sub_data_f, n_sub_f, sub_data_r, n_sub_r);
-  double nu_norm = construct_nu_norm(data_count, thj , window_size, decay_rate);
+  double nu_norm = construct_vTy(v, v, data_count, thj, window_size);
   SquareLossPieceList::iterator it;
 
   // numerically safe

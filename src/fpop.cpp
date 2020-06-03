@@ -171,6 +171,10 @@ PiecewiseBiSquareLosses fpop_2d_custom_start(double *data_vec, int data_count,
   collection.piece_list.clear();
   collection.piece_list.emplace_back(start);
 
+  // print out collections
+  //TODO: remove after debug
+  verbose = 0;
+
   if(verbose) {
     collection.print();
   }
@@ -204,6 +208,11 @@ PiecewiseBiSquareLosses fpop_2d_custom_start(double *data_vec, int data_count,
 
       double decay_rate2 = decay_rate * decay_rate;
       double c1 =  decay_rate*(decay_rate2-1)/(decay_rate2-pow(decay_rate,(-2*(effective_window_size-1)))) / norm_constant;
+
+//      printf("uphi coeff %f \n", c1*pow(decay_rate, effective_window_size-data_i-1));
+//      printf("c1 coeff %f \n", c1);
+//      printf("effective_window_size %i \n", effective_window_size);
+//      printf("phi^2 coeff %f\n",0.5*pow(c1,2)*pow(decay_rate, 2 * (effective_window_size-data_i-1)));
 
       collection.add(0.5,
                      (-c1*pow(decay_rate, effective_window_size-data_i-1)*nuTy) - data_vec[data_i],
