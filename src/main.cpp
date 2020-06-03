@@ -81,7 +81,7 @@ void toy_example_1(){
     printf("\n");
 
     int thj = 2;
-    int window_size = 2;
+    int window_size = 1;
     double decay_rate = 0.5;
     const double sig = 1;
 
@@ -147,7 +147,7 @@ void toy_example_3(){
     printf("\n");
 
     int thj = 10;
-    int window_size = 2;
+    int window_size = 1;
     double decay_rate = 0.5;
     const double sig = 1;
 
@@ -172,8 +172,8 @@ int main(int argc, char *argv[]) {
 //  VecDouble y = read_data_vec_double(filename, data_count);
 
  toy_example_1();
- toy_example_2();
- toy_example_3();
+// toy_example_2();
+// toy_example_3();
  return 0;
 
 }
