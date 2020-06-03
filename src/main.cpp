@@ -167,6 +167,39 @@ void toy_example_3(){
 
 }
 
+
+void toy_example_4(){
+
+  const int data_count = 4; // # of data points
+  double y[data_count] = {8, 4, 2, 5};
+
+  // print out y data
+  double penalty = 1;
+  for (auto x : y) {printf("%f \t", x);}
+  printf("\n");
+
+  int thj = 2;
+  int window_size = 2;
+  double decay_rate = 0.5;
+  const double sig = 1;
+
+  // forward pass
+  PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty, -INFINITY, INFINITY);
+  // backward pass
+  double *data_vec_rev = reverse_data(y, data_count);
+  PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, -INFINITY, INFINITY);
+  FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig);
+
+  double * v_test = construct_v(data_count, thj, window_size, decay_rate);
+  double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
+
+  printf("Cost model, longer data, 2 true cp \n");
+  out.model.print();
+  printf("Cost on original data = \t %f\n", out.model.findCost(vTy));
+
+}
+
+
 int main(int argc, char *argv[]) {
 //  const std::string filename = "/Users/jewellsean/Desktop/test.csv";
 //  VecDouble y = read_data_vec_double(filename, data_count);
@@ -174,6 +207,7 @@ int main(int argc, char *argv[]) {
  toy_example_1();
  toy_example_2();
  toy_example_3();
+  toy_example_4();
  return 0;
 
 }
