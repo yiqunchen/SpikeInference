@@ -43,15 +43,7 @@ double * construct_v(int data_count, int thj, int window_size, double decay_rate
 
 
 
-double naive_nuTy (double * vec_a, double * vec_b, int data_count) {
-    double result = 0;
-    for (int i = 0; i < data_count; i++) {
-        result += vec_a[i]*vec_b[i];
-    }
-    return(result);
-}
-
-//TODO: FIX THIS
+// TODO: FIX THIS
 // trying to test construct v
 double construct_nu_norm(int data_count, int thj, int window_size, double decay_rate){
   double gam_2 = pow(decay_rate, 2.0);
@@ -63,7 +55,6 @@ double construct_nu_norm(int data_count, int thj, int window_size, double decay_
 }
 
 double construct_vTy(double * y, double * v, int data_count, int thj, int window_size){
-
   double result = 0;
   int tau_L = std::max(0, thj-window_size+1);
   int tau_R = std::min(data_count-1, thj+window_size);

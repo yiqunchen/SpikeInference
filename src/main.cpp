@@ -70,31 +70,118 @@ double naive_nuTy (double * vec_a, double * vec_b, int data_count) {
 }
 
 
+void toy_example_1(){
+
+    const int data_count = 6;
+    double y[data_count] =  {8, 4, 2, 5, 2.5, 1.25};
+
+    // print out y data
+    double penalty = 1;
+    for (auto x : y) {printf("%f \t", x);}
+    printf("\n");
+
+    int thj = 2;
+    int window_size = 2;
+    double decay_rate = 0.5;
+    const double sig = 1;
+
+    // forward pass
+    PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty, -INFINITY, INFINITY);
+    // backward pass
+    double *data_vec_rev = reverse_data(y, data_count);
+    PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, -INFINITY, INFINITY);
+    FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig);
+
+    double * v_test = construct_v(data_count, thj, window_size, decay_rate);
+    double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
+
+    printf("Cost model, short data, 1 true cp \n");
+    out.model.print();
+    printf("Cost on original data = \t %f\n", out.model.findCost(vTy));
+
+}
+
+void toy_example_2(){
+
+    const int data_count = 11; // # of data points
+//  const std::string filename = "/Users/jewellsean/Desktop/test.csv";
+//  VecDouble y = read_data_vec_double(filename, data_count);
+    double y[data_count] = {8, 4, 2, 1, 0.5, 8, 4, 2, 1, 0.5, 10};
+
+    // print out y data
+    double penalty = 0.5;
+    for (auto x : y) {printf("%f \t", x);}
+    printf("\n");
+
+    int thj = 4;
+    int window_size = 3;
+    double decay_rate = 0.5;
+    const double sig = 1;
+
+    // forward pass
+    PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty, -INFINITY, INFINITY);
+    // backward pass
+    double *data_vec_rev = reverse_data(y, data_count);
+    PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, -INFINITY, INFINITY);
+    FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig);
+
+    double * v_test = construct_v(data_count, thj, window_size, decay_rate);
+    double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
+
+    printf("Cost model, longer data, 2 true cp \n");
+    out.model.print();
+    printf("Cost on original data = \t %f\n", out.model.findCost(vTy));
+
+}
+
+void toy_example_3(){
+
+    const int data_count = 11; // # of data points
+//  const std::string filename = "/Users/jewellsean/Desktop/test.csv";
+//  VecDouble y = read_data_vec_double(filename, data_count);
+    double y[data_count] = {8, 4, 2, 1, 0.5, 8, 4, 2, 1, 0.5, 10};
+
+    // print out y data
+    double penalty = 0.5;
+    for (auto x : y) {printf("%f \t", x);}
+    printf("\n");
+
+    int thj = 10;
+    int window_size = 2;
+    double decay_rate = 0.5;
+    const double sig = 1;
+
+    // forward pass
+    PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty, -INFINITY, INFINITY);
+    // backward pass
+    double *data_vec_rev = reverse_data(y, data_count);
+    PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, -INFINITY, INFINITY);
+    FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig);
+
+    double * v_test = construct_v(data_count, thj, window_size, decay_rate);
+    double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
+
+    printf("Cost model, longer data, 2 true cp \n");
+    out.model.print();
+    printf("Cost on original data = \t %f\n", out.model.findCost(vTy));
+
+}
+
 int main(int argc, char *argv[]) {
 //  const std::string filename = "/Users/jewellsean/Desktop/test.csv";
 //  VecDouble y = read_data_vec_double(filename, data_count);
-  const int data_count = 5; //3; // # of data points
 
-  double y[data_count] =  {8, 4, 2, 1, 5};//{8, 4, 2, 5, 2.5, 1.25};
+ toy_example_1();
+ toy_example_2();
+ toy_example_3();
+ return 0;
 
-  double penalty = 1;
-  for (auto x : y) {printf("%f \t", x);}
-  printf("\n");
+}
 
-  int thj = 2;
-  int window_size = 2;
-  double decay_rate = 0.5;
-  const double sig = 1;
 
-  // forward pass
-  PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty, -INFINITY, INFINITY);
 
-// backward pass
-  double *data_vec_rev = reverse_data(y, data_count);
-  PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, -INFINITY, INFINITY);
-  FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig);
-
-  double * v_test = construct_v(data_count, thj, window_size, decay_rate);
+// CODE for printing out v
+//  double * v_test = construct_v(data_count, thj, window_size, decay_rate);
 
 //
 //  for(int data_i=0; data_i < data_count; data_i++){
@@ -108,28 +195,6 @@ int main(int argc, char *argv[]) {
 //  printf("vTv %f\n",v_norm2);
 
 
-//  double phi_eval = 0;
-//  for(int data_i=0; data_i < data_count; data_i++){
-//      double next_data_point = y[data_i] - v_test[data_i] / v_norm2 * (vTy - phi_eval);
-//      printf("%f \t", next_data_point);
-//    }
-
-
-//  printf("Cost model \n");
-//  out.model.print();
-//  printf("Cost on original data = \t %f\n", out.model.findCost(vTy));
-
-//  printf("cost as a function of phi\n");
-//  double phi = 0;
-//  double eps = 0.5;
-//  int n = 10;
-//  for (int i = 0; i < n; i++) {
-//    printf("%f \t %f\n", phi, out.model.findCost(phi));
-//    phi = phi + eps;
-//  }
-  return 0;
-}
-
 
 
 int main2(int argc, char *argv[]) {
@@ -137,7 +202,7 @@ int main2(int argc, char *argv[]) {
 //  const std::string filename = "/Users/jewellsean/Desktop/test.csv";
 //  VecDouble y = read_data_vec_double(filename, data_count);
 
-  double y[data_count] = {8, 4, 2, 1, 5};//{8, 4, 2, 1, 0.5, 8, 4, 2, 1, 0.5, 10};
+  double y[data_count] = {8, 4, 2, 1, 0.5, 8, 4, 2, 1, 0.5, 10};
 
 //  printf("Array length %i \n",sizeof( y )/sizeof( y[0] ));
 
