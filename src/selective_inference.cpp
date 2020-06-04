@@ -24,7 +24,7 @@
 double * construct_v(int data_count, int thj, int window_size, double decay_rate){
   double * v = new double[data_count];
   int tau_L = std::max(0, thj-window_size+1);
-  int tau_R = std::min(data_count, thj+window_size);
+  int tau_R = std::min(data_count-1, thj+window_size);
   double const_left = -decay_rate * (pow(decay_rate, 2.0) - 1) / (pow(decay_rate, 2.0) - pow(decay_rate , (2 * (tau_L - thj) )));
   double const_right = (pow(decay_rate, 2.0) - 1) / (pow(decay_rate, (2 * (tau_R - thj))) - 1);
   for (int i = 0; i<data_count; i++){
@@ -40,8 +40,6 @@ double * construct_v(int data_count, int thj, int window_size, double decay_rate
   }
   return(v);
 }
-
-
 
 // TODO: FIX THIS
 // trying to test construct v
@@ -179,7 +177,7 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
         double penalty, // tuning parameter to penalize the number of spikes
         int verbose) {
 
-  const double MIN = -50;
+  const double MIN = 0;
   const double MAX = 50;
 
   SquareLossPieceList::iterator it;

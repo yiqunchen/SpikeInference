@@ -4,7 +4,7 @@
 #include <vector>
 #include <stdexcept>
 #define NEWTON_EPSILON 1e-30
-#define DIFF_EPS 1e-8
+#define DIFF_EPS 1e-6
 #define PREV_NOT_SET (-3)
 #define MACHINE_MIN -INFINITY
 #define MACHINE_MAX INFINITY
