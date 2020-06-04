@@ -41,7 +41,6 @@ double * construct_v(int data_count, int thj, int window_size, double decay_rate
   return(v);
 }
 
-// TODO: FIX THIS
 // trying to test construct v
 double construct_nu_norm(int data_count, int thj, int window_size, double decay_rate){
   double gam_2 = pow(decay_rate, 2.0);
@@ -178,7 +177,7 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
         int verbose) {
 
   const double MIN = 0;
-  const double MAX = 50;
+  const double MAX = 100;
 
   SquareLossPieceList::iterator it;
   double phi_eval, analytic_cost, manual_cost;

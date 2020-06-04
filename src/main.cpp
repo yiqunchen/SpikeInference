@@ -1,6 +1,6 @@
 #include <vector>
 #include <stdio.h>
-#include <stdlib.h>     /* srand, rand */
+#include <stdlib.h>    /* srand, rand */
 #include <math.h>
 #include <iostream>
 #include <string>
@@ -167,10 +167,13 @@ void toy_example_3(){
   }
 
   double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
-//  double v_norm2 = construct_vTy(v_test, v_test, data_count, thj, window_size);
+  double v_norm2 = construct_vTy(v_test, v_test, data_count, thj, window_size);
+  double v_norm2_incorrect = construct_nu_norm(data_count, thj, window_size, decay_rate);
 //  printf("vTy %f\n",vTy);
 //  printf("vTv %f\n",v_norm2);
-//
+//  printf("vTv false %f\n",v_norm2_incorrect);
+
+
 //  double phi_eval = 0;
 //  for(int data_i=0; data_i < data_count; data_i++){
 //      double next_data_point = y[data_i] - v_test[data_i] / v_norm2 * (vTy - phi_eval);
@@ -274,8 +277,8 @@ int main(int argc, char *argv[]) {
  toy_example_2();
  toy_example_3();
  toy_example_4();
- random_example_test(1000, 0.8, 0.1, 0.01,
-            true, 1, 10, 10, 1234);
+ random_example_test(100000, 0.8, 0.1, 0.01,
+            true, 1, 10, 20, 1234);
 
  return 0;
 
@@ -337,12 +340,6 @@ int main2(int argc, char *argv[]) {
   double test_vTv = naive_nuTy(v_test, v_test, data_count);
   double v_norm_2 = construct_nu_norm(data_count, thj, window_size, decay_rate);
   TEST(double_within_eps(test_vTv, v_norm_2, EPS));
-
-//  for (int i = 0; i < data_count; i++){
-//    printf("%f \t", null_v_test[i]);
-//  }
-//
-//  printf("\n vTy = %f\n", null_vTy);
 
   return 0;
 }
