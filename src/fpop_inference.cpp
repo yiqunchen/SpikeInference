@@ -36,7 +36,7 @@ FpopInference fpop_analytic_inference_recycle(PiecewiseSquareLosses * cost_model
           decay_rate, // AR1 decay parameter
           penalty, // tuning parameter to penalize the number of spikes
           verbose);
-  check_selective_inference(&model, thj, window_size, data_count, data_vec, decay_rate, penalty ,verbose);
+  check_selective_inference(&model, thj, window_size, data_count, data_vec, decay_rate, penalty, sig, verbose);
   double pval = calc_p_value(&model, thj, window_size, data_count, data_vec, decay_rate, sig, false, verbose);
   double approximation_error = 0.0;
   return FpopInference(pval, approximation_error, model, thj);

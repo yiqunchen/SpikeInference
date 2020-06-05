@@ -174,10 +174,17 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
         double *data_vec, // original data
         double decay_rate, // decay rate of the Ca2+
         double penalty, // tuning parameter to penalize the number of spikes
+        double sig, // estimated variance to limit our check range
         int verbose) {
 
+  double v_norm2 = construct_nu_norm(data_count, thj, window_size, decay_rate);
+  double * v = construct_v(data_count, thj, window_size, decay_rate);
+  double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
+
   const double MIN = 0;
-  const double MAX = 100;
+
+  const double MAX = std::max(20*sqrt(v_norm2*sig),abs(vTy));
+  //printf("check max %f \n",MAX);
 
   SquareLossPieceList::iterator it;
   double phi_eval, analytic_cost, manual_cost;
@@ -189,15 +196,10 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
       analytic_cost = it -> getCost(phi_eval);
       // run fpop on yphi
 
-      double * v = construct_v(data_count, thj, window_size, decay_rate);
-      double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
-      double v_norm2 = construct_vTy(v, v, data_count, thj, window_size);
-//      printf("v_norm2 %f \n", v_norm2);
-
       PiecewiseSquareLoss *cost_prev;
       PiecewiseSquareLosses cost_model_mat(data_count);
       PiecewiseSquareLoss start;
-      start.piece_list.emplace_back(0, 0, 0, -INFINITY, INFINITY, 0, 0); // degenerate cost section to update
+      start.piece_list.emplace_back(0, 0, 0, MACHINE_MIN, MACHINE_MAX, 0, 0); // degenerate cost section to update
       cost_prev = &start;
 
       // build cost functions for each data point, starting with start_cost cost function

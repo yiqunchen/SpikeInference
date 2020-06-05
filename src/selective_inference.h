@@ -71,6 +71,7 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
                                double *data_vec, // original data
                                double decay_rate,
                                double penalty, // tuning parameter to penalize the number of spikes
+                               double sig, //
                                int verbose);
 
 
