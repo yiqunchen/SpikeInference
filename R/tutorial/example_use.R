@@ -10,3 +10,8 @@ inference_spike <- spike_inference(dat = sim$fl, decay_rate = 0.95, tuning_param
                 sig = 0.15, return_conditioning_sets = TRUE)
 
 plot(inference_spike, thj = inference_spike$change_pts[1])
+# 1-sided: 
+# 3.920091e-04 3.510919e-07 4.734645e-07 1.297679e-08 5.090982e-07 1.239837e-08 7.686889e-07
+# 2-sided:
+# 7.840182e-04 7.021838e-07 9.469291e-07 2.595358e-08 1.018196e-06 2.479674e-08 1.537378e-06
+

@@ -224,10 +224,11 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
                     double *data_vec, // original data
                     double decay_rate, // AR1 decay rate
                     double sig, // noise variance
+                    bool two_sided, // whether calc 2 sided alternative or one sided (default to >)
                     int verbose) {
 
   double * v = construct_v(data_count, thj, window_size, decay_rate);
-  double vTy = construct_vTy(data_vec, v, data_count, thj ,window_size); //construct_vTy(sub_data_f, n_sub_f, sub_data_r, n_sub_r);
+  double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
   double nu_norm = construct_vTy(v, v, data_count, thj, window_size);
   SquareLossPieceList::iterator it;
 
@@ -243,16 +244,25 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
       arg2 = log_subtract(a, b);
       d1 = log_sum_exp(d1, arg2);
 
-      if (it->max_mean >= ABS(vTy)) {
-        arg2 = log_subtract(pnorm_log(it -> max_mean / sqrt(nu_norm * sig)),
-                            pnorm_log(std::max(it -> min_mean, ABS(vTy)) / sqrt(nu_norm * sig)));
-        n1 = log_sum_exp(n1, arg2);
+      if (two_sided){
+          if (it->max_mean >= ABS(vTy)) {
+              arg2 = log_subtract(pnorm_log(it -> max_mean / sqrt(nu_norm * sig)),
+                                  pnorm_log(std::max(it -> min_mean, ABS(vTy)) / sqrt(nu_norm * sig)));
+              n1 = log_sum_exp(n1, arg2);
+          }
+          if (it->min_mean <= -1 * ABS(vTy)) {
+              arg2 = log_subtract(pnorm_log(std::min(it -> max_mean, -ABS(vTy)) / sqrt(nu_norm * sig)),
+                                  pnorm_log(it -> min_mean / sqrt(nu_norm * sig)));
+              n1 = log_sum_exp(n1, arg2);
+          }
+      } else {
+          if (it->max_mean >= ABS(vTy)) {
+              arg2 = log_subtract(pnorm_log(it -> max_mean / sqrt(nu_norm * sig)),
+                                  pnorm_log(std::max(it -> min_mean, ABS(vTy)) / sqrt(nu_norm * sig)));
+              n1 = log_sum_exp(n1, arg2);
+          }
       }
-      if (it->min_mean <= -1 * ABS(vTy)) {
-        arg2 = log_subtract(pnorm_log(std::min(it -> max_mean, -ABS(vTy)) / sqrt(nu_norm * sig)),
-                            pnorm_log(it -> min_mean / sqrt(nu_norm * sig)));
-        n1 = log_sum_exp(n1, arg2);
-      }
+
     }
   }
   return (exp(n1 - d1));

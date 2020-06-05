@@ -81,4 +81,5 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
                     double *data_vec, // original data
                     double decay_rate, // AR1 decay rate
                     double sig, // noise variance
+                    bool two_sided, // two sided p-val?
                     int verbose);

@@ -273,11 +273,11 @@ int main(int argc, char *argv[]) {
 //  const std::string filename = "/Users/jewellsean/Desktop/test.csv";
 //  VecDouble y = read_data_vec_double(filename, data_count);
 //
- toy_example_1();
- toy_example_2();
- toy_example_3();
- toy_example_4();
- random_example_test(100000, 0.8, 0.1, 0.01,
+// toy_example_1();
+// toy_example_2();
+// toy_example_3();
+// toy_example_4();
+ random_example_test(10000, 0.8, 0.1, 0.01,
             true, 1, 10, 20, 1234);
 
  return 0;
