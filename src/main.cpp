@@ -364,7 +364,7 @@ void specific_example_1() {
     int thj;
     int window_size = 2;
     float sigma = 0.15;
-    vector<double> y_example = read_data_vec_double("/Users/tonyyiqunchen/Desktop/spring_2020/research/SpikeInference/example_fail.csv",
+    vector<double> y_example = read_data_vec_double("~/Desktop/spring_2020/research/SpikeInference/example_fail.csv",
                                                     T);
 
     double y[T];
