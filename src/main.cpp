@@ -367,12 +367,7 @@ void specific_example_1() {
     vector<double> y_example = read_data_vec_double("~/Desktop/spring_2020/research/SpikeInference/example_fail.csv",
                                                     T);
 
-    double y[T];
-    for (int data_i = 0; data_i < T; data_i++) {
-        y[data_i] = y_example[data_i];
-    }
-
-    PiecewiseSquareLosses cost_model_fwd = fpop(y, T, decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
+    PiecewiseSquareLosses cost_model_fwd = fpop(&y_example[0], T, decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
 
     std::list<int> ll = extract_changepoints(cost_model_fwd, T);
     ll.pop_front(); // we don't want to test the first loc at -1
@@ -381,16 +376,15 @@ void specific_example_1() {
     std::list<int>::iterator j;
     int count = 0;
 
+    // backward pass
+    double *data_vec_rev = reverse_data(&y_example[0], T);
+    PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, T, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
+
     for (j = ll.begin(); j != ll.end(); ++j) {
         count += 1;
         thj = *j; // get random spike location to test
         printf("currently testing %i th location at %i\n", count, thj);
-        // forward pass
-        PiecewiseSquareLosses cost_model_fwd = fpop(y, T, decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
-        // backward pass
-        double *data_vec_rev = reverse_data(y, T);
-        PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, T, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
-        FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, T, decay_rate, penalty,
+        FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, &y_example[0], T, decay_rate, penalty,
                                                             thj, window_size, sigma * sigma);
 
     }
@@ -407,9 +401,8 @@ int main(int argc, char *argv[]) {
 // toy_example_3();
 // toy_example_4();
 // toy_example_5();
- random_example_test(1000, 0.95, 0.01, 0.1,
-            true, 1, 50, 1, 1, true);
-//    specific_example_1();
+// random_example_test(1000, 0.95, 0.01, 0.1,true, 1, 50, 1, 1, true);
+  specific_example_1();
 
  return 0;
 }
