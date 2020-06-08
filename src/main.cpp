@@ -13,23 +13,41 @@
 #include "selective_inference.h"
 #include "fpop_inference.h"
 #include "test_utils.h" // for unit test purposes
+//#include "omp.h"
+#include <cassert>
 
 typedef std::vector<double> VecDouble;
 typedef std::vector<int> VecInt;
 
+//VecDouble read_data_vec_double(const std::string filename, const int data_count) {
+//  const int max_line_size = 20;
+//  std::string in;
+//
+//  std::ifstream fsnumbers;
+//  fsnumbers.open(filename);
+//
+////    fsnumbers.getline(in, max_line_size);
+//  VecDouble data_vec;
+//  //for (int i = 0; i < data_count; i++) {
+//  while (std::getline(fsnumbers, in)){
+//      data_vec.emplace_back(std::stod(in));
+//  }
+//  return data_vec;
+//}
+
 VecDouble read_data_vec_double(const std::string filename, const int data_count) {
-  const int max_line_size = 100;
-  char in[max_line_size];
+    const int max_line_size = 100;
+    char in[max_line_size];
 
-  std::ifstream fsnumbers;
-  fsnumbers.open(filename);
+    std::ifstream fsnumbers;
+    fsnumbers.open(filename);
 
-  VecDouble data_vec;
-  for (int i = 0; i < data_count; i++) {
-    fsnumbers >> in;
-    data_vec.emplace_back(std::stod(in));
-  }
-  return data_vec;
+    VecDouble data_vec;
+    for (int i = 0; i < data_count; i++) {
+        fsnumbers >> in;
+        data_vec.emplace_back(std::stod(in));
+    }
+    return data_vec;
 }
 
 
@@ -225,8 +243,6 @@ void toy_example_4(){
 
 }
 
-
-
 void toy_example_5(){
 
     const int data_count = 6; // # of data points
@@ -266,17 +282,18 @@ void toy_example_5(){
 
 // random test
 void random_example_test(int T, double decay_rate, double spike_rate, float sigma,
-        bool noisy, double penalty, int window_size, int test_times, int random_seed){
+        bool noisy, double penalty, int window_size, int test_times, int random_seed,
+        bool parallel) {
 
-    assert(decay_rate<1 & decay_rate >0);
-    assert(spike_rate>0);
-    assert(T>0);
-    assert(sigma>0);
+    assert(decay_rate < 1 & decay_rate > 0);
+    assert(spike_rate > 0);
+    assert(T > 0);
+    assert(sigma > 0);
 
 
     std::default_random_engine generator(random_seed);
     std::poisson_distribution<int> poisson(spike_rate);
-    std::normal_distribution<double> normal(0.0,sigma);
+    std::normal_distribution<double> normal(0.0, sigma);
 
     double y[T];
     y[0] = 1.0;
@@ -284,12 +301,12 @@ void random_example_test(int T, double decay_rate, double spike_rate, float sigm
 
     double vTv = construct_nu_norm(T, thj, window_size, decay_rate);
 
-    printf("vTv %f \n",vTv);
+    printf("vTv %f \n", vTv);
 
 
-    for(int data_i = 1; data_i < T; data_i++){
+    for (int data_i = 1; data_i < T; data_i++) {
         int spike_T = poisson(generator);
-        y[data_i] = decay_rate*y[data_i - 1] + spike_T;
+        y[data_i] = decay_rate * y[data_i - 1] + spike_T;
         if (noisy) {
             double noise_T = normal(generator);
             y[data_i] += noise_T;
@@ -299,9 +316,29 @@ void random_example_test(int T, double decay_rate, double spike_rate, float sigm
     PiecewiseSquareLosses cost_model_fwd = fpop(y, T, decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
     std::list<int> ll = extract_changepoints(cost_model_fwd, T);
     ll.pop_front(); // we don't want to test the first loc at -1
+    // convert the cp into vector so we could use openmp
+    std::vector<int> ll_vec(ll.begin(), ll.end());
     std::list<int>::iterator j;
     int count = 0;
-    for (j = ll.begin(); j != ll.end(); ++j){
+
+//    if (parallel){
+//        omp_set_num_threads(4); //make this an argument?
+//        #pragma omp parallel for
+//        for (int k = 0; k < ll_vec.size(); ++k) {
+//            count += 1;
+//            thj = ll_vec[k]; // get random spike location to test
+//            printf("currently testing %i th location at %i\n", count, thj);
+//            // forward pass
+//            PiecewiseSquareLosses cost_model_fwd = fpop(y, T, decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
+//            // backward pass
+//            double *data_vec_rev = reverse_data(y, T);
+//            PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, T, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
+//            FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, T, decay_rate, penalty,
+//                                                                thj, window_size, sigma * sigma);
+//
+//        }
+//    }else{
+    for (j = ll.begin(); j != ll.end(); ++j) {
         count += 1;
         thj = *j; // get random spike location to test
         printf("currently testing %i th location at %i\n", count, thj);
@@ -311,13 +348,54 @@ void random_example_test(int T, double decay_rate, double spike_rate, float sigm
         double *data_vec_rev = reverse_data(y, T);
         PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, T, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
         FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, T, decay_rate, penalty,
-                thj, window_size, sigma*sigma);
+                                                            thj, window_size, sigma * sigma);
 
     }
+//}
 
 }
 
 
+void specific_example_1() {
+
+    float decay_rate = 0.95;
+    float penalty = 0.3;
+    int T = 100000;
+    int thj;
+    int window_size = 2;
+    float sigma = 0.15;
+    vector<double> y_example = read_data_vec_double("/Users/tonyyiqunchen/Desktop/spring_2020/research/SpikeInference/example_fail.csv",
+                                                    T);
+
+    double y[T];
+    for (int data_i = 0; data_i < T; data_i++) {
+        y[data_i] = y_example[data_i];
+    }
+
+    PiecewiseSquareLosses cost_model_fwd = fpop(y, T, decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
+
+    std::list<int> ll = extract_changepoints(cost_model_fwd, T);
+    ll.pop_front(); // we don't want to test the first loc at -1
+    // convert the cp into vector so we could use openmp
+    std::vector<int> ll_vec(ll.begin(), ll.end());
+    std::list<int>::iterator j;
+    int count = 0;
+
+    for (j = ll.begin(); j != ll.end(); ++j) {
+        count += 1;
+        thj = *j; // get random spike location to test
+        printf("currently testing %i th location at %i\n", count, thj);
+        // forward pass
+        PiecewiseSquareLosses cost_model_fwd = fpop(y, T, decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
+        // backward pass
+        double *data_vec_rev = reverse_data(y, T);
+        PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, T, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
+        FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, T, decay_rate, penalty,
+                                                            thj, window_size, sigma * sigma);
+
+    }
+
+}
 
 
 int main(int argc, char *argv[]) {
@@ -328,9 +406,11 @@ int main(int argc, char *argv[]) {
 // toy_example_2();
 // toy_example_3();
 // toy_example_4();
- toy_example_5();
-// random_example_test(1000, 0.95, 0.0001, 0.1,
-//            true, 1, 50, 1, 1);
+// toy_example_5();
+ random_example_test(1000, 0.95, 0.01, 0.1,
+            true, 1, 50, 1, 1, true);
+//    specific_example_1();
+
  return 0;
 }
 
