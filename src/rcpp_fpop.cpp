@@ -6,6 +6,7 @@
 #include <Rcpp.h>
 #include <algorithm>    // std::min
 #include <math.h>
+#include <omp.h> // open mp
 
 using namespace Rcpp;
 
@@ -116,11 +117,15 @@ List fpop_inference_interface_recycle
   List phi_intervals(nrows);
 
   int row_i = 0;
-  for (it = ll.begin(); it != ll.end(); ++it) {
-
+  //omp_set_num_threads(3); //make this an argument?
+  //#pragma omp parallel for
+  std::vector<int> ll_vec(ll.begin(), ll.end());
+  for (int k = 0; k < ll_vec.size(); ++k){
+  //for (it = ll.begin(); it != ll.end(); ++it) {
+    int it = ll_vec[k];
     try {
-      if (*it > 0) {
-        FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, data_ptr, data_count, decay_rate, penalty, *it, window_size, sig);
+      if (it > 0) {
+        FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, data_ptr, data_count, decay_rate, penalty, it, window_size, sig);
 
         out_mat(row_i, 0) = out.thj + 1;
         out_mat(row_i, 1) = out.pval;
