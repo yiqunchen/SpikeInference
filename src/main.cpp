@@ -108,10 +108,10 @@ void toy_example_1(){
     const double sig = 1;
 
     // forward pass
-    PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty, -INFINITY, INFINITY);
+    PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
     // backward pass
     double *data_vec_rev = reverse_data(y, data_count);
-    PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, -INFINITY, INFINITY);
+    PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
     FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig);
 
     double * v_test = construct_v(data_count, thj, window_size, decay_rate);
@@ -141,10 +141,10 @@ void toy_example_2(){
     const double sig = 1;
 
     // forward pass
-    PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty, -INFINITY, INFINITY);
+    PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
     // backward pass
     double *data_vec_rev = reverse_data(y, data_count);
-    PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, -INFINITY, INFINITY);
+    PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
     FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig);
 
     double * v_test = construct_v(data_count, thj, window_size, decay_rate);
@@ -172,17 +172,16 @@ void toy_example_3(){
   const double sig = 1;
 
   // forward pass
-  PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty, -INFINITY, INFINITY);
+  PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
   // backward pass
   double *data_vec_rev = reverse_data(y, data_count);
-  PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, -INFINITY, INFINITY);
+  PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
   FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig);
 
   double * v_test = construct_v(data_count, thj, window_size, decay_rate);
-  for(int data_i=0; data_i < data_count; data_i++){
-    printf("%f \t", v_test[data_i]);
-    printf("\n");
-  }
+//  for(int data_i=0; data_i < data_count; data_i++){
+//    printf("%f \n", v_test[data_i]);
+//  }
 
   double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
   double v_norm2 = construct_vTy(v_test, v_test, data_count, thj, window_size);
@@ -259,10 +258,10 @@ void toy_example_5(){
     const double sig = 0;
 
     // forward pass
-    PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty, -INFINITY, INFINITY);
+    PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
     // backward pass
     double *data_vec_rev = reverse_data(y, data_count);
-    PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, -INFINITY, INFINITY);
+    PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
     FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig);
 
     double * v_test = construct_v(data_count, thj, window_size, decay_rate);
@@ -394,13 +393,13 @@ int main(int argc, char *argv[]) {
 //  const std::string filename = "/Users/jewellsean/Desktop/test.csv";
 //  VecDouble y = read_data_vec_double(filename, data_count);
 //
- //toy_example_1();
+// toy_example_1();
 // toy_example_2();
- toy_example_3();
+// toy_example_3();
 // toy_example_4();
 // toy_example_5();
- //random_example_test(10000, 0.95, 0.01, 0.1,true, 1, 50, 1, 1, true);
- //specific_example_1();
+random_example_test(10000, 0.95, 0.01, 0.01,true, 1, 50, 1, 1, false);
+// specific_example_1();
 
  return 0;
 }

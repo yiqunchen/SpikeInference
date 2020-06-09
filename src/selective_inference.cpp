@@ -114,16 +114,17 @@ PiecewiseSquareLoss thj_in_model(
   PiecewiseBiSquareLosses fwd_2d = fpop_2d_custom_start(sub_data_f, n_sub_f,cost_f_piece, penalty, decay_rate, 1, vTy, v_norm2, verbose);
   PiecewiseBiSquareLosses rev_2d = fpop_2d_custom_start(sub_data_r, n_sub_r,cost_r_piece, penalty, decay_rate, 0, vTy, v_norm2, verbose);
 
+
   PiecewiseSquareLoss fwd_min, rev_min, c_change_at_thj;
+
   fwd_min = fwd_2d.min_u().get_univariate_p();
   rev_min = rev_2d.min_u().get_univariate_p();
   c_change_at_thj.set_to_addition_of(&fwd_min, &rev_min, 0);
   c_change_at_thj.add(0, 0, penalty);
   c_change_at_thj.set_prev_seg_end(1); // there is a changepoint at thj
-
 //  printf("change at thj\n");
 //  c_change_at_thj.print();
-
+//
 //  printf("eval at baseline (change)= %f\n", c_change_at_thj.findCost(vTy));
 
   PiecewiseBiSquareLosses c_no_change_at_thj;
@@ -145,9 +146,12 @@ PiecewiseSquareLoss thj_in_model(
 //  c_no_change_at_thj.print();
 
   PiecewiseSquareLoss c_no_change;
+//  printf("reach here \n");
+
+
   c_no_change = c_no_change_at_thj.min_u().get_univariate_p();
 //  printf("printing c_no_change...min over u\n");
-//  c_no_change.print();
+ // c_no_change.print();
 //  printf("eval at baseline (no change)= %f\n", c_no_change.findCost(-1.0));
 
 //  PiecewiseBiSquareLoss c_no_change;

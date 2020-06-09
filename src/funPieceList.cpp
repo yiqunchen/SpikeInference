@@ -306,6 +306,7 @@ double PiecewiseSquareLoss::findCost(double mean){
       return it->getCost(mean);
     }
   }
+  //printf("min %f, mean %f , max %f\n", it->min_mean, mean, it->max_mean);
   throw std::range_error("mean not contained in piecewise list");
 }
 
@@ -448,7 +449,7 @@ int PiecewiseSquareLoss::check_min_of
       return 2;
     }
     double mid_mean = MidMean(it -> min_mean, it -> max_mean);
-    if(-INFINITY < mid_mean){
+    if(MACHINE_MIN_P < mid_mean & mid_mean < MACHINE_MAX_P){ // WAS negative infinity
       double cost_min = it->getCost(mid_mean);
       double cost_prev = prev->findCost(mid_mean);
 
@@ -488,7 +489,7 @@ int PiecewiseSquareLoss::check_min_of
       return 2;
     }
     double mid_mean = MidMean(it -> min_mean, it -> max_mean);
-    if(-INFINITY < mid_mean){
+    if(MACHINE_MIN_P < mid_mean & mid_mean < MACHINE_MAX_P){
       double cost_prev = it->getCost(mid_mean);
       double cost_min = findCost(mid_mean);
 
@@ -518,7 +519,7 @@ int PiecewiseSquareLoss::check_min_of
       return 2;
     }
     double mid_mean = MidMean(it -> min_mean, it -> max_mean);
-    if(-INFINITY < mid_mean){
+    if(MACHINE_MIN_P < mid_mean & mid_mean < MACHINE_MAX_P){
       double cost_model = it->getCost(mid_mean);
       double cost_min = findCost(mid_mean);
 
@@ -1295,6 +1296,7 @@ PiecewiseSquareLoss PiecewiseBiSquareLoss::get_univariate_p() {
            it -> min_p, it -> max_p,
            0.0,0);
   }
+ // printf(":( HERE??\n");
   return out;
 }
 
@@ -1376,8 +1378,10 @@ void PiecewiseBiSquareLoss::set_to_pw_u(PiecewiseSquareLoss *f) {
   piece_list.clear();
   while(it != f -> piece_list.end()) {
     piece_list.emplace_back(it -> Square, it -> Linear, 0, 0, 0, it -> Constant,
-            std::max(it -> min_mean, (double) MACHINE_MIN_P), std::min(it -> max_mean, (double) MACHINE_MAX_P),
-            MACHINE_MIN, MACHINE_MAX);
+              MACHINE_MIN_P, MACHINE_MAX_P,
+            std::max(it -> min_mean, (double) MACHINE_MIN),
+            std::min(it -> max_mean, (double) MACHINE_MAX)
+            );
     it++;
   }
 }
@@ -1387,58 +1391,13 @@ void PiecewiseBiSquareLoss::set_to_pw_p(PiecewiseSquareLoss *f) {
     piece_list.clear();
     while(it != f -> piece_list.end()) {
         piece_list.emplace_back( 0,  0, 0,  it->Square, it->Linear, it -> Constant,
-                                 MACHINE_MIN_P, MACHINE_MAX_P,
-                                 it->min_mean,
-                                 it->max_mean);
+                                 std::max(it->min_mean, (double) MACHINE_MIN_P),
+                                 std::min(it->max_mean, (double) MACHINE_MAX_P),
+                                 MACHINE_MIN, MACHINE_MAX
+                                 );
         it++;
     }
 }
-
-// TODO: Yiqun is modifying this to put constraints on the range of the output from "min over u"
-//void PiecewiseBiSquareLoss::set_to_pw_p(PiecewiseSquareLoss *f) {
-//  SquareLossPieceList::iterator it = f -> piece_list.begin();
-//  piece_list.clear();g
-//  while(it != f -> piece_list.end()) {
-//      // try fixing here, let's not keep track of pw quadratics that are
-//      // not in MIN_P, MAX_P
-//      bool cond_1 = (it->min_mean >= (double) MACHINE_MIN);
-//      bool cond_2 = (it->max_mean <= (double) MACHINE_MAX);
-//      bool left_to_range =  (it->max_mean < (double) MACHINE_MIN);
-//      bool right_to_range =  (it->min_mean > (double) MACHINE_MAX);
-//
-//      if(cond_1 & cond_2){
-//      //printf("%d cond 1\n",cond_1);
-//      //bool cond_2 = it->max_mean <= (double) MACHINE_MAX;
-//          piece_list.emplace_back(0, 0, 0, it->Square, it->Linear, it->Constant,
-//                              MACHINE_MIN_P, MACHINE_MAX_P,
-//                              it->min_mean,
-//                              it->max_mean);
-//      }else if (!cond_1 & cond_2){
-//          // cond2
-//          if (!left_to_range){
-//              piece_list.emplace_back(0, 0, 0, it->Square, it->Linear, it->Constant,
-//                                      MACHINE_MIN_P, MACHINE_MAX_P,
-//                                      std::max(it->min_mean, (double) MACHINE_MIN),
-//                                      std::max(it->max_mean, (double) MACHINE_MIN));
-//          }
-//      }else if(cond_1 & !cond_2 & !right_to_range) {
-//          if (!right_to_range){
-//              piece_list.emplace_back(0, 0, 0, it->Square, it->Linear, it->Constant,
-//                                      MACHINE_MIN_P, MACHINE_MAX_P,
-//                                      std::min(it->min_mean, (double) MACHINE_MAX),
-//                                      std::min(it->max_mean, (double) MACHINE_MAX));
-//          }
-//
-//      }else{
-//            // add the eligible piece
-//          piece_list.emplace_back(0, 0, 0, it->Square, it->Linear, it->Constant,
-//                                  MACHINE_MIN_P, MACHINE_MAX_P,
-//                                  std::max(it->min_mean, (double) MACHINE_MIN),
-//                                  std::min(it->max_mean, (double) MACHINE_MAX));
-//      }
-//      it++;
-//    }
-// }
 
 void PiecewiseBiSquareLoss::add(double a, double b, double c, double d, double e, double f) {
   for(BiSquareLossPieceList::iterator it = piece_list.begin(); it != piece_list.end(); it++){
@@ -1624,10 +1583,9 @@ PiecewiseBiSquareLoss PiecewiseBiSquareLosses::min_u() {
   }
   PiecewiseBiSquareLoss out;
   out.set_to_pw_p(&cost_min);
-  // try to fix the range here?
 
-  printf("What's wrong with the range??\n");
-  out.print();
+  //printf(":( What's wrong with the range??\n");
+  //out.print();
   return out;
 }
 
