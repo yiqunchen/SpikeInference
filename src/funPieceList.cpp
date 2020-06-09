@@ -342,7 +342,7 @@ void PiecewiseSquareLoss::print(){
 
 
 void SquareLossPiece::print(){
-  printf("%.15f %.15f %.15f %.5f %.5f %.5f %d\n",
+  printf("%.15f %.15f %.15f %.20f %.20f %.5f %d\n",
          Square, Linear, Constant,
          min_mean, max_mean,
          prev_mean, data_i);
@@ -449,7 +449,8 @@ int PiecewiseSquareLoss::check_min_of
       return 2;
     }
     double mid_mean = MidMean(it -> min_mean, it -> max_mean);
-    if(MACHINE_MIN_P < mid_mean & mid_mean < MACHINE_MAX_P){ // WAS negative infinity
+    printf("mid_mean %f \n", mid_mean);
+    if(-INFINITY < mid_mean & mid_mean < INFINITY){ // WAS negative infinity
       double cost_min = it->getCost(mid_mean);
       double cost_prev = prev->findCost(mid_mean);
 
@@ -489,7 +490,7 @@ int PiecewiseSquareLoss::check_min_of
       return 2;
     }
     double mid_mean = MidMean(it -> min_mean, it -> max_mean);
-    if(MACHINE_MIN_P < mid_mean & mid_mean < MACHINE_MAX_P){
+    if(-INFINITY < mid_mean & mid_mean < INFINITY){
       double cost_prev = it->getCost(mid_mean);
       double cost_min = findCost(mid_mean);
 
@@ -519,7 +520,7 @@ int PiecewiseSquareLoss::check_min_of
       return 2;
     }
     double mid_mean = MidMean(it -> min_mean, it -> max_mean);
-    if(MACHINE_MIN_P < mid_mean & mid_mean < MACHINE_MAX_P){
+    if(-INFINITY < mid_mean & mid_mean < INFINITY){
       double cost_model = it->getCost(mid_mean);
       double cost_min = findCost(mid_mean);
 
