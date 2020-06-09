@@ -449,8 +449,8 @@ int PiecewiseSquareLoss::check_min_of
       return 2;
     }
     double mid_mean = MidMean(it -> min_mean, it -> max_mean);
-    printf("mid_mean %f \n", mid_mean);
-    if(-INFINITY < mid_mean & mid_mean < INFINITY){ // WAS negative infinity
+//    printf("mid_mean %f \n", mid_mean);
+    if(MACHINE_MIN_P < mid_mean & mid_mean < MACHINE_MAX_P){ // WAS negative infinity
       double cost_min = it->getCost(mid_mean);
       double cost_prev = prev->findCost(mid_mean);
 
@@ -490,7 +490,7 @@ int PiecewiseSquareLoss::check_min_of
       return 2;
     }
     double mid_mean = MidMean(it -> min_mean, it -> max_mean);
-    if(-INFINITY < mid_mean & mid_mean < INFINITY){
+    if(MACHINE_MIN_P < mid_mean & mid_mean < MACHINE_MAX_P){
       double cost_prev = it->getCost(mid_mean);
       double cost_min = findCost(mid_mean);
 
@@ -520,7 +520,7 @@ int PiecewiseSquareLoss::check_min_of
       return 2;
     }
     double mid_mean = MidMean(it -> min_mean, it -> max_mean);
-    if(-INFINITY < mid_mean & mid_mean < INFINITY){
+    if(MACHINE_MIN_P < mid_mean & mid_mean < MACHINE_MAX_P){
       double cost_model = it->getCost(mid_mean);
       double cost_min = findCost(mid_mean);
 
@@ -1517,16 +1517,13 @@ void PiecewiseBiSquareLoss::set_to_addition_of(PiecewiseBiSquareLoss *f, Piecewi
                                   mu_min, mu_max, phi_min, phi_max);
         }
 
-
       }
       j++;
     }
     i++;
   }
 
-
 }
-
 
 
 void PiecewiseBiSquareLosses::collect(PiecewiseBiSquareLoss * f) {
