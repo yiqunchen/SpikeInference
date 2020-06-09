@@ -342,7 +342,7 @@ void PiecewiseSquareLoss::print(){
 
 
 void SquareLossPiece::print(){
-  printf("%.15f %.15f %.15f %.20f %.20f %.5f %d\n",
+  printf("%.15f %.15f %.15f %.5f %.5f %.5f %d\n",
          Square, Linear, Constant,
          min_mean, max_mean,
          prev_mean, data_i);
@@ -449,7 +449,6 @@ int PiecewiseSquareLoss::check_min_of
       return 2;
     }
     double mid_mean = MidMean(it -> min_mean, it -> max_mean);
-    printf("mid_mean %f \n", mid_mean);
     if(-INFINITY < mid_mean & mid_mean < INFINITY){ // WAS negative infinity
       double cost_min = it->getCost(mid_mean);
       double cost_prev = prev->findCost(mid_mean);
@@ -1207,6 +1206,20 @@ PiecewiseSquareLoss BiSquareLossPiece::min_over_u() {
 
   }
 
+  for(SquareLossPieceList::iterator it = out.piece_list.begin(); it != out.piece_list.end(); it++) {
+    it -> min_mean = std::max(it -> min_mean, MACHINE_MIN_P);
+    it -> max_mean = std::min(it -> max_mean, MACHINE_MAX_P);
+    if (it -> max_mean < MACHINE_MIN_P) {
+      // remove this interval
+      out.piece_list.erase(it);
+    }
+    if ( it -> min_mean > MACHINE_MAX_P) {
+      // remove this interval
+      out.piece_list.erase(it);
+    }
+
+
+  }
 
 //crude checks
 
@@ -1331,7 +1344,6 @@ PiecewiseSquareLoss PiecewiseBiSquareLoss::min_over_u() {
 
       cost_min = cost_prev;
     } else {
-
       if (verbose) {
         printf("min of\n");
         printf("\t");
@@ -1354,6 +1366,7 @@ PiecewiseSquareLoss PiecewiseBiSquareLoss::min_over_u() {
 
 
       cost_min.set_to_min_env_of(&cost_prev, &cost_cur, 0);
+
       int status = cost_min.check_min_of(&cost_prev, &cost_cur);
         if(status){
           cost_min.set_to_min_env_of(&cost_prev, &cost_cur, 1);
