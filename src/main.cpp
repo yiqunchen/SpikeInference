@@ -222,10 +222,10 @@ void toy_example_4(){
     const double sig = 1;
 
     // forward pass
-    PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty, -INFINITY, INFINITY);
+    PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty,MACHINE_MIN, MACHINE_MAX);
     // backward pass
     double *data_vec_rev = reverse_data(y, data_count);
-    PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, -INFINITY, INFINITY);
+    PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
     FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig);
 
     double * v_test = construct_v(data_count, thj, window_size, decay_rate);
@@ -320,6 +320,8 @@ void random_example_test(int T, double decay_rate, double spike_rate, float sigm
     std::vector<int> ll_vec(ll.begin(), ll.end());
     std::list<int>::iterator j;
     int count = 0;
+    double *data_vec_rev = reverse_data(y, T);
+    PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, T, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
 
 //    if (parallel){
 //        omp_set_num_threads(4); //make this an argument?
@@ -343,13 +345,9 @@ void random_example_test(int T, double decay_rate, double spike_rate, float sigm
         thj = *j; // get random spike location to test
         printf("currently testing %i th location at %i\n", count, thj);
         // forward pass
-        PiecewiseSquareLosses cost_model_fwd = fpop(y, T, decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
         // backward pass
-        double *data_vec_rev = reverse_data(y, T);
-        PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, T, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
         FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, T, decay_rate, penalty,
                                                             thj, window_size, sigma * sigma);
-
     }
 //}
 
@@ -364,7 +362,7 @@ void specific_example_1() {
     int thj;
     int window_size = 2;
     float sigma = 0.15;
-    vector<double> y_example = read_data_vec_double("~/Desktop/spring_2020/research/SpikeInference/example_fail.csv",
+    vector<double> y_example = read_data_vec_double("/Users/tonyyiqunchen/Desktop/test.csv",
                                                     T);
 
     PiecewiseSquareLosses cost_model_fwd = fpop(&y_example[0], T, decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
@@ -396,13 +394,13 @@ int main(int argc, char *argv[]) {
 //  const std::string filename = "/Users/jewellsean/Desktop/test.csv";
 //  VecDouble y = read_data_vec_double(filename, data_count);
 //
-// toy_example_1();
+ //toy_example_1();
 // toy_example_2();
-// toy_example_3();
+ toy_example_3();
 // toy_example_4();
 // toy_example_5();
-// random_example_test(1000, 0.95, 0.01, 0.1,true, 1, 50, 1, 1, true);
-  specific_example_1();
+ //random_example_test(10000, 0.95, 0.01, 0.1,true, 1, 50, 1, 1, true);
+ //specific_example_1();
 
  return 0;
 }

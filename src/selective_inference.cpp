@@ -99,7 +99,6 @@ PiecewiseSquareLoss thj_in_model(
   if (thj - window_size < 0) {
     fwd_0.piece_list.emplace_back(0, 0, 0, MACHINE_MIN, MACHINE_MAX, 0, 0); // degenerate cost section to update
     cost_f_piece = &fwd_0;
-
   } else {
     cost_f_piece = &(cost_fwd -> at(cost_f_start));
   }

@@ -6,7 +6,8 @@
 #define NEWTON_EPSILON 1e-30
 #define DIFF_EPS 1e-6
 #define PREV_NOT_SET (-3)
-#define MACHINE_MIN -INFINITY
+#define MACHINE_MIN 0//-INFINITY
+// somehow this is setting phi's range to be 0,infty instead of u!
 #define MACHINE_MAX INFINITY
 #define MACHINE_MIN_P -INFINITY
 #define MACHINE_MAX_P INFINITY
@@ -84,10 +85,10 @@ public:
     double SquareP;
     double LinearP;
     double Constant;
-    double min_u;
-    double max_u;
     double min_p;
     double max_p;
+    double min_u; // order swapped
+    double max_u;
     BiSquareLossPiece();
     BiSquareLossPiece
             (double, double, double, double, double, double, double, double, double, double);
