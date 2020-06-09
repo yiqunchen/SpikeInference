@@ -393,10 +393,10 @@ int main(int argc, char *argv[]) {
 //  const std::string filename = "/Users/jewellsean/Desktop/test.csv";
 //  VecDouble y = read_data_vec_double(filename, data_count);
 //
-// toy_example_1();
+//toy_example_1();
 // toy_example_2();
 // toy_example_3();
-// toy_example_4();
+ //toy_example_4();
 // toy_example_5();
  random_example_test(10000, 0.95, 0.01, 0.01,true, 1, 50, 1, 1, false);
 // specific_example_1();

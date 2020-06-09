@@ -173,7 +173,7 @@ PiecewiseBiSquareLosses fpop_2d_custom_start(double *data_vec, int data_count,
 
   // print out collections
   //TODO: remove after debug
-  verbose = 1;
+  verbose = 0;
 
   if(verbose) {
     collection.print();

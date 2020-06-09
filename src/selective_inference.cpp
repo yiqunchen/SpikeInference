@@ -142,8 +142,8 @@ PiecewiseSquareLoss thj_in_model(
 
   c_no_change_at_thj.set_to_addition_of(&fwd_2d, &rev_2d, 0);
 
-//  printf("addition of fwd and scaled reverse costs\n");
-//  c_no_change_at_thj.print();
+  printf("CHANGE addition of fwd and scaled reverse costs\n");
+  c_no_change_at_thj.print();
 
   PiecewiseSquareLoss c_no_change;
 //  printf("reach here \n");
@@ -158,8 +158,8 @@ PiecewiseSquareLoss thj_in_model(
 //  c_no_change = c_no_change_at_thj.min_u();
 //  c_no_change.print();
 
-//  printf("no change \n");
-//  c_no_change.print();
+  printf("no change \n");
+  c_no_change.print();
 
   c_no_change.set_prev_seg_end(0); // there is no changepoint at thj
 
