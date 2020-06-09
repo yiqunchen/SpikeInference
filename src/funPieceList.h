@@ -3,7 +3,7 @@
 #include <list>
 #include <vector>
 #include <stdexcept>
-#define NEWTON_EPSILON 1e-30
+#define NEWTON_EPSILON 1e-20
 #define DIFF_EPS 1e-5
 #define PREV_NOT_SET (-3)
 #define MACHINE_MIN 0//-INFINITY

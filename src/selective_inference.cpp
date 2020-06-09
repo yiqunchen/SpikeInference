@@ -166,6 +166,8 @@ PiecewiseSquareLoss thj_in_model(
   PiecewiseSquareLoss optimal_cost_in_phi;
   optimal_cost_in_phi.set_to_min_env_of(&c_change_at_thj, &c_no_change, 0);
 
+  printf("final pw quadratics\n");
+  optimal_cost_in_phi.print();
   return optimal_cost_in_phi;
 
 }
