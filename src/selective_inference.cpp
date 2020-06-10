@@ -142,32 +142,32 @@ PiecewiseSquareLoss thj_in_model(
 
   c_no_change_at_thj.set_to_addition_of(&fwd_2d, &rev_2d, 0);
 
-  printf("CHANGE addition of fwd and scaled reverse costs\n");
-  c_no_change_at_thj.print();
+  //printf("CHANGE addition of fwd and scaled reverse costs\n");
+ // c_no_change_at_thj.print();
 
   PiecewiseSquareLoss c_no_change;
 //  printf("reach here \n");
 
 
   c_no_change = c_no_change_at_thj.min_u().get_univariate_p();
-//  printf("printing c_no_change...min over u\n");
- // c_no_change.print();
+  //printf("printing c_no_change...min over u\n");
+  //c_no_change_at_thj.min_u().print();
 //  printf("eval at baseline (no change)= %f\n", c_no_change.findCost(-1.0));
 
 //  PiecewiseBiSquareLoss c_no_change;
 //  c_no_change = c_no_change_at_thj.min_u();
 //  c_no_change.print();
 
-  printf("no change \n");
-  c_no_change.print();
+ //printf("no change \n");
+  //c_no_change.print();
 
   c_no_change.set_prev_seg_end(0); // there is no changepoint at thj
 
   PiecewiseSquareLoss optimal_cost_in_phi;
   optimal_cost_in_phi.set_to_min_env_of(&c_change_at_thj, &c_no_change, 0);
 
-  printf("final pw quadratics\n");
-  optimal_cost_in_phi.print();
+  //printf("final pw quadratics\n");
+  //optimal_cost_in_phi.print();
   return optimal_cost_in_phi;
 
 }
