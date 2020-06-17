@@ -391,9 +391,9 @@ void specific_example_1() {
 
 int main(int argc, char *argv[]) {
 
- toy_example_1();
- toy_example_2();
- toy_example_3();
+// toy_example_1();
+// toy_example_2();
+// toy_example_3();
  toy_example_4();
  toy_example_5();
  //random_example_test(10000, 0.95, 0.01, 0.01,true, 1, 5, 1, 1, false);

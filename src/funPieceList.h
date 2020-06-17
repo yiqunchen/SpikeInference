@@ -8,8 +8,8 @@
 #define PREV_NOT_SET (-3)
 #define MACHINE_MIN (double) 0
 #define MACHINE_MAX (double) INFINITY
-#define MACHINE_MIN_P (double) -1e7
-#define MACHINE_MAX_P (double) 1e7
+#define MACHINE_MIN_P (double) -INFINITY
+#define MACHINE_MAX_P (double) INFINITY
 #define TAIL_THRESHOLD 30.0
 #define ABS(x) ((x)<0 ? -(x) : (x))
 
