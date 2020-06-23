@@ -32,7 +32,7 @@ bool SquareLossPiece::has_two_roots(double equals){
     // Square * u ^ 2 +
     // Linear * u + Constant = equals ?
     double delta = Linear * Linear - 4 * Square * (Constant - equals);
-    if (delta > 0) {
+    if (delta > 0 && !isinf(delta)) {
         return true;
     } else {
         return false;
@@ -122,6 +122,7 @@ double SquareLossPiece::argmin(){
 }
 
 double SquareLossPiece::getCost(double mean){
+//    printf("mean cost why %f\n",std::to_string(mean));
     if (mean < INFINITY && mean > -INFINITY) {
         return Square * mean * mean + Linear * mean + Constant;
     } else if (mean == INFINITY) {
@@ -153,6 +154,7 @@ double SquareLossPiece::getCost(double mean){
             }
         }
     }
+    printf("mean cost %f\n",(double)mean);
     throw std::runtime_error("cannot determine cost of mean");
 }
 
@@ -685,6 +687,7 @@ void PiecewiseSquareLoss::push_min_pieces
     // is -Inf or Inf
     // If either is Inf or -Inf then
 
+
     double mid_mean;
     if (first_max_mean != INFINITY && last_min_mean != -INFINITY) {
         mid_mean = (first_max_mean + last_min_mean) / 2;
@@ -696,6 +699,7 @@ void PiecewiseSquareLoss::push_min_pieces
         mid_mean = 0;
     }
 
+//    printf("1. mid_mean %f first_max_mean %f last_min_mean %f \n",mid_mean,first_max_mean,last_min_mean);
     double cost_diff_mid = diff_piece.getCost(mid_mean);
     // Easy case of equality on both left and right.
     if(same_at_left && same_at_right){

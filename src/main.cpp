@@ -395,15 +395,53 @@ void specific_example_1() {
 }
 
 
-int main(int argc, char *argv[]) {
- toy_example_1();
- toy_example_2();
- toy_example_3();
- toy_example_4();
- toy_example_5();
- random_example_test(10000, 0.95, 0.01, 0.01,true, 1, 50, 1, 1, false);
- specific_example_1();
+void specific_example_2() {
 
+    float decay_rate = 0.98675;
+    float penalty = 0.004911876;
+    int T = 10000;
+    int thj;
+    int window_size = 10;
+    float sigma = 0.0004104214;
+    vector<double> y_example = read_data_vec_double("/Users/tonyyiqunchen/Desktop/calcium_test.csv",
+                                                    T);
+
+    PiecewiseSquareLosses cost_model_fwd = fpop(&y_example[0], T, decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
+
+    std::list<int> ll = extract_changepoints(cost_model_fwd, T);
+    ll.pop_front(); // we don't want to test the first loc at -1
+    // convert the cp into vector so we could use openmp
+    std::vector<int> ll_vec(ll.begin(), ll.end());
+    std::list<int>::iterator j;
+    int count = 0;
+
+    // backward pass
+    double *data_vec_rev = reverse_data(&y_example[0], T);
+    PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, T, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
+
+    for (j = ll.begin(); j != ll.end(); ++j) {
+        count += 1;
+        thj = *j; // get estimated spike location to test
+        printf("currently testing %i th location at %i\n", count, thj);
+        FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, &y_example[0], T,
+                                                                decay_rate, penalty,
+                                                                thj, window_size, sigma * sigma);
+
+
+    }
+}
+
+
+
+int main(int argc, char *argv[]) {
+// toy_example_1();
+// toy_example_2();
+// toy_example_3();
+// toy_example_4();
+// toy_example_5();
+ random_example_test(10000, 0.95, 0.01, 0.01,true, 1, 100, 1, 1, false);
+// specific_example_1();
+ //specific_example_2();
  return 0;
 }
 
