@@ -98,7 +98,6 @@ List fpop_inference_interface_recycle
   int verbose = 0;
   double pval;
 
-
 // forward pass
   PiecewiseSquareLosses cost_model_fwd = fpop(data_ptr, data_count, decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
 

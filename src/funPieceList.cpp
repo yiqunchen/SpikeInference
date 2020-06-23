@@ -1024,6 +1024,7 @@ void PiecewiseSquareLoss::set_to_addition_of(PiecewiseSquareLoss *fun1, Piecewis
     SquareLossPieceList::iterator
             it1 = fun1->piece_list.begin(),
             it2 = fun2->piece_list.begin();
+    verbose = 0;  // debugging purpose
     if(verbose){
         printf("computing addition of:\n");
         printf("=function 1\n");
@@ -1113,8 +1114,24 @@ PiecewiseSquareLoss BiSquareLossPiece::min_over_u() {
     PiecewiseSquareLoss out;
     out.piece_list.clear();
 
-    if (SquareU == 0 && LinearU == 0 && Constant == 0) { // degenerate case
-        out.piece_list.emplace_back(0, 0, 0, min_p, max_p, PREV_NOT_SET, -3);
+    if (SquareU == 0 && LinearU == 0) { // degenerate case
+        if (LinearUP == 0){
+            // add in phi coef directly
+            out.piece_list.emplace_back(SquareP, LinearP, Constant, min_p, max_p, PREV_NOT_SET, -3);
+        }else if(LinearUP > 0){
+            if (min_p >= 0){
+                out.piece_list.emplace_back(SquareP, LinearP, Constant, min_p, max_p, PREV_NOT_SET, -3);
+            }else{
+                throw std::range_error("Minimizer not well-defined!");
+            }
+        }else{
+            if (max_p <= 0){
+                out.piece_list.emplace_back(SquareP, LinearP, Constant, min_p, max_p, PREV_NOT_SET, -3);
+            }else{
+                throw std::range_error("Minimizer not well-defined!");
+            }
+        }
+
         return out;
     }
 
@@ -1126,11 +1143,9 @@ PiecewiseSquareLoss BiSquareLossPiece::min_over_u() {
 
     if (SquareU == 0) {
         if (LinearU > 0) {
-            out.piece_list.emplace_back(0, 0, 0, min_p, max_p, PREV_NOT_SET, -3);
-        } else if (LinearU < 0) {
-            out.piece_list.emplace_back(0, 0, 0, min_p, max_p, PREV_NOT_SET, -3);
+            out.piece_list.emplace_back(SquareP, LinearP, Constant, min_p, max_p, PREV_NOT_SET, -3);
         } else {
-            out.piece_list.emplace_back(0, 0, 0, min_p, max_p, PREV_NOT_SET, -3);
+            throw std::range_error("Minimizer not well-defined!");
         }
         return out;
     }
@@ -1148,12 +1163,16 @@ PiecewiseSquareLoss BiSquareLossPiece::min_over_u() {
 
         if (min_p > MACHINE_MIN_P) {
             out.piece_list.emplace_back(0, 0, INFINITY, MACHINE_MIN_P, min_p, PREV_NOT_SET, -3);
+        }else{
+            min_p = std::max(min_p, MACHINE_MIN_P);
         }
-        out.piece_list.emplace_back(SquareP, LinearP, constant, min_p, max_p, PREV_NOT_SET, -3);
+        out.piece_list.emplace_back(SquareP, LinearP, constant, std::max(min_p, MACHINE_MIN_P),
+                std::min(max_p, MACHINE_MAX_P), PREV_NOT_SET, -3);
         if (max_p < MACHINE_MAX_P) {
             out.piece_list.emplace_back(0, 0, INFINITY, max_p, MACHINE_MAX_P, PREV_NOT_SET, -3);
+        }else{
+            max_p = std::min(max_p, MACHINE_MAX_P);
         }
-
 
     } else {
         double end_1, end_2, region_1, region_2;
@@ -1171,30 +1190,41 @@ PiecewiseSquareLoss BiSquareLossPiece::min_over_u() {
 
         if (min_p > MACHINE_MIN_P) {
             out.piece_list.emplace_back(0, 0, INFINITY, MACHINE_MIN_P, min_p, PREV_NOT_SET, -3);
+        }else{
+            min_p = std::max(min_p, MACHINE_MIN_P);
         }
+        // if end 1 is included in min_p and max_p
         if (min_p < end_1 && max_p >= end_1) {
             out.piece_list.emplace_back(SquareP, region_1 * LinearUP + LinearP,
-                                        region_1 * region_1 * SquareU + region_1 * LinearU + Constant, min_p, end_1, -3, PREV_NOT_SET);
+                                        region_1 * region_1 * SquareU + region_1 * LinearU + Constant,
+                                        min_p, std::min(end_1,MACHINE_MAX_P), -3, PREV_NOT_SET);
+        }else if (max_p < end_1) {
+            out.piece_list.emplace_back(0, 0, INFINITY, min_p,
+                    std::min(max_p, MACHINE_MAX_P), PREV_NOT_SET, -3);
         }
-        if (max_p < end_1) {
-            out.piece_list.emplace_back(0, 0, INFINITY, min_p, max_p, PREV_NOT_SET, -3);
-        }
+
+        // if min_p > end_1, this just means we need to consider another scenario
         double start_interval = (min_p > end_1 ? min_p : end_1);
         double end_interval = (max_p > end_2 ? end_2 : max_p);
-        if ((end_interval -  start_interval) > 0) {
+
+        if ((end_interval -  start_interval) > 0) { //seems vacuous
             out.piece_list.emplace_back(SquareP - LinearUP * LinearUP / (4 * SquareU),
                                         - LinearU * LinearUP / (2 * SquareU) + LinearP,
-                                        Constant - LinearU * LinearU / (4 * SquareU), start_interval, end_interval, -3, PREV_NOT_SET);
+                                        Constant - LinearU * LinearU / (4 * SquareU),
+                                        start_interval, end_interval, -3, PREV_NOT_SET);
         }
-        if (max_p > end_2 && min_p <= end_2) {
+        if (max_p > end_2 && min_p <= end_2) { // final piece
             out.piece_list.emplace_back(SquareP, region_2 * LinearUP + LinearP,
-                                        region_2 * region_2 * SquareU + region_2 * LinearU + Constant, end_2, max_p, -3, PREV_NOT_SET);
+                                        region_2 * region_2 * SquareU + region_2 * LinearU + Constant,
+                                        end_2, std::min(max_p, MACHINE_MAX_P), -3, PREV_NOT_SET);
+        } else if (min_p > end_2) { // optimization unattainable
+            out.piece_list.emplace_back(0, 0, INFINITY, min_p,
+                    std::min(max_p, MACHINE_MAX_P), PREV_NOT_SET, -3);
         }
-        if (min_p > end_2) {
-            out.piece_list.emplace_back(0, 0, INFINITY, min_p, max_p, PREV_NOT_SET, -3);
-        }
-        if (max_p < MACHINE_MAX_P) {
-            out.piece_list.emplace_back(0, 0, INFINITY, max_p, MACHINE_MAX_P, PREV_NOT_SET, -3);
+
+        if (max_p < MACHINE_MAX_P) { // preserve the ends
+            out.piece_list.emplace_back(0, 0, INFINITY,
+                    max_p, MACHINE_MAX_P, PREV_NOT_SET, -3);
         }
 
     }
@@ -1451,7 +1481,7 @@ void PiecewiseBiSquareLoss::set_to_addition_of(PiecewiseBiSquareLoss *f, Piecewi
                 phi_min = phi_max;
                 phi_max = *it_p;
 
-                if (verbose) printf("searching matching functions for interval mu: [%f, %f] \t phi: [%f, %f] \n", mu_min, mu_max, phi_min, phi_max);
+                if (verbose) printf("searching matching functions for interval mu: [%f, %f] \t phi: [%f, %f] \n", phi_min, phi_max,mu_min, mu_max);
                 itf = f->piece_list.begin();
                 itg = g->piece_list.begin();
                 while(!(itf-> min_u <= mu_min && itf->max_u >= mu_max && itf-> min_p <= phi_min && itf->max_p >= phi_max) && itf != f -> piece_list.end()) {
@@ -1483,7 +1513,7 @@ void PiecewiseBiSquareLoss::set_to_addition_of(PiecewiseBiSquareLoss *f, Piecewi
                                             itf -> SquareP + itg -> SquareP,
                                             itf -> LinearP + itg -> LinearP,
                                             itf -> Constant + itg -> Constant,
-                                            mu_min, mu_max, phi_min, phi_max);
+                                            phi_min, phi_max, mu_min, mu_max);
                 }  else { // failed to find two functions over same domain
                     if (verbose) {
                         printf("NO matching functions for interval mu: [%f, %f] \t phi: [%f, %f] \n", mu_min, mu_max, phi_min, phi_max);
@@ -1496,7 +1526,7 @@ void PiecewiseBiSquareLoss::set_to_addition_of(PiecewiseBiSquareLoss *f, Piecewi
                                             0,
                                             0,
                                             INFINITY,
-                                            mu_min, mu_max, phi_min, phi_max);
+                                            phi_min, phi_max, mu_min, mu_max);
                 }
 
 

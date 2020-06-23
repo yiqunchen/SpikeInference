@@ -116,14 +116,23 @@ PiecewiseSquareLoss thj_in_model(
 
 
   PiecewiseSquareLoss fwd_min, rev_min, c_change_at_thj;
-
+//    printf("fwd_2d\n");
+//    fwd_2d.print();
   fwd_min = fwd_2d.min_u().get_univariate_p();
   rev_min = rev_2d.min_u().get_univariate_p();
+//  printf("forward\n");
+//    fwd_min.print();
+//    printf("reverse\n");
+//    rev_min.print();
   c_change_at_thj.set_to_addition_of(&fwd_min, &rev_min, 0);
-  c_change_at_thj.add(0, 0, penalty);
+
+
+  c_change_at_thj.add(0, 0, penalty); // add penalty at the end
   c_change_at_thj.set_prev_seg_end(1); // there is a changepoint at thj
-//  printf("change at thj\n");
-//  c_change_at_thj.print();
+
+
+//    printf("change at thj\n");
+//    c_change_at_thj.print();
 //
 //  printf("eval at baseline (change)= %f\n", c_change_at_thj.findCost(vTy));
 
@@ -135,31 +144,28 @@ PiecewiseSquareLoss thj_in_model(
 //  printf("reverse 2d collection \n");
 //  rev_2d.print();
 
-  rev_2d.rescale(0, decay_rate);
+  rev_2d.rescale(0, decay_rate); //rescaling for addition - same as scaling fwd since we are minimizing over u
 
 //  printf("reverse collection after rescaling\n");
+//  printf("forward\n");
+//  fwd_2d.print();
+//  printf("reverse\n");
 //  rev_2d.print();
 
   c_no_change_at_thj.set_to_addition_of(&fwd_2d, &rev_2d, 0);
 
-  //printf("CHANGE addition of fwd and scaled reverse costs\n");
- // c_no_change_at_thj.print();
-
   PiecewiseSquareLoss c_no_change;
-//  printf("reach here \n");
 
 
   c_no_change = c_no_change_at_thj.min_u().get_univariate_p();
-  //printf("printing c_no_change...min over u\n");
-  //c_no_change_at_thj.min_u().print();
+
+//  printf("printing c_no_change...min over u\n");
+//  c_no_change.print();
 //  printf("eval at baseline (no change)= %f\n", c_no_change.findCost(-1.0));
 
 //  PiecewiseBiSquareLoss c_no_change;
 //  c_no_change = c_no_change_at_thj.min_u();
 //  c_no_change.print();
-
- //printf("no change \n");
-  //c_no_change.print();
 
   c_no_change.set_prev_seg_end(0); // there is no changepoint at thj
 
@@ -186,10 +192,9 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
   double * v = construct_v(data_count, thj, window_size, decay_rate);
   double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
 
-  const double MIN = 0;
-
+  const double MIN = 0; //-1*std::max(20*sqrt(v_norm2*sig),abs(vTy));
   const double MAX = std::max(20*sqrt(v_norm2*sig),abs(vTy));
-  //printf("check max %f \n",MAX);
+//  printf("check max %f \n",MAX);
 
   SquareLossPieceList::iterator it;
   double phi_eval, analytic_cost, manual_cost;
@@ -262,10 +267,10 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
                                   pnorm_log(it -> min_mean / sqrt(nu_norm * sig)));
               n1 = log_sum_exp(n1, arg2);
           }
-      } else {
-          if (it->max_mean >= ABS(vTy)) {
+      } else {//one sided p-value
+          if (it->max_mean >= (vTy)) {
               arg2 = log_subtract(pnorm_log(it -> max_mean / sqrt(nu_norm * sig)),
-                                  pnorm_log(std::max(it -> min_mean, ABS(vTy)) / sqrt(nu_norm * sig)));
+                                  pnorm_log(std::max(it -> min_mean, (vTy)) / sqrt(nu_norm * sig)));
               n1 = log_sum_exp(n1, arg2);
           }
       }

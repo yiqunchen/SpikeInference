@@ -6,10 +6,10 @@
 #define NEWTON_EPSILON 1e-20
 #define DIFF_EPS 1e-5
 #define PREV_NOT_SET (-3)
-#define MACHINE_MIN (double) 0
+#define MACHINE_MIN 0//-INFINITY
 #define MACHINE_MAX (double) INFINITY
-#define MACHINE_MIN_P (double) -INFINITY
-#define MACHINE_MAX_P (double) INFINITY
+#define MACHINE_MIN_P (double) -1e7//-INFINITY
+#define MACHINE_MAX_P (double) 1e7//INFINITY
 #define TAIL_THRESHOLD 30.0
 #define ABS(x) ((x)<0 ? -(x) : (x))
 

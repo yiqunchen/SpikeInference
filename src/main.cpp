@@ -215,26 +215,33 @@ void toy_example_4(){
     for (auto x : y) {printf("%f \t", x);}
     printf("\n");
 
-    int thj = 0;
+    int thj = 2;
     int window_size = 2;
     double decay_rate = 0.5;
     const double sig = 1;
 
-    // forward pass
-    PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty,MACHINE_MIN, MACHINE_MAX);
-    // backward pass
-    double *data_vec_rev = reverse_data(y, data_count);
-    PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
-    FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig);
 
     double * v_test = construct_v(data_count, thj, window_size, decay_rate);
 
     for(int data_i=0; data_i < data_count; data_i++){
         printf("%f \t", v_test[data_i]);
-        printf("\n");
     }
+    printf("\n");
 
     double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
+    double vTv = construct_vTy(v_test, v_test, data_count, thj, window_size);
+    printf("vTy %f vTv %f\n", vTy,vTv);
+
+    // forward pass
+    PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
+    // backward pass
+    double *data_vec_rev = reverse_data(y, data_count);
+    PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
+    FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig);
+
+
+
+
 
     printf("Cost model, longer data, 1 true cp \n");
     out.model.print();
@@ -341,7 +348,7 @@ void random_example_test(int T, double decay_rate, double spike_rate, float sigm
 //    }else{
     for (j = ll.begin(); j != ll.end(); ++j) {
         count += 1;
-        thj = *j; // get random spike location to test
+        thj = *j; // get estimated spike location to test
         printf("currently testing %i th location at %i\n", count, thj);
         // forward pass
         // backward pass
@@ -379,25 +386,23 @@ void specific_example_1() {
 
     for (j = ll.begin(); j != ll.end(); ++j) {
         count += 1;
-        thj = *j; // get random spike location to test
+        thj = *j; // get estimated spike location to test
         printf("currently testing %i th location at %i\n", count, thj);
         FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, &y_example[0], T, decay_rate, penalty,
                                                             thj, window_size, sigma * sigma);
 
     }
-
 }
 
 
 int main(int argc, char *argv[]) {
-
-// toy_example_1();
-// toy_example_2();
-// toy_example_3();
+ toy_example_1();
+ toy_example_2();
+ toy_example_3();
  toy_example_4();
  toy_example_5();
- //random_example_test(10000, 0.95, 0.01, 0.01,true, 1, 5, 1, 1, false);
-// specific_example_1();
+ random_example_test(10000, 0.95, 0.01, 0.01,true, 1, 50, 1, 1, false);
+ specific_example_1();
 
  return 0;
 }
