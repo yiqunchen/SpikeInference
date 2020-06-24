@@ -55,8 +55,8 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter, window_
       call = match.call(),
       tuning_parameter = tuning_parameter,
       window_size = window_size,
-      sig = sig,
-      change_pts = out_fpop_inference[[1]][, 1],
+      sig = sig, 
+      change_pts = out_fpop_inference[[1]][, 1], # thj+1 - thj \neq 0
       pvals = out_fpop_inference[[1]][, 2],
       conditioning_sets = conditioning_sets, 
       estimated_variance = estimated

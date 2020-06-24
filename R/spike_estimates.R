@@ -71,18 +71,29 @@ spike_estimates <- structure(function(dat, decay_rate, tuning_parameter, functio
     colnames(piecewise_square_losses) <- c("square", "linear", "constant", "min_mean", "max_mean", "prev_last_mean", "data_i", "s")  
   }
   
+  # edit to encode the positive/negative spike information
+  estimated_means = rev(mean_vec_r)
+  change_pts = rev(unique(end_vec_r[end_vec_r > 0]))
+  est_diff_mean <- estimated_means[2:length(estimated_means)]-decay_rate*estimated_means[1:(length(estimated_means)-1)]
+  est_spike_size <- est_diff_mean[change_pts]
+  
+  spike_sign <- rep("Positive", times = length(change_pts))
+  spike_sign[est_spike_size<0] <- "Negative"
+  
   out <-
       list(
-        estimated_means = rev(mean_vec_r),
+        estimated_means = estimated_means,
+        estimated_calcium = estimated_means,
         dat = dat,
         decay_rate = decay_rate, 
-        change_pts = rev(unique(end_vec_r[end_vec_r > 0])),
+        change_pts = change_pts,
         call = match.call(),
         tuning_parameter = tuning_parameter,
         cost = cost_mat_r,
         n_intervals = intervals_mat_r,
         end_vec = end_vec_r,
-        piecewise_square_losses = piecewise_square_losses
+        piecewise_square_losses = piecewise_square_losses,
+        spike_sign = spike_sign
       )
     class(out) <- "SpikeInference_estimated_changes"
     return(out)

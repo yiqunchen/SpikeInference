@@ -24,7 +24,7 @@ fpop_inference_intervals_formatter <- function(phi_list) {
 #' @export
 #' @import graphics
 #'
-plot.estimated_spikes <- function(x, xlims = NULL, ...) {
+plot.SpikeInference_estimated_changes <- function(x, xlims = NULL, ...) {
   if (sum(is.na(x$estimated_calcium))) {
     warning("Calcium concentration must be estimated before plotting. Automatically running estimate_calcium(fit), however estimated_calicum is not saved.)")
     x <- estimate_calcium(x)
@@ -37,10 +37,11 @@ plot.estimated_spikes <- function(x, xlims = NULL, ...) {
   } else {
     plot(ind, x$dat, cex = 0.5, pch = 20, col = "darkgrey", ylab = "", ylim = ylims, xlim = xlims, xlab = "Time")
   }
+  # estimated calcium curve
   lines(ind, x$estimated_calcium, col = "blue", lwd = 2)
-  
+
   hh <- 0.01 * diff(ylims)
-  for (spike in x$spikes)
+  for (spike in x$change_pts)
   {
     segments(x0 = ind[spike], x1 = ind[spike], y0 = ylims[1] - hh,
              y1 = hh + ylims[1], col = "blue", lwd = 1)

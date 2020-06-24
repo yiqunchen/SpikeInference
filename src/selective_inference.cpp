@@ -192,7 +192,7 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
   double * v = construct_v(data_count, thj, window_size, decay_rate);
   double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
 
-  const double MIN = 0; //-1*std::max(20*sqrt(v_norm2*sig),abs(vTy));
+  const double MIN = -1*std::max(20*sqrt(v_norm2*sig),abs(vTy));
   const double MAX = std::max(20*sqrt(v_norm2*sig),abs(vTy));
 //  printf("check max %f \n",MAX);
 

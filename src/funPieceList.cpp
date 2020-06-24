@@ -154,7 +154,7 @@ double SquareLossPiece::getCost(double mean){
             }
         }
     }
-    printf("mean cost %f\n",(double)mean);
+    //printf("mean cost %f\n",(double)mean);
     throw std::runtime_error("cannot determine cost of mean");
 }
 
@@ -1210,7 +1210,9 @@ PiecewiseSquareLoss BiSquareLossPiece::min_over_u() {
                                         region_1 * region_1 * SquareU + region_1 * LinearU + Constant,
                                         min_p, std::min(end_1,MACHINE_MAX_P), -3, PREV_NOT_SET);
         }else if (max_p < end_1) {
-            out.piece_list.emplace_back(0, 0, INFINITY, min_p,
+            //printf("here pos? %f %f %f %f\n",min_p,max_p,end_1,end_2);
+            // maybe try the constraint - 0
+            out.piece_list.emplace_back(SquareP, LinearP, Constant, min_p,
                                         std::min(max_p, MACHINE_MAX_P), PREV_NOT_SET, -3);
         }
 
@@ -1229,7 +1231,8 @@ PiecewiseSquareLoss BiSquareLossPiece::min_over_u() {
                                         region_2 * region_2 * SquareU + region_2 * LinearU + Constant,
                                         end_2, std::min(max_p, MACHINE_MAX_P), -3, PREV_NOT_SET);
         } else if (min_p > end_2) { // optimization unattainable
-            out.piece_list.emplace_back(0, 0, INFINITY, min_p,
+            //printf("here neg? %f %f %f %f\n",min_p,max_p,end_1,end_2);
+            out.piece_list.emplace_back(SquareP, LinearP, Constant, min_p,
                                         std::min(max_p, MACHINE_MAX_P), PREV_NOT_SET, -3);
         }
 
@@ -1616,6 +1619,8 @@ PiecewiseBiSquareLoss PiecewiseBiSquareLosses::min_u() {
             int status = cost_min.check_min_of(&cost_prev, &cost_cur);
             if(status){
                 cost_min.set_to_min_env_of(&cost_prev, &cost_cur, 1);
+                printf("before minimizing over u \n");
+                it -> print();
                 printf("=cost current\n");
                 cost_cur.print();
                 printf("=cost previous\n");
