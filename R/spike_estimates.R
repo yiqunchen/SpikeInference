@@ -87,6 +87,7 @@ spike_estimates <- structure(function(dat, decay_rate, tuning_parameter, functio
         dat = dat,
         decay_rate = decay_rate, 
         change_pts = change_pts,
+        spikes = change_pts,
         call = match.call(),
         tuning_parameter = tuning_parameter,
         cost = cost_mat_r,

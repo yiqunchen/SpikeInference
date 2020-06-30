@@ -112,14 +112,16 @@ void toy_example_1(){
     // backward pass
     double *data_vec_rev = reverse_data(y, data_count);
     PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
-    FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig);
+    FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig, true);
+    printf("true vTc %f \n", y[thj+1]-y[thj]);
 
-    double * v_test = construct_v(data_count, thj, window_size, decay_rate);
-    double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
 
-    printf("Cost model, longer data, 2 true cp \n");
-    out.model.print();
-    printf("Cost on original data = \t %f\n", out.model.findCost(vTy));
+//    double * v_test = construct_v(data_count, thj, window_size, decay_rate);
+//    double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
+//
+//    printf("Cost model, longer data, 2 true cp \n");
+//    out.model.print();
+//    printf("Cost on original data = \t %f\n", out.model.findCost(vTy));
 
 }
 
@@ -145,14 +147,17 @@ void toy_example_2(){
     // backward pass
     double *data_vec_rev = reverse_data(y, data_count);
     PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
-    FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig);
+    FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig, true);
 
-    double * v_test = construct_v(data_count, thj, window_size, decay_rate);
-    double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
+//    double * v_test = construct_v(data_count, thj, window_size, decay_rate);
+//    double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
+//
+//    printf("Cost model, longer data, 2 true cp \n");
+//    out.model.print();
+//    printf("Cost on original data = \t %f\n", out.model.findCost(vTy));
 
-    printf("Cost model, longer data, 2 true cp \n");
-    out.model.print();
-    printf("Cost on original data = \t %f\n", out.model.findCost(vTy));
+    printf("true vTc %f \n", y[thj+1]-y[thj]);
+
 
 }
 
@@ -176,12 +181,15 @@ void toy_example_3(){
   // backward pass
   double *data_vec_rev = reverse_data(y, data_count);
   PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
-  FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig);
+  FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig, true);
 
-  double * v_test = construct_v(data_count, thj, window_size, decay_rate);
+  printf("true vTc %f \n", y[thj+1]-y[thj]);
+
+    double * v_test = construct_v(data_count, thj, window_size, decay_rate);
 //  for(int data_i=0; data_i < data_count; data_i++){
 //    printf("%f \n", v_test[data_i]);
 //  }
+
 
   double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
   double v_norm2 = construct_vTy(v_test, v_test, data_count, thj, window_size);
@@ -197,11 +205,11 @@ void toy_example_3(){
 //      printf("%f \t", next_data_point);
 //    }
 
-
-
-  printf("Cost model, longer data, 1 true cp \n");
-  out.model.print();
-  printf("Cost on original data = \t %f\n", out.model.findCost(vTy));
+//
+//
+//  printf("Cost model, longer data, 1 true cp \n");
+//  out.model.print();
+//  printf("Cost on original data = \t %f\n", out.model.findCost(vTy));
 
 }
 
@@ -237,15 +245,18 @@ void toy_example_4(){
     // backward pass
     double *data_vec_rev = reverse_data(y, data_count);
     PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
-    FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig);
+    FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig, true);
+
+
+    printf("true vTc %f \n", y[thj+1]-y[thj]);
 
 
 
 
-
-    printf("Cost model, longer data, 1 true cp \n");
-    out.model.print();
-    printf("Cost on original data = \t %f\n", out.model.findCost(vTy));
+//
+//    printf("Cost model, longer data, 1 true cp \n");
+//    out.model.print();
+//    printf("Cost on original data = \t %f\n", out.model.findCost(vTy));
 
 }
 
@@ -262,27 +273,29 @@ void toy_example_5(){
     int thj = 2;
     int window_size = 2;
     double decay_rate = 0.9;
-    const double sig = 0;
+    const double sig = 1;
 
     // forward pass
     PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
     // backward pass
     double *data_vec_rev = reverse_data(y, data_count);
     PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
-    FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig);
+    FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig, true);
 
-    double * v_test = construct_v(data_count, thj, window_size, decay_rate);
+//    double * v_test = construct_v(data_count, thj, window_size, decay_rate);
 
-    for(int data_i=0; data_i < data_count; data_i++){
-        printf("%f \t", v_test[data_i]);
-        printf("\n");
-    }
+//    for(int data_i=0; data_i < data_count; data_i++){
+//        printf("%f \t", v_test[data_i]);
+//        printf("\n");
+//    }
+//    double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
 
-    double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
+    printf("true vTc %f \n", y[thj+1]-y[thj]);
 
-    printf("Cost model, longer data, 1 true cp \n");
-    out.model.print();
-    printf("Cost on original data = \t %f\n", out.model.findCost(vTy));
+
+//    printf("Cost model, longer data, 1 true cp \n");
+//    out.model.print();
+//    printf("Cost on original data = \t %f\n", out.model.findCost(vTy));
 
 }
 
@@ -302,6 +315,7 @@ void random_example_test(int T, double decay_rate, double spike_rate, float sigm
     std::normal_distribution<double> normal(0.0, sigma);
 
     double y[T];
+    double spike_vec[T];
     y[0] = 1.0;
     int thj;
 
@@ -312,6 +326,7 @@ void random_example_test(int T, double decay_rate, double spike_rate, float sigm
 
     for (int data_i = 1; data_i < T; data_i++) {
         int spike_T = poisson(generator);
+        spike_vec[data_i] = spike_T;
         y[data_i] = decay_rate * y[data_i - 1] + spike_T;
         if (noisy) {
             double noise_T = normal(generator);
@@ -353,7 +368,9 @@ void random_example_test(int T, double decay_rate, double spike_rate, float sigm
         // forward pass
         // backward pass
         FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, T, decay_rate, penalty,
-                                                            thj, window_size, sigma * sigma);
+                                                            thj, window_size, sigma * sigma, true);
+        printf("true spike jump %f \n", spike_vec[thj+1]-spike_vec[thj]);
+
     }
 //}
 
@@ -389,7 +406,7 @@ void specific_example_1() {
         thj = *j; // get estimated spike location to test
         printf("currently testing %i th location at %i\n", count, thj);
         FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, &y_example[0], T, decay_rate, penalty,
-                                                            thj, window_size, sigma * sigma);
+                                                            thj, window_size, sigma * sigma, true);
 
     }
 }
@@ -426,7 +443,7 @@ void specific_example_2() {
         //if (count == 160){
             FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, &y_example[0], T,
                                                                 decay_rate, penalty,
-                                                                thj, window_size, sigma * sigma);
+                                                                thj, window_size, sigma * sigma, true);
        // }
 
     }
@@ -435,14 +452,14 @@ void specific_example_2() {
 
 
 int main(int argc, char *argv[]) {
-// toy_example_1();
-// toy_example_2();
-// toy_example_3();
-// toy_example_4();
-// toy_example_5();
- //random_example_test(10000, 0.95, 0.01, 0.01,true, 1, 100, 1, 1, false);
+ //toy_example_1();
+ //toy_example_2();
+ //toy_example_3();
+ //toy_example_4();
+ //toy_example_5();
+ random_example_test(10000, 0.95, 0.01, 0.5,true, 0.5, 5, 10, 1, false);
 // specific_example_1();
- specific_example_2();
+// specific_example_2();
  return 0;
 }
 

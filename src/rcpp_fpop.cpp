@@ -90,7 +90,8 @@ List fpop_inference_interface_recycle
          double penalty,
          int window_size,
          double sig,
-         int return_dev = 0) {
+         int return_dev = 0,
+         bool return_ci = false) {
 
 
   double *data_ptr = data.begin();
@@ -110,7 +111,12 @@ List fpop_inference_interface_recycle
 
 
 //  for each changepoint determine pval
-  const int ncols = 3; // changepoint + 1 (in R notation), pval, approximation error
+  if (return_ci){
+      const int ncols = 5; // changepoint + 1 (in R notation), pval, approximation error, LCB, UCB
+  }else{
+      const int ncols = 3; // changepoint + 1 (in R notation), pval, approximation error
+  }
+
   const int nrows = ll.size() - 1;
   NumericMatrix out_mat(nrows, ncols);
   List phi_intervals(nrows);
@@ -124,11 +130,15 @@ List fpop_inference_interface_recycle
     int it = ll_vec[k];
     try {
       if (it > 0) {
-        FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, data_ptr, data_count, decay_rate, penalty, it, window_size, sig);
+        FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, data_ptr, data_count, decay_rate, penalty, it, window_size, sig, return_ci);
 
         out_mat(row_i, 0) = out.thj + 1;
         out_mat(row_i, 1) = out.pval;
         out_mat(row_i, 2) = out.approximation_error;
+        if (return_ci){
+            out_mat(row_i, 3) = out.ci[0];
+            out_mat(row_i, 4) = out.ci[1];
+        }
 
         if (return_dev) {
           phi_intervals[row_i] = convert_loss(&out.model, 0);

@@ -14,6 +14,14 @@ FpopInference::FpopInference(double p, double a, PiecewiseSquareLoss m, int t) {
   thj = t;
 }
 
+FpopInference::FpopInference(double p, double a, PiecewiseSquareLoss m, int t, std::vector<double> ci) {
+    pval = p;
+    approximation_error = a;
+    model = m;
+    thj = t;
+    ci = ci;
+}
+
 
 FpopInference fpop_analytic_inference_recycle(PiecewiseSquareLosses * cost_model_fwd,
         PiecewiseSquareLosses * cost_model_rev,
@@ -22,8 +30,10 @@ FpopInference fpop_analytic_inference_recycle(PiecewiseSquareLosses * cost_model
         double penalty,
         int thj,
         int window_size,
-        double sig) {
+        double sig,
+        bool return_ci) { // return CI defaults to false
   int verbose = 0;
+  double alpha = 0.05; //default type I error control
   double *data_vec_rev = reverse_data(data_vec, data_count);
   PiecewiseSquareLoss model = thj_in_model(
           cost_model_fwd,
@@ -36,8 +46,16 @@ FpopInference fpop_analytic_inference_recycle(PiecewiseSquareLosses * cost_model
           decay_rate, // AR1 decay parameter
           penalty, // tuning parameter to penalize the number of spikes
           verbose);
-  //check_selective_inference(&model, thj, window_size, data_count, data_vec, decay_rate, penalty, sig, verbose);
+  check_selective_inference(&model, thj, window_size, data_count, data_vec, decay_rate, penalty, sig, verbose);
   double pval = calc_p_value(&model, thj, window_size, data_count, data_vec, decay_rate, sig, false, verbose);
+//  printf("P value %f \n", pval);
   double approximation_error = 0.0;
-  return FpopInference(pval, approximation_error, model, thj);
+  if (return_ci){
+      std::vector<double> thj_CI =  compute_CI(&model, thj,  window_size, data_count, data_vec, decay_rate, sig, alpha);
+      //  printf("Constructed CI [%f, %f] \n", thj_CI[0], thj_CI[1]);
+      return FpopInference(pval, approximation_error, model, thj, thj_CI);
+  }else{
+      return FpopInference(pval, approximation_error, model, thj);
+  }
+
 }

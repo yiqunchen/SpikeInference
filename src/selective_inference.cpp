@@ -14,7 +14,7 @@
  * for some changepoint of interest thj and endpoints
  *
  * t_L = max(0, thj - window_size + 1)
- * t_R = min(data_count, thj + window_size)
+ * t_R = min(data_count-1, thj + window_size)
  *
  * and window_size
  *
@@ -192,8 +192,8 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
   double * v = construct_v(data_count, thj, window_size, decay_rate);
   double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
 
-  const double MIN = -1*std::max(20*sqrt(v_norm2*sig),abs(vTy));
-  const double MAX = std::max(20*sqrt(v_norm2*sig),abs(vTy));
+  const double MIN = -1*std::max(10*sqrt(v_norm2*sig),abs(vTy));
+  const double MAX = std::max(10*sqrt(v_norm2*sig),abs(vTy));
 //  printf("check max %f \n",MAX);
 
   SquareLossPieceList::iterator it;
@@ -229,6 +229,7 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
   }
 }
 
+// for one-sided p-val, this computes P(X\geq vTy | X \in S) where S is the truncation set
 double calc_p_value(PiecewiseSquareLoss * analytic_phi,
                     int thj, // changepoint of interest
                     int window_size, // size of window around thj
@@ -278,4 +279,277 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
     }
   }
   return (exp(n1 - d1));
+}
+
+
+double calc_surv_prob(PiecewiseSquareLoss * analytic_phi,
+                    double mu, // mean of the truncated gaussian
+                    int thj, // changepoint of interest
+                    int window_size, // size of window around thj
+                    int data_count, // number of data points
+                    double *data_vec, // original data
+                    double decay_rate, // AR1 decay rate
+                    double sig) {
+
+    double * v = construct_v(data_count, thj, window_size, decay_rate);
+    double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
+    double nu_norm = construct_vTy(v, v, data_count, thj, window_size);
+    SquareLossPieceList::iterator it;
+
+    // numerically safe
+    double n1 = -INFINITY;
+    double d1 = -INFINITY;
+    double arg2;
+    for (it = analytic_phi->piece_list.begin(); it != analytic_phi->piece_list.end(); it++) {
+        if (it->data_i == 1) { // this segment is contained
+            double a, b;
+            a = pnorm_log((it -> max_mean - mu) / sqrt(nu_norm * sig));
+            b = pnorm_log((it -> min_mean - mu) / sqrt(nu_norm * sig));
+            arg2 = log_subtract(a, b);
+            d1 = log_sum_exp(d1, arg2);
+
+
+            if (it->max_mean >= (vTy)) {
+                arg2 = log_subtract(pnorm_log((it -> max_mean - mu) / sqrt(nu_norm * sig)),
+                                    pnorm_log(std::max(it -> min_mean - mu, vTy - mu) / sqrt(nu_norm * sig)));
+                n1 = log_sum_exp(n1, arg2);
+            }
+
+        }
+    }
+    return (exp(n1 - d1));
+}
+
+
+double tn_lower_surv(PiecewiseSquareLoss * analytic_phi,
+                    double mu, // mean of the truncated gaussian
+                    int thj, // changepoint of interest
+                    int window_size, // size of window around thj
+                    int data_count, // number of data points
+                    double *data_vec, // original data
+                    double decay_rate, // AR1 decay rate
+                    double sig, // noise variance
+                    double alpha_1){
+     double result = calc_surv_prob(analytic_phi,
+             mu,
+             thj, // changepoint of interest
+              window_size, // size of window around thj
+              data_count, // number of data points
+              data_vec, // original data
+              decay_rate, // AR1 decay rate
+              sig)-alpha_1;
+     return(result);
+}
+
+
+double tn_upper_surv(PiecewiseSquareLoss * analytic_phi,
+                     double mu, // mean of the truncated gaussian
+                     int thj, // changepoint of interest
+                     int window_size, // size of window around thj
+                     int data_count, // number of data points
+                     double *data_vec, // original data
+                     double decay_rate, // AR1 decay rate
+                     double sig, // noise variance
+                     double alpha_2){
+    double result = calc_surv_prob(analytic_phi,
+                                   mu,
+                                   thj, // changepoint of interest
+                                   window_size, // size of window around thj
+                                   data_count, // number of data points
+                                   data_vec, // original data
+                                   decay_rate, // AR1 decay rate
+                                   sig)-(1-alpha_2);
+    return(result);
+}
+
+// compute the confidence interval for the mean parameter of a normal truncated to a union of intervals
+std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
+                    int thj, // changepoint of interest
+                    int window_size, // size of window around thj
+                    int data_count, // number of data points
+                    double *data_vec, // original data
+                    double decay_rate, // AR1 decay rate
+                    double sig, // noise variance
+                    double alpha // desired type I error rate control, default to 0.05
+                   ) {
+
+    //BISECTION_EPS
+    double alpha_1 = alpha/2.0;
+    double alpha_2 = alpha-alpha_1;
+    double lower_CI, upper_CI;
+    double xL_1 = -10;
+    double xR_1 = -10;
+    double xL_2 = 10;
+    double xR_2 = 10;
+    double f_lower_neg, f_upper_neg, delta, f_lower_pos, f_upper_pos;
+
+    f_lower_neg = tn_lower_surv(analytic_phi,
+            xL_1,
+            thj, // changepoint of interest
+             window_size, // size of window around thj
+             data_count, // number of data points
+             data_vec, // original data
+             decay_rate, // AR1 decay rate
+             sig, // noise variance
+             alpha_1); // ideally this is <= 0
+
+
+    if (f_lower_neg < 0){
+        f_lower_pos = tn_lower_surv(analytic_phi,
+                                    xL_2,
+                                    thj, // changepoint of interest
+                                    window_size, // size of window around thj
+                                    data_count, // number of data points
+                                    data_vec, // original data
+                                    decay_rate, // AR1 decay rate
+                                    sig, // noise variance
+                                    alpha_1);
+        while (f_lower_pos < 0 && xL_2 <= 1E7){
+            delta = 0.01*std::max(1e-5, abs(f_lower_pos));
+            xL_2 = xL_2+delta;
+            f_lower_pos = tn_lower_surv(analytic_phi,
+                                        xL_2,
+                                        thj, // changepoint of interest
+                                        window_size, // size of window around thj
+                                        data_count, // number of data points
+                                        data_vec, // original data
+                                        decay_rate, // AR1 decay rate
+                                        sig, // noise variance
+                                        alpha_1);
+        }
+    }else{
+        while (f_lower_neg > 0 && xL_1 >= -1E7){
+
+            delta = 0.01*std::max(1e-5, abs(f_lower_neg));
+            xL_1 = xL_1-delta;
+            f_lower_neg = tn_lower_surv(analytic_phi,
+                                    xL_1,
+                                    thj, // changepoint of interest
+                                    window_size, // size of window around thj
+                                    data_count, // number of data points
+                                    data_vec, // original data
+                                    decay_rate, // AR1 decay rate
+                                    sig, // noise variance
+                                    alpha_1);
+        }
+    }
+
+
+    f_upper_neg = tn_upper_surv(analytic_phi,
+                            xR_1,
+                            thj, // changepoint of interest
+                            window_size, // size of window around thj
+                            data_count, // number of data points
+                            data_vec, // original data
+                            decay_rate, // AR1 decay rate
+                            sig, // noise variance
+                            alpha_2);
+
+    if (f_upper_neg < 0){
+        f_upper_pos = tn_upper_surv(analytic_phi,
+                                    xR_2,
+                                    thj, // changepoint of interest
+                                    window_size, // size of window around thj
+                                    data_count, // number of data points
+                                    data_vec, // original data
+                                    decay_rate, // AR1 decay rate
+                                    sig, // noise variance
+                                    alpha_2);
+        while (f_upper_pos < 0 && xR_2 <= 1E7){
+            delta = 0.01*std::max(1e-5, abs(f_upper_pos));
+            xR_2 = xR_2+delta;
+            f_upper_pos = tn_upper_surv(analytic_phi,
+                                        xR_2,
+                                        thj, // changepoint of interest
+                                        window_size, // size of window around thj
+                                        data_count, // number of data points
+                                        data_vec, // original data
+                                        decay_rate, // AR1 decay rate
+                                        sig, // noise variance
+                                        alpha_2);
+        }
+    }else{
+        while (f_upper_neg>0 && xR_1 >= -1E7){
+            delta = 0.01*std::max(1e-5, abs(f_upper_neg));
+            xR_1 = xR_1-delta;
+            f_upper_neg = tn_upper_surv(analytic_phi,
+                                        xR_1,
+                                        thj, // changepoint of interest
+                                        window_size, // size of window around thj
+                                        data_count, // number of data points
+                                        data_vec, // original data
+                                        decay_rate, // AR1 decay rate
+                                        sig, // noise variance
+                                        alpha_2);
+        }
+    }
+
+    // xL_1, xL_2, xR_1, xR_2 are ready to pass into the root finding eqs
+    // Bisection to find lower_CI
+    double f_midpoint, f_1;
+    while (xL_2 - xL_1 >= BISECTION_EPS){
+        double mid_point = (xL_1 + xL_2)/2.0;
+        f_1 = tn_lower_surv(analytic_phi,
+                            xL_1,
+                                   thj, // changepoint of interest
+                                   window_size, // size of window around thj
+                                   data_count, // number of data points
+                                   data_vec, // original data
+                                   decay_rate, // AR1 decay rate
+                                   sig, // noise variance
+                                   alpha_1);
+
+        f_midpoint = tn_lower_surv(analytic_phi,
+                                          mid_point,
+                      thj, // changepoint of interest
+                      window_size, // size of window around thj
+                      data_count, // number of data points
+                      data_vec, // original data
+                      decay_rate, // AR1 decay rate
+                      sig, // noise variance
+                      alpha_1);
+
+        if (f_1*f_midpoint>=0){ // same sign
+            xL_1 = mid_point;
+        }else{
+            xL_2 = mid_point;
+        }
+    }
+
+    lower_CI = (xL_1 + xL_2)/2.0;
+
+    // Bisection to find upper_CI
+    while (xR_2 - xR_1 >= BISECTION_EPS){
+        double mid_point = (xR_1 + xR_2)/2.0;
+        f_1 = tn_upper_surv(analytic_phi,
+                            xR_1,
+                            thj, // changepoint of interest
+                            window_size, // size of window around thj
+                            data_count, // number of data points
+                            data_vec, // original data
+                            decay_rate, // AR1 decay rate
+                            sig, // noise variance
+                            alpha_2);
+
+        f_midpoint = tn_upper_surv(analytic_phi,
+                                   mid_point,
+                                   thj, // changepoint of interest
+                                   window_size, // size of window around thj
+                                   data_count, // number of data points
+                                   data_vec, // original data
+                                   decay_rate, // AR1 decay rate
+                                   sig, // noise variance
+                                   alpha_2);
+
+        if (f_1*f_midpoint>=0){ // same sign
+            xR_1 = mid_point;
+        }else{
+            xR_2 = mid_point;
+        }
+    }
+
+    upper_CI = (xR_1 + xR_2)/2.0;
+
+    std::vector<double> CI_result = {lower_CI,upper_CI};
+    return (CI_result);
 }

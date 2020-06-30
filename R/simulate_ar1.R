@@ -41,7 +41,7 @@ simulate_ar1 <- function(n, gam, poisMean, sd, seed)
   }
   
   spikesOut <- unique((eta > 0) * (1:n))
-  out <- list(spikes = spikesOut[-1], fl = f, conc = c, call = match.call(),
+  out <- list(spikes = spikesOut[-1]-1, fl = f, conc = c, call = match.call(),
               gam = gam, poisMean = poisMean, type = "ar1",
               sd = sd, seed = seed)
   class(out) <- "simdata"
