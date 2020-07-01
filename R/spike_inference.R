@@ -24,7 +24,7 @@
 #' @references
 #'
 #' @export
-spike_inference <- structure(function(dat, decay_rate, tuning_parameter, window_size = NULL, sig = NULL, return_conditioning_sets = FALSE) {
+spike_inference <- structure(function(dat, decay_rate, tuning_parameter, window_size = NULL, sig = NULL, return_conditioning_sets = FALSE, return_ci = TRUE) {
   stopifnot(decay_rate > 0)
   stopifnot(decay_rate < 1)
   stopifnot(tuning_parameter > 0)
@@ -41,7 +41,7 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter, window_
       # sig <- var(dat - fit$estimated_means)
     }
     
-    out_fpop_inference <- .fpop_inference(dat, decay_rate, tuning_parameter, window_size, sig, return_conditioning_sets)
+    out_fpop_inference <- .fpop_inference(dat, decay_rate, tuning_parameter, window_size, sig, return_conditioning_sets, return_ci)
     
     if (return_conditioning_sets) { 
       conditioning_sets = fpop_inference_intervals_formatter(out_fpop_inference[[2]])
@@ -49,6 +49,22 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter, window_
       conditioning_sets = NA
     }
     
+    if (return_ci){
+      out <- list(
+        dat = dat,
+        decay_rate = decay_rate,
+        call = match.call(),
+        tuning_parameter = tuning_parameter,
+        window_size = window_size,
+        sig = sig, 
+        change_pts = out_fpop_inference[[1]][, 1], # thj+1 - thj \neq 0
+        pvals = out_fpop_inference[[1]][, 2],
+        LCB = out_fpop_inference[[1]][, 4],
+        UCB = out_fpop_inference[[1]][, 5],
+        conditioning_sets = conditioning_sets, 
+        estimated_variance = estimated
+      )
+    }else{
     out <- list(
       dat = dat,
       decay_rate = decay_rate,
@@ -61,6 +77,7 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter, window_
       conditioning_sets = conditioning_sets, 
       estimated_variance = estimated
     )
+    }
     class(out) <- "SpikeInference"
     return(out)
   })

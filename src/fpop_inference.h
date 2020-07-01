@@ -7,9 +7,9 @@ public:
     double approximation_error;
     PiecewiseSquareLoss model;
     int thj;
-    std::vector<double> ci;
+    std::vector<double> confidence_interval;
+    FpopInference(double p, double a, PiecewiseSquareLoss m, int t, std::vector<double> confidence_interval);
     FpopInference(double p, double a, PiecewiseSquareLoss m, int t);
-    FpopInference(double p, double a, PiecewiseSquareLoss m, int t, std::vector<double> ci);
 };
 
 FpopInference fpop_analytic_inference_recycle(PiecewiseSquareLosses * cost_model_fwd,

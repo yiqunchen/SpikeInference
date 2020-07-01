@@ -91,7 +91,7 @@ List fpop_inference_interface_recycle
          int window_size,
          double sig,
          int return_dev = 0,
-         bool return_ci = false) {
+         bool return_ci = true) {
 
 
   double *data_ptr = data.begin();
@@ -110,13 +110,9 @@ List fpop_inference_interface_recycle
   std::list<int>::iterator it;
 
 
-//  for each changepoint determine pval
-  if (return_ci){
-      const int ncols = 5; // changepoint + 1 (in R notation), pval, approximation error, LCB, UCB
-  }else{
-      const int ncols = 3; // changepoint + 1 (in R notation), pval, approximation error
-  }
 
+
+  const int ncols = 5;// changepoint + 1 (in R notation), pval, approximation error, LCB, UCB
   const int nrows = ll.size() - 1;
   NumericMatrix out_mat(nrows, ncols);
   List phi_intervals(nrows);
@@ -136,8 +132,8 @@ List fpop_inference_interface_recycle
         out_mat(row_i, 1) = out.pval;
         out_mat(row_i, 2) = out.approximation_error;
         if (return_ci){
-            out_mat(row_i, 3) = out.ci[0];
-            out_mat(row_i, 4) = out.ci[1];
+            out_mat(row_i, 3) = out.confidence_interval[0];
+            out_mat(row_i, 4) = out.confidence_interval[1];
         }
 
         if (return_dev) {
