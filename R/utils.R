@@ -1,3 +1,114 @@
+nearest_changepoint <- function(pt, cps) {
+  M <- length(pt)
+  out <- numeric(M)
+  for (i in 1:M) {
+    out[i] <- cps[which.min(abs(pt[i] - cps))]
+  }
+  return(out)
+}
+
+
+loss_function_n_spikes <- function(lam, gcamp, decay_rate, num_spikes_target){
+  fit <- spike_estimates(dat = gcamp, decay_rate = decay_rate, tuning_parameter = lam, 
+                         functional_pruning_out = FALSE)
+  num_spiked_spike <- length(fit$spikes)
+  spike_num_diff <- abs(num_spiked_spike-num_spikes_target)
+  return(spike_num_diff)
+}
+
+
+one_d_binary_search <- function(gcamp, decay_rate, lam_min, lam_max, 
+                                num_spikes_target, max_iters=50, tolerance=5){
+  iter_i <- 0
+  loss_i <- Inf
+  verbose <- 0
+  
+  while(iter_i <= max_iters & loss_i > tolerance){
+    
+    lam_1 <- (3 * lam_min + lam_max) / 4
+    lam_2 <- (3 * lam_max + lam_min) / 4
+    
+    loss_lam_1 = loss_function_n_spikes(lam_1, gcamp, decay_rate, num_spikes_target)
+    loss_lam_2 = loss_function_n_spikes(lam_2, gcamp, decay_rate, num_spikes_target)
+    
+    if(verbose){
+      cat('at iteration i = ', iter_i, "\n")
+      cat("loss at lam 1 (" , lam_1 , ") = " , loss_lam_1, "\n")
+      cat("loss at lam 2 (" , lam_2 , ") = " , loss_lam_2, "\n")
+    }
+    
+    if (loss_lam_1 < loss_lam_2){
+      if (loss_lam_1 < tolerance){
+        return(lam_1)
+      }
+      lam_max = (lam_min + lam_max) / 2
+    }else{
+      if (loss_lam_2 < tolerance){
+        return(lam_2)
+      }
+      lam_min = (lam_min + lam_max) / 2
+    }
+      
+    iter_i = iter_i + 1
+  }
+  
+  lam_star = (lam_min + lam_max) / 2
+  
+  return(lam_star)
+}
+
+
+estimate_spike_by_spike_number <- function(dat, decay_rate, target_firing_rate, 
+                                           lam_min = 1e-6, lam_max = 1e0, max_iters=50, tolerance=5){
+  
+  fps = 1 # sampling ratio - default to one
+  gcamp = dat$fl
+  # transform target firing rate into a number of spikes
+  n = length(gcamp)
+  nbin_spike_target = floor(target_firing_rate * n / fps)
+  lam_star = one_d_binary_search(gcamp, decay_rate, lam_min, lam_max,
+                                  nbin_spike_target, max_iters, tolerance)
+  fit = spike_estimates(gcamp, decay_rate, lam_star, 
+                        functional_pruning_out = FALSE)
+  return(fit)
+  
+}
+
+
+
+
+
+
+
+#' @param u - vector of spike times [n]
+#' @param v - vector of spike times [m]
+#' @param tau - timescale parameter that parameterizes distance
+#' @return VR distance, with timescale tau, between u and v 
+vanRossumDist <- function(u, v, tau) {
+  lenU <- length(u)
+  lenV <- length(v)
+  d2 <- 0
+  s1 <- 0
+  for (i in 1:lenU) {
+    for (j in 1:lenU) {
+      s1 <- s1 + exp(-abs(u[i] - u[j]) / tau)
+    }
+  }
+  s3 <- 0
+  for (i in 1:lenU) {
+    for (j in 1:lenV) {
+      s3 <- s3 - 2 * exp(-abs(u[i] - v[j]) / tau)
+    }
+  }
+  s2 <- 0
+  for (i in 1:lenV) {
+    for (j in 1:lenV) {
+      s2 <- s2 + exp(-abs(v[i] - v[j]) / tau)
+    }
+  }
+  return(sum(c(s1, s2, s3)))
+}
+
 ### 
 ### Formatting utilities
 ###
