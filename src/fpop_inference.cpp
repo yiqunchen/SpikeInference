@@ -52,7 +52,7 @@ FpopInference fpop_analytic_inference_recycle(PiecewiseSquareLosses * cost_model
   double approximation_error = 0.0;
   if (return_ci){
       std::vector<double> thj_CI =  compute_CI(&model, thj,  window_size, data_count, data_vec, decay_rate, sig, alpha);
-//        printf("Constructed CI [%f, %f] \n", thj_CI[0], thj_CI[1]);
+      //  printf("Constructed CI [%f, %f] \n", thj_CI[0], thj_CI[1]);
       FpopInference temp = FpopInference(pval, approximation_error, model, thj, thj_CI);
 //        printf("Constructed CI [%f, %f] \n", temp.confidence_interval[0], temp.confidence_interval[1]);
 

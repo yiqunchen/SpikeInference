@@ -88,33 +88,23 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
 // new helper functions for CI computation
 double calc_surv_prob(PiecewiseSquareLoss * analytic_phi,
                       double mu, // mean of the truncated gaussian
-                      int thj, // changepoint of interest
-                      int window_size, // size of window around thj
-                      int data_count, // number of data points
-                      double *data_vec, // original data
-                      double decay_rate, // AR1 decay rate
+                      double vTy, //
+                      double nu_norm,
                       double sig);
 
 double tn_lower_surv(PiecewiseSquareLoss * analytic_phi,
                      double mu, // mean of the truncated gaussian
-                     int thj, // changepoint of interest
-                     int window_size, // size of window around thj
-                     int data_count, // number of data points
-                     double *data_vec, // original data
-                     double decay_rate, // AR1 decay rate
+                     double vTy, //
+                     double nu_norm,
                      double sig, // noise variance
                      double alpha_1);
 
 double tn_upper_surv(PiecewiseSquareLoss * analytic_phi,
                      double mu, // mean of the truncated gaussian
-                     int thj, // changepoint of interest
-                     int window_size, // size of window around thj
-                     int data_count, // number of data points
-                     double *data_vec, // original data
-                     double decay_rate, // AR1 decay rate
+                     double vTy,
+                     double nu_norm,
                      double sig, // noise variance
                      double alpha_2);
-
 
 std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
                              int thj, // changepoint of interest

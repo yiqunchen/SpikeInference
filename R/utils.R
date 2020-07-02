@@ -1,3 +1,17 @@
+#' @export
+construct_v <- function(n, thj, window_size, gam) {
+  tL <- max(1, thj-window_size+1)
+  tR <- min(n, thj+window_size)
+  v <- 0 * numeric(n)
+  v[tL:thj] <- -gam * (gam ^ 2 - 1) / (gam ^ 2 - gam ^ (2 * (tL - thj) ) ) * gam ^ (-(thj - tL):0)
+  v[(thj + 1):tR] <- (gam ^ 2 - 1) / (gam ^ (2 * (tR - thj)) - 1) * gam ^ (0:(tR - (thj + 1)))
+  return(v)
+}
+
+
+
+
+#' @export
 nearest_changepoint <- function(pt, cps) {
   M <- length(pt)
   out <- numeric(M)
@@ -7,7 +21,7 @@ nearest_changepoint <- function(pt, cps) {
   return(out)
 }
 
-
+#' @export
 loss_function_n_spikes <- function(lam, gcamp, decay_rate, num_spikes_target){
   fit <- spike_estimates(dat = gcamp, decay_rate = decay_rate, tuning_parameter = lam, 
                          functional_pruning_out = FALSE)
@@ -16,7 +30,7 @@ loss_function_n_spikes <- function(lam, gcamp, decay_rate, num_spikes_target){
   return(spike_num_diff)
 }
 
-
+#' @export
 one_d_binary_search <- function(gcamp, decay_rate, lam_min, lam_max, 
                                 num_spikes_target, max_iters=50, tolerance=5){
   iter_i <- 0
@@ -57,9 +71,9 @@ one_d_binary_search <- function(gcamp, decay_rate, lam_min, lam_max,
   return(lam_star)
 }
 
-
+#' @export
 estimate_spike_by_spike_number <- function(dat, decay_rate, target_firing_rate, 
-                                           lam_min = 1e-6, lam_max = 1e0, max_iters=50, tolerance=5){
+                                           lam_min = 1e-6, lam_max = 1, max_iters=50, tolerance=5){
   
   fps = 1 # sampling ratio - default to one
   gcamp = dat$fl
@@ -75,15 +89,11 @@ estimate_spike_by_spike_number <- function(dat, decay_rate, target_firing_rate,
 }
 
 
-
-
-
-
-
 #' @param u - vector of spike times [n]
 #' @param v - vector of spike times [m]
 #' @param tau - timescale parameter that parameterizes distance
 #' @return VR distance, with timescale tau, between u and v 
+#' @export
 vanRossumDist <- function(u, v, tau) {
   lenU <- length(u)
   lenV <- length(v)

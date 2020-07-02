@@ -109,9 +109,6 @@ List fpop_inference_interface_recycle
   std::list<int> ll = extract_changepoints(cost_model_fwd, data_count);
   std::list<int>::iterator it;
 
-
-
-
   const int ncols = 5;// changepoint + 1 (in R notation), pval, approximation error, LCB, UCB
   const int nrows = ll.size() - 1;
   NumericMatrix out_mat(nrows, ncols);
@@ -127,7 +124,6 @@ List fpop_inference_interface_recycle
     try {
       if (it > 0) {
         FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, data_ptr, data_count, decay_rate, penalty, it, window_size, sig, return_ci);
-
         out_mat(row_i, 0) = out.thj + 1;
         out_mat(row_i, 1) = out.pval;
         out_mat(row_i, 2) = out.approximation_error;

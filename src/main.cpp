@@ -301,7 +301,7 @@ void toy_example_5(){
 
 // random test
 void random_example_test(int T, double decay_rate, double spike_rate, float sigma,
-        bool noisy, double penalty, int window_size, int test_times, int random_seed,
+        bool noisy, double penalty, int window_size, int random_seed,
         bool parallel) {
 
     assert(decay_rate < 1 & decay_rate > 0);
@@ -315,22 +315,26 @@ void random_example_test(int T, double decay_rate, double spike_rate, float sigm
     std::normal_distribution<double> normal(0.0, sigma);
 
     double y[T];
-    double spike_vec[T];
+    double c[T];
     y[0] = 1.0;
+    c[0] = 1.0;
     int thj;
 
-    double vTv = construct_nu_norm(T, thj, window_size, decay_rate);
 
-    printf("vTv %f \n", vTv);
+    //double vTv = construct_nu_norm(T, thj, window_size, decay_rate);
+
+    //printf("vTv %f \n", vTv);
 
 
     for (int data_i = 1; data_i < T; data_i++) {
         int spike_T = poisson(generator);
-        spike_vec[data_i] = spike_T;
-        y[data_i] = decay_rate * y[data_i - 1] + spike_T;
+        c[data_i] = decay_rate * c[data_i - 1] + spike_T;
+
         if (noisy) {
             double noise_T = normal(generator);
-            y[data_i] += noise_T;
+            y[data_i] = c[data_i]+noise_T;
+        }else{
+            y[data_i] = c[data_i];
         }
     }
 
@@ -361,19 +365,26 @@ void random_example_test(int T, double decay_rate, double spike_rate, float sigm
 //
 //        }
 //    }else{
+    double total_test = 0, cover_test = 0;
     for (j = ll.begin(); j != ll.end(); ++j) {
         count += 1;
         thj = *j; // get estimated spike location to test
-        printf("currently testing %i th location at %i\n", count, thj);
+        //printf("currently testing %i th location at %i\n", count, thj);
         // forward pass
         // backward pass
         FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, T, decay_rate, penalty,
                                                             thj, window_size, sigma * sigma, true);
-        printf("true spike jump %f \n", spike_vec[thj+1]-spike_vec[thj]);
 
+        double * v = construct_v(T, thj, window_size, decay_rate);
+        double vTc = construct_vTy(v, c, T, thj, window_size);
+        //printf("true spike jump %f \n", vTc);
+        total_test += 1;
+        if (out.confidence_interval[0]<=vTc & out.confidence_interval[1]>=vTc){
+            cover_test += 1;
+        }
     }
+    printf("total %f cover %f rate %f\n", total_test, cover_test, cover_test/total_test);
 //}
-
 }
 
 
@@ -440,11 +451,9 @@ void specific_example_2() {
         count += 1;
         thj = *j; // get estimated spike location to test
         printf("currently testing %i th location at %i\n", count, thj);
-        //if (count == 160){
-            FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, &y_example[0], T,
+        FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, &y_example[0], T,
                                                                 decay_rate, penalty,
                                                                 thj, window_size, sigma * sigma, true);
-       // }
 
     }
 }
@@ -457,7 +466,11 @@ int main(int argc, char *argv[]) {
  //toy_example_3();
  //toy_example_4();
  //toy_example_5();
- random_example_test(10000, 0.95, 0.01, 0.5,true, 0.5, 5, 10, 1, false);
+ int test_times = 20;
+ for (int i = 0; i < test_times; i++){
+     random_example_test(10000, 0.95, 0.01, 0.15,true, 0.5, 5, i, false);
+ }
+
 // specific_example_1();
 // specific_example_2();
  return 0;
