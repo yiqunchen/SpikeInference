@@ -192,8 +192,8 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
   double * v = construct_v(data_count, thj, window_size, decay_rate);
   double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
 
-  const double MIN = -1*std::max(10*sqrt(v_norm2*sig),abs(vTy));
-  const double MAX = std::max(10*sqrt(v_norm2*sig),abs(vTy));
+  const double MIN = -1*std::max(10*sqrt(v_norm2*sig),fabs(vTy));
+  const double MAX = std::max(10*sqrt(v_norm2*sig),fabs(vTy));
 //  printf("check max %f \n",MAX);
 
   SquareLossPieceList::iterator it;
@@ -389,7 +389,7 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
                                     sig, // noise variance
                                     alpha_1);
         while (f_lower_pos < 0 && xL_2 <= 1E7){
-            delta = 0.01*std::max(1e-5, abs(f_lower_pos));
+            delta = 0.01*std::max(1e-5, fabs(f_lower_pos));
             xL_2 = xL_2+delta;
             f_lower_pos = tn_lower_surv(analytic_phi,
                                         xL_2,
@@ -401,7 +401,7 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
     }else{
         while (f_lower_neg > 0 && xL_1 >= -1E7){
 
-            delta = 0.01*std::max(1e-5, abs(f_lower_neg));
+            delta = 0.01*std::max(1e-5, fabs(f_lower_neg));
             xL_1 = xL_1-delta;
             f_lower_neg = tn_lower_surv(analytic_phi,
                                     xL_1,
@@ -428,7 +428,7 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
                                     alpha_2);
 
         while (f_upper_pos < 0 && xR_2 <= 1E7){
-            delta = 0.01*std::max(1e-5, abs(f_upper_pos));
+            delta = 0.01*std::max(1e-5, (double) fabs(f_upper_pos));
             xR_2 = xR_2+delta;
             f_upper_pos = tn_upper_surv(analytic_phi,
                                         xR_2,
@@ -440,7 +440,7 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
 
     }else{
         while (f_upper_neg>0 && xR_1 >= -1E7){
-            delta = 0.01*std::max(1e-5, abs(f_upper_neg));
+            delta = 0.01*std::max(1e-5, (double) fabs(f_upper_neg));
             xR_1 = xR_1-delta;
             f_upper_neg = tn_upper_surv(analytic_phi,
                                         xR_1,
