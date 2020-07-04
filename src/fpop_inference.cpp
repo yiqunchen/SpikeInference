@@ -31,9 +31,10 @@ FpopInference fpop_analytic_inference_recycle(PiecewiseSquareLosses * cost_model
         int thj,
         int window_size,
         double sig,
-        bool return_ci = true) { // return CI defaults to false
+        bool return_ci = true,
+        double alpha = 0.05) { // return CI defaults to false
   int verbose = 0;
-  double alpha = 0.05; //default type I error control
+  //double alpha = 0.05; //default type I error control
   double *data_vec_rev = reverse_data(data_vec, data_count);
   PiecewiseSquareLoss model = thj_in_model(
           cost_model_fwd,

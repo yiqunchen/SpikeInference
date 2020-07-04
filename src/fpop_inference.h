@@ -20,5 +20,6 @@ FpopInference fpop_analytic_inference_recycle(PiecewiseSquareLosses * cost_model
                                        int thj,
                                        int window_size,
                                        double sig,
-                                       bool return_ci);
+                                       bool return_ci,
+                                       double alpha);
 
