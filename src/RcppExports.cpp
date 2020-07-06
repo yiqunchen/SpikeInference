@@ -25,8 +25,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // fpop_inference_interface_recycle
-List fpop_inference_interface_recycle(NumericVector data, double decay_rate, double penalty, int window_size, double sig, int return_dev, bool return_ci);
-RcppExport SEXP _SpikeInference_fpop_inference_interface_recycle(SEXP dataSEXP, SEXP decay_rateSEXP, SEXP penaltySEXP, SEXP window_sizeSEXP, SEXP sigSEXP, SEXP return_devSEXP, SEXP return_ciSEXP) {
+List fpop_inference_interface_recycle(NumericVector data, double decay_rate, double penalty, int window_size, double sig, int return_dev, bool return_ci, double alpha);
+RcppExport SEXP _SpikeInference_fpop_inference_interface_recycle(SEXP dataSEXP, SEXP decay_rateSEXP, SEXP penaltySEXP, SEXP window_sizeSEXP, SEXP sigSEXP, SEXP return_devSEXP, SEXP return_ciSEXP, SEXP alphaSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -37,14 +37,15 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type sig(sigSEXP);
     Rcpp::traits::input_parameter< int >::type return_dev(return_devSEXP);
     Rcpp::traits::input_parameter< bool >::type return_ci(return_ciSEXP);
-    rcpp_result_gen = Rcpp::wrap(fpop_inference_interface_recycle(data, decay_rate, penalty, window_size, sig, return_dev, return_ci));
+    Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
+    rcpp_result_gen = Rcpp::wrap(fpop_inference_interface_recycle(data, decay_rate, penalty, window_size, sig, return_dev, return_ci, alpha));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"_SpikeInference_fpop_interface2", (DL_FUNC) &_SpikeInference_fpop_interface2, 9},
-    {"_SpikeInference_fpop_inference_interface_recycle", (DL_FUNC) &_SpikeInference_fpop_inference_interface_recycle, 7},
+    {"_SpikeInference_fpop_inference_interface_recycle", (DL_FUNC) &_SpikeInference_fpop_inference_interface_recycle, 8},
     {NULL, NULL, 0}
 };
 

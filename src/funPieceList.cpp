@@ -1400,8 +1400,6 @@ PiecewiseSquareLoss PiecewiseBiSquareLoss::min_over_u() {
                 cost_prev.print();
             }
 
-
-
             cost_min.set_to_min_env_of(&cost_prev, &cost_cur, 0);
 
             int status = cost_min.check_min_of(&cost_prev, &cost_cur);
