@@ -89,7 +89,7 @@ PiecewiseSquareLoss thj_in_model(
   double * v = construct_v(data_count, thj, window_size, decay_rate);
   double vTy = construct_vTy(data_vec, v, data_count, thj ,window_size);
   double v_norm2 = construct_vTy(v, v, data_count, thj, window_size);
-  free(v); //free the vectors
+  delete v; //free the vectors
   int cost_f_start = (int) std::max(thj - window_size, 0);
   int cost_r_start = (int) std::max(data_count - 1 - thj - window_size - 1, 0);
 
@@ -114,8 +114,8 @@ PiecewiseSquareLoss thj_in_model(
   PiecewiseBiSquareLosses fwd_2d = fpop_2d_custom_start(sub_data_f, n_sub_f,cost_f_piece, penalty, decay_rate, 1, vTy, v_norm2, verbose);
   PiecewiseBiSquareLosses rev_2d = fpop_2d_custom_start(sub_data_r, n_sub_r,cost_r_piece, penalty, decay_rate, 0, vTy, v_norm2, verbose);
 
-  free(sub_data_f); // free pointer
-  free(sub_data_r); // free pointer
+  delete sub_data_f; // free pointer
+  delete sub_data_r; // free pointer
 
   PiecewiseSquareLoss fwd_min, rev_min, c_change_at_thj;
 //    printf("fwd_2d\n");
@@ -193,7 +193,7 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
   double v_norm2 = construct_nu_norm(data_count, thj, window_size, decay_rate);
   double * v = construct_v(data_count, thj, window_size, decay_rate);
   double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
-  free(v);
+  delete v;
   const double MIN = -1*std::max(10*sqrt(v_norm2*sig),fabs(vTy));
   const double MAX = std::max(10*sqrt(v_norm2*sig),fabs(vTy));
 //  printf("check max %f \n",MAX);
@@ -246,7 +246,7 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
   double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
   double nu_norm = construct_vTy(v, v, data_count, thj, window_size);
   SquareLossPieceList::iterator it;
-  free(v); // free memory
+  delete v; // free memory
   // numerically safe
   double n1 = -INFINITY;
   double d1 = -INFINITY;
@@ -375,7 +375,7 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
     double * v = construct_v(data_count, thj, window_size, decay_rate);
     double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
     double nu_norm = construct_vTy(v, v, data_count, thj, window_size);
-    free(v); // free memory
+    delete v; // free memory
 
     f_lower_neg = tn_lower_surv(analytic_phi,
             xL_1,
