@@ -347,7 +347,7 @@ void random_example_test(int T, double decay_rate, double spike_rate, float sigm
     int count = 0;
     double *data_vec_rev = reverse_data(y, T);
     PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, T, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
-
+    free(data_vec_rev); //free memory
 //    if (parallel){
 //        omp_set_num_threads(4); //make this an argument?
 //        #pragma omp parallel for
@@ -377,6 +377,7 @@ void random_example_test(int T, double decay_rate, double spike_rate, float sigm
 
         double * v = construct_v(T, thj, window_size, decay_rate);
         double vTc = construct_vTy(v, c, T, thj, window_size);
+        free(v); //
         //printf("true spike jump %f \n", vTc);
         total_test += 1;
         if (out.confidence_interval[0]<=vTc & out.confidence_interval[1]>=vTc){
@@ -466,16 +467,14 @@ int main(int argc, char *argv[]) {
  //toy_example_3();
  //toy_example_4();
  //toy_example_5();
- int test_times = 5;
+ int test_times = 1;
  for (int i = 0; i < test_times; i++){
-     random_example_test(10000, 0.95, 0.01, 0.15,true, 0.5, 5, i, false);
+     random_example_test(10000, 0.95, 0.01, 0.1,true, 0.5, 5, i, false);
  }
-
 // specific_example_1();
 // specific_example_2();
  return 0;
 }
-
 
 
 // CODE for printing out v

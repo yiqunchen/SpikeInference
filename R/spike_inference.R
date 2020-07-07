@@ -25,7 +25,9 @@
 #'
 #' @export
 spike_inference <- structure(function(dat, decay_rate, tuning_parameter, window_size = NULL, sig = NULL, 
-                                      return_conditioning_sets = FALSE, return_ci = TRUE, alpha = 0.05) {
+                                      sig_estimation = NULL,
+                                      return_conditioning_sets = FALSE, return_ci = TRUE, alpha = 0.05
+                                    ) {
   stopifnot(decay_rate > 0)
   stopifnot(decay_rate < 1)
   stopifnot(tuning_parameter > 0)
@@ -36,10 +38,35 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter, window_
     estimated = FALSE
   }
   
+  MAD_var_estimator <- function(y, decay_rate){
+    lag_1_diff <- (y[2:length(y)]-decay_rate*y[1:(length(y)-1)])/sqrt(2)
+    sigma_hat <- stats::mad(lag_1_diff)
+    return(sigma_hat)
+  }
+  
+  JNFL_var_estimator <- function(y, decay_rate){
+    lag_1_diff <- (y[2:length(y)]-decay_rate*y[1:(length(y)-1)])/sqrt(2)
+    lag_2_diff <- (y[3:length(y)]-decay_rate*decay_rate*y[1:(length(y)-2)])/sqrt(2)
+    sigma_hat <- sqrt(max(0, 2*var(lag_1_diff)-var(lag_2_diff)))
+    return(sigma_hat)
+  }
+  
+  
   if (is.null(sig)) {
+       if(is.null(sig_estimation)){
       stop("not implemented")
-      # fit <- changepoint_estimates(dat, "L0", tuning_parameter)
-      # sig <- var(dat - fit$estimated_means)
+       }
+  }else{
+      if(sig_estimation=='MAD'){
+        sig = MAD_var_estimator(dat, decay_rate)^2 # get varianxe
+      }else if(sig_estimation=='JNFL'){
+        sig = JNFL_var_estimator(dat, decay_rate)^2
+        if(sig==0){
+          sig = (MAD_var_estimator(dat, decay_rate)^2)
+        }
+      }else{
+        stop("Only MAD or JNFL is implemented")
+      }
     }
     
     out_fpop_inference <- .fpop_inference(dat, decay_rate, tuning_parameter, window_size, sig,

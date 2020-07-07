@@ -91,6 +91,51 @@ estimate_spike_by_spike_number <- function(dat, decay_rate, target_firing_rate,
 
 #' @param u - vector of spike times [n]
 #' @param v - vector of spike times [m]
+#' @param cost - cost parameter that parameterizes distance
+#' @return VP distance, with cost parameter cost, between u and v 
+VictorPurpuraDist <- function(u, v, cost){
+  lenU <- length(u)
+  lenV <- length(v)
+  if (cost == 0){
+    return(abs(lenU-lenV))
+  }else if(cost == Inf){
+    return(lenU+lenV)
+  }
+  # non-degenerate case
+  cost_mat <- matrix(0,nrow=lenU+1,ncol=lenV+1)
+  cost_mat[,1] <- c(0:lenU)
+  cost_mat[1,] <- c(0:lenV)
+  
+  if (lenU & lenV){
+    for (i in c(2:(lenU+1))){
+      for (j in c(2:(lenV+1))){
+        choice_vec = c(cost_mat[i-1,j]+1, cost_mat[i,j-1]+1, 
+                       cost_mat[i-1,j-1]+cost*abs(u[i-1]-v[j-1]))
+        cost_mat[i,j] = min(choice_vec)
+      }
+    }
+  }
+  
+ result_d = cost_mat[lenU+1,lenV+1]
+ return(result_d)
+  
+}
+
+
+#' @param u - vector of spike times [n]
+#' @param v - vector of spike times [n]
+#' @return correlation distance between u and v (1-cor(u,v))
+#' @export
+corrDistance <- function(u,v){
+  if(length(u)!=length(v)){
+    stop("Incompatible dimensions")
+  }
+  result = 1-cor(u,v)
+  return(result)
+}  
+  
+#' @param u - vector of spike times [n]
+#' @param v - vector of spike times [m]
 #' @param tau - timescale parameter that parameterizes distance
 #' @return VR distance, with timescale tau, between u and v 
 #' @export
@@ -99,6 +144,7 @@ vanRossumDist <- function(u, v, tau) {
   lenV <- length(v)
   d2 <- 0
   s1 <- 0
+  
   for (i in 1:lenU) {
     for (j in 1:lenU) {
       s1 <- s1 + exp(-abs(u[i] - u[j]) / tau)

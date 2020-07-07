@@ -89,7 +89,7 @@ PiecewiseSquareLoss thj_in_model(
   double * v = construct_v(data_count, thj, window_size, decay_rate);
   double vTy = construct_vTy(data_vec, v, data_count, thj ,window_size); //construct_vTy(sub_data_f, n_sub_f, sub_data_r, n_sub_r);
   double v_norm2 = construct_vTy(v, v, data_count, thj, window_size); //construct_nu_norm(data_count, thj , window_size, decay_rate);
-
+  free(v); //free the vectors
   int cost_f_start = (int) std::max(thj - window_size, 0);
   int cost_r_start = (int) std::max(data_count - 1 - thj - window_size - 1, 0);
 
@@ -191,7 +191,7 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
   double v_norm2 = construct_nu_norm(data_count, thj, window_size, decay_rate);
   double * v = construct_v(data_count, thj, window_size, decay_rate);
   double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
-
+  free(v);
   const double MIN = -1*std::max(10*sqrt(v_norm2*sig),fabs(vTy));
   const double MAX = std::max(10*sqrt(v_norm2*sig),fabs(vTy));
 //  printf("check max %f \n",MAX);
@@ -244,7 +244,7 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
   double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
   double nu_norm = construct_vTy(v, v, data_count, thj, window_size);
   SquareLossPieceList::iterator it;
-
+  free(v); // free memory
   // numerically safe
   double n1 = -INFINITY;
   double d1 = -INFINITY;
@@ -373,6 +373,7 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
     double * v = construct_v(data_count, thj, window_size, decay_rate);
     double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
     double nu_norm = construct_vTy(v, v, data_count, thj, window_size);
+    free(v); // free memory
 
     f_lower_neg = tn_lower_surv(analytic_phi,
             xL_1,
