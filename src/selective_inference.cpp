@@ -87,8 +87,8 @@ PiecewiseSquareLoss thj_in_model(
   double * sub_data_r = subset_array(data_vec_rev, sub_r_start, data_count - thj - 1); // subsets original to thj+1:tR
 
   double * v = construct_v(data_count, thj, window_size, decay_rate);
-  double vTy = construct_vTy(data_vec, v, data_count, thj ,window_size); //construct_vTy(sub_data_f, n_sub_f, sub_data_r, n_sub_r);
-  double v_norm2 = construct_vTy(v, v, data_count, thj, window_size); //construct_nu_norm(data_count, thj , window_size, decay_rate);
+  double vTy = construct_vTy(data_vec, v, data_count, thj ,window_size);
+  double v_norm2 = construct_vTy(v, v, data_count, thj, window_size);
   free(v); //free the vectors
   int cost_f_start = (int) std::max(thj - window_size, 0);
   int cost_r_start = (int) std::max(data_count - 1 - thj - window_size - 1, 0);
@@ -114,6 +114,8 @@ PiecewiseSquareLoss thj_in_model(
   PiecewiseBiSquareLosses fwd_2d = fpop_2d_custom_start(sub_data_f, n_sub_f,cost_f_piece, penalty, decay_rate, 1, vTy, v_norm2, verbose);
   PiecewiseBiSquareLosses rev_2d = fpop_2d_custom_start(sub_data_r, n_sub_r,cost_r_piece, penalty, decay_rate, 0, vTy, v_norm2, verbose);
 
+  free(sub_data_f); // free pointer
+  free(sub_data_r); // free pointer
 
   PiecewiseSquareLoss fwd_min, rev_min, c_change_at_thj;
 //    printf("fwd_2d\n");

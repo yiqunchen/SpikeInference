@@ -55,8 +55,7 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter, window_
   if (is.null(sig)) {
        if(is.null(sig_estimation)){
       stop("not implemented")
-       }
-  }else{
+       }else{
       if(sig_estimation=='MAD'){
         sig = MAD_var_estimator(dat, decay_rate)^2 # get varianxe
       }else if(sig_estimation=='JNFL'){
@@ -67,7 +66,8 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter, window_
       }else{
         stop("Only MAD or JNFL is implemented")
       }
-    }
+       }
+  }
     
     out_fpop_inference <- .fpop_inference(dat, decay_rate, tuning_parameter, window_size, sig,
                                           return_conditioning_sets, return_ci, alpha)
