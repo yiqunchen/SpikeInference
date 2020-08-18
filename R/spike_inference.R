@@ -26,7 +26,8 @@
 #' @export
 spike_inference <- structure(function(dat, decay_rate, tuning_parameter, window_size = NULL, sig = NULL, 
                                       sig_estimation = NULL,
-                                      return_conditioning_sets = FALSE, return_ci = TRUE, alpha = 0.05
+                                      return_conditioning_sets = FALSE, return_ci = TRUE, 
+                                      two_sided = FALSE, alpha = 0.05
                                     ) {
   stopifnot(decay_rate > 0)
   stopifnot(decay_rate < 1)
@@ -70,13 +71,14 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter, window_
   }
     
     out_fpop_inference <- .fpop_inference(dat, decay_rate, tuning_parameter, window_size, sig,
-                                          return_conditioning_sets, return_ci, alpha)
+                                          return_conditioning_sets, return_ci, two_sided, alpha)
     
     if (return_conditioning_sets) { 
       conditioning_sets = fpop_inference_intervals_formatter(out_fpop_inference[[2]])
     } else { 
       conditioning_sets = NA
     }
+    
     
     if (return_ci){
       out <- list(
@@ -86,12 +88,13 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter, window_
         tuning_parameter = tuning_parameter,
         window_size = window_size,
         sig = sig, 
-        change_pts = out_fpop_inference[[1]][, 1], # thj+1 - thj \neq 0
+        change_pts = pmax(out_fpop_inference[[1]][, 1],1), # thj+1 - thj \neq 0
         pvals = out_fpop_inference[[1]][, 2],
         LCB = out_fpop_inference[[1]][, 4],
         UCB = out_fpop_inference[[1]][, 5],
         conditioning_sets = conditioning_sets, 
         estimated_variance = estimated,
+        two_sided = two_sided,
         alpha = alpha
       )
     }else{
@@ -102,10 +105,12 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter, window_
       tuning_parameter = tuning_parameter,
       window_size = window_size,
       sig = sig, 
-      change_pts = out_fpop_inference[[1]][, 1], # thj+1 - thj \neq 0
+      change_pts = pmax(out_fpop_inference[[1]][, 1],1), # thj+1 - thj \neq 0
       pvals = out_fpop_inference[[1]][, 2],
       conditioning_sets = conditioning_sets, 
-      estimated_variance = estimated
+      estimated_variance = estimated,
+      two_sided = two_sided,
+      alpha = alpha
     )
     }
     class(out) <- "SpikeInference"

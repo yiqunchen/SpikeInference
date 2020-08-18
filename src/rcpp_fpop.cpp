@@ -92,6 +92,7 @@ List fpop_inference_interface_recycle
          double sig,
          int return_dev = 0,
          bool return_ci = true,
+         bool two_sided = false,
          double alpha = 0.05) {
 
 
@@ -107,6 +108,7 @@ List fpop_inference_interface_recycle
   double *data_vec_rev = reverse_data(data_ptr, data_count);
   PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
 
+  free(data_vec_rev); //free reverse vector
   std::list<int> ll = extract_changepoints(cost_model_fwd, data_count);
   std::list<int>::iterator it;
 
@@ -125,7 +127,7 @@ List fpop_inference_interface_recycle
     try {
       if (it > 0) {
         FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, data_ptr, data_count, decay_rate, penalty, it,
-                window_size, sig, return_ci, alpha);
+                window_size, sig, return_ci, two_sided, alpha);
         out_mat(row_i, 0) = out.thj + 1;
         out_mat(row_i, 1) = out.pval;
         out_mat(row_i, 2) = out.approximation_error;

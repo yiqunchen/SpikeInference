@@ -89,7 +89,7 @@ PiecewiseSquareLoss thj_in_model(
   double * v = construct_v(data_count, thj, window_size, decay_rate);
   double vTy = construct_vTy(data_vec, v, data_count, thj ,window_size);
   double v_norm2 = construct_vTy(v, v, data_count, thj, window_size);
-  delete v; //free the vectors
+  free(v); //free the vectors
   int cost_f_start = (int) std::max(thj - window_size, 0);
   int cost_r_start = (int) std::max(data_count - 1 - thj - window_size - 1, 0);
 
@@ -114,8 +114,8 @@ PiecewiseSquareLoss thj_in_model(
   PiecewiseBiSquareLosses fwd_2d = fpop_2d_custom_start(sub_data_f, n_sub_f,cost_f_piece, penalty, decay_rate, 1, vTy, v_norm2, verbose);
   PiecewiseBiSquareLosses rev_2d = fpop_2d_custom_start(sub_data_r, n_sub_r,cost_r_piece, penalty, decay_rate, 0, vTy, v_norm2, verbose);
 
-  delete sub_data_f; // free pointer
-  delete sub_data_r; // free pointer
+  free(sub_data_f); // free pointer
+  free(sub_data_r); // free pointer
 
   PiecewiseSquareLoss fwd_min, rev_min, c_change_at_thj;
 //    printf("fwd_2d\n");
@@ -193,7 +193,7 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
   double v_norm2 = construct_nu_norm(data_count, thj, window_size, decay_rate);
   double * v = construct_v(data_count, thj, window_size, decay_rate);
   double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
-  delete v;
+  free(v);
   const double MIN = -1*std::max(10*sqrt(v_norm2*sig),fabs(vTy));
   const double MAX = std::max(10*sqrt(v_norm2*sig),fabs(vTy));
 //  printf("check max %f \n",MAX);
@@ -246,7 +246,7 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
   double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
   double nu_norm = construct_vTy(v, v, data_count, thj, window_size);
   SquareLossPieceList::iterator it;
-  delete v; // free memory
+  free(v); // free memory
   // numerically safe
   double n1 = -INFINITY;
   double d1 = -INFINITY;
@@ -280,7 +280,15 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
 
     }
   }
-  return (exp(n1 - d1));
+
+  double p_val_result;
+
+  if (isnan(exp(n1-d1))){
+      p_val_result=1.0;
+  }else{
+      p_val_result = exp(n1 - d1);
+  }
+  return (p_val_result);
 }
 
 
@@ -311,7 +319,16 @@ double calc_surv_prob(PiecewiseSquareLoss * analytic_phi,
 
         }
     }
-    return (exp(n1 - d1));
+
+    double p_val_result;
+
+    if (isnan(exp(n1-d1))){
+        p_val_result=1.0;
+    }else{
+        p_val_result = exp(n1 - d1);
+    }
+    return (p_val_result);
+
 }
 
 
@@ -349,7 +366,6 @@ double tn_upper_surv(PiecewiseSquareLoss * analytic_phi,
 
 
 
-
 // compute the confidence interval for the mean parameter of a normal truncated to a union of intervals
 std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
                     int thj, // changepoint of interest
@@ -365,17 +381,17 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
     double alpha_1 = alpha/2.0;
     double alpha_2 = alpha-alpha_1;
     double lower_CI, upper_CI;
-    double xL_1 = -10;
-    double xR_1 = -10;
-    double xL_2 = 10;
-    double xR_2 = 10;
+    double xL_1 = -20;
+    double xR_1 = -20;
+    double xL_2 = 20;
+    double xR_2 = 20;
     double f_lower_neg, f_upper_neg, delta, f_lower_pos, f_upper_pos;
 
     // recycle these computation
     double * v = construct_v(data_count, thj, window_size, decay_rate);
     double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
     double nu_norm = construct_vTy(v, v, data_count, thj, window_size);
-    delete v; // free memory
+    free(v); // free memory
 
     f_lower_neg = tn_lower_surv(analytic_phi,
             xL_1,
@@ -391,8 +407,8 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
                                     nu_norm,
                                     sig, // noise variance
                                     alpha_1);
-        while (f_lower_pos < 0 && xL_2 <= 1E7){
-            delta = 0.01*std::max(1e-5, fabs(f_lower_pos));
+        while (f_lower_pos < 0 && xL_2 <= 1E3){
+            delta = 0.01*std::max(1e-3, fabs(f_lower_pos));
             xL_2 = xL_2+delta;
             f_lower_pos = tn_lower_surv(analytic_phi,
                                         xL_2,
@@ -402,9 +418,9 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
                                         alpha_1);
         }
     }else{
-        while (f_lower_neg > 0 && xL_1 >= -1E7){
+        while (f_lower_neg > 0 && xL_1 >= -1E3){
 
-            delta = 0.01*std::max(1e-5, fabs(f_lower_neg));
+            delta = 0.01*std::max(1e-3, fabs(f_lower_neg));
             xL_1 = xL_1-delta;
             f_lower_neg = tn_lower_surv(analytic_phi,
                                     xL_1,
@@ -430,8 +446,8 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
                                     sig, // noise variance
                                     alpha_2);
 
-        while (f_upper_pos < 0 && xR_2 <= 1E7){
-            delta = 0.01*std::max(1e-5, (double) fabs(f_upper_pos));
+        while (f_upper_pos < 0 && xR_2 <= 1E3){
+            delta = 0.01*std::max(1e-3, (double) fabs(f_upper_pos));
             xR_2 = xR_2+delta;
             f_upper_pos = tn_upper_surv(analytic_phi,
                                         xR_2,
@@ -442,8 +458,8 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
         }
 
     }else{
-        while (f_upper_neg>0 && xR_1 >= -1E7){
-            delta = 0.01*std::max(1e-5, (double) fabs(f_upper_neg));
+        while (f_upper_neg>0 && xR_1 >= -1E3){
+            delta = 0.01*std::max(1e-3, (double) fabs(f_upper_neg));
             xR_1 = xR_1-delta;
             f_upper_neg = tn_upper_surv(analytic_phi,
                                         xR_1,
@@ -509,5 +525,6 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
     upper_CI = (xR_1 + xR_2)/2.0;
 
     std::vector<double> CI_result = {lower_CI,upper_CI};
+    //printf("lower_CI %f upper_CI %f \n",lower_CI,upper_CI);
     return (CI_result);
 }
