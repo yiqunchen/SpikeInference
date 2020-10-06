@@ -158,7 +158,6 @@ PiecewiseSquareLoss thj_in_model(
 
   PiecewiseSquareLoss c_no_change;
 
-
   c_no_change = c_no_change_at_thj.min_u().get_univariate_p();
 
 //  printf("printing c_no_change...min over u\n");
@@ -240,7 +239,7 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
                     double decay_rate, // AR1 decay rate
                     double sig, // noise variance
                     bool two_sided, // whether calc 2 sided alternative or one sided (default to >)
-                    int verbose) {
+                    double mu = 0) {
 
   double * v = construct_v(data_count, thj, window_size, decay_rate);
   double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
@@ -251,29 +250,30 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
   double n1 = -INFINITY;
   double d1 = -INFINITY;
   double arg2;
+
   for (it = analytic_phi->piece_list.begin(); it != analytic_phi->piece_list.end(); it++) {
     if (it->data_i == 1) { // this segment is contained
       double a, b;
-      a = pnorm_log(it -> max_mean / sqrt(nu_norm * sig));
-      b = pnorm_log(it -> min_mean / sqrt(nu_norm * sig));
+      a = pnorm_log((it -> max_mean - mu) / sqrt(nu_norm * sig));
+      b = pnorm_log((it -> min_mean - mu) / sqrt(nu_norm * sig));
       arg2 = log_subtract(a, b);
       d1 = log_sum_exp(d1, arg2);
 
       if (two_sided){
-          if (it->max_mean >= ABS(vTy)) {
-              arg2 = log_subtract(pnorm_log(it -> max_mean / sqrt(nu_norm * sig)),
-                                  pnorm_log(std::max(it -> min_mean, ABS(vTy)) / sqrt(nu_norm * sig)));
+          if ((it->max_mean - mu) >= (ABS(vTy)-mu)) {
+              arg2 = log_subtract(pnorm_log((it -> max_mean - mu) / sqrt(nu_norm * sig)),
+                                  pnorm_log(std::max(it -> min_mean - mu, ABS(vTy)-mu) / sqrt(nu_norm * sig)));
               n1 = log_sum_exp(n1, arg2);
           }
-          if (it->min_mean <= -1 * ABS(vTy)) {
-              arg2 = log_subtract(pnorm_log(std::min(it -> max_mean, -ABS(vTy)) / sqrt(nu_norm * sig)),
-                                  pnorm_log(it -> min_mean / sqrt(nu_norm * sig)));
+          if ((it->min_mean - mu) <= (-1 * ABS(vTy)-mu)) {
+              arg2 = log_subtract(pnorm_log(std::min(it -> max_mean - mu , -ABS(vTy) - mu) / sqrt(nu_norm * sig)),
+                                  pnorm_log((it -> min_mean - mu) / sqrt(nu_norm * sig)));
               n1 = log_sum_exp(n1, arg2);
           }
       } else {//one sided p-value
-          if (it->max_mean >= (vTy)) {
-              arg2 = log_subtract(pnorm_log(it -> max_mean / sqrt(nu_norm * sig)),
-                                  pnorm_log(std::max(it -> min_mean, (vTy)) / sqrt(nu_norm * sig)));
+          if ((it->max_mean-mu) >= (vTy-mu)) {
+              arg2 = log_subtract(pnorm_log((it -> max_mean - mu) / sqrt(nu_norm * sig)),
+                                  pnorm_log(std::max(it -> min_mean - mu, (vTy-mu)) / sqrt(nu_norm * sig)));
               n1 = log_sum_exp(n1, arg2);
           }
       }

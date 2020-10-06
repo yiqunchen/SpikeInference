@@ -27,13 +27,13 @@
 spike_inference <- structure(function(dat, decay_rate, tuning_parameter, window_size = NULL, sig = NULL, 
                                       sig_estimation = NULL,
                                       return_conditioning_sets = FALSE, return_ci = TRUE, 
-                                      two_sided = FALSE, alpha = 0.05
-                                    ) {
+                                      two_sided = FALSE, alpha = 0.05, mu = 0
+                                    ){
   stopifnot(decay_rate > 0)
   stopifnot(decay_rate < 1)
   stopifnot(tuning_parameter > 0)
   ## L0 segmentation
-  if (is.null(sig)) {
+  if (is.null(sig)){
     estimated = TRUE
   } else {
     estimated = FALSE
@@ -71,7 +71,8 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter, window_
   }
     
     out_fpop_inference <- .fpop_inference(dat, decay_rate, tuning_parameter, window_size, sig,
-                                          return_conditioning_sets, return_ci, two_sided, alpha)
+                                          return_conditioning_sets, return_ci, two_sided, alpha,
+                                          mu)
     
     if (return_conditioning_sets) { 
       conditioning_sets = fpop_inference_intervals_formatter(out_fpop_inference[[2]])
@@ -95,7 +96,8 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter, window_
         conditioning_sets = conditioning_sets, 
         estimated_variance = estimated,
         two_sided = two_sided,
-        alpha = alpha
+        alpha = alpha,
+        mu = mu
       )
     }else{
     out <- list(
@@ -110,9 +112,13 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter, window_
       conditioning_sets = conditioning_sets, 
       estimated_variance = estimated,
       two_sided = two_sided,
-      alpha = alpha
+      alpha = alpha,
+      mu = mu
     )
     }
     class(out) <- "SpikeInference"
     return(out)
   })
+
+
+

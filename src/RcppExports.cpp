@@ -25,8 +25,8 @@ BEGIN_RCPP
 END_RCPP
 }
 // fpop_inference_interface_recycle
-List fpop_inference_interface_recycle(NumericVector data, double decay_rate, double penalty, int window_size, double sig, int return_dev, bool return_ci, bool two_sided, double alpha);
-RcppExport SEXP _SpikeInference_fpop_inference_interface_recycle(SEXP dataSEXP, SEXP decay_rateSEXP, SEXP penaltySEXP, SEXP window_sizeSEXP, SEXP sigSEXP, SEXP return_devSEXP, SEXP return_ciSEXP, SEXP two_sidedSEXP, SEXP alphaSEXP) {
+List fpop_inference_interface_recycle(NumericVector data, double decay_rate, double penalty, int window_size, double sig, int return_dev, bool return_ci, bool two_sided, double alpha, double mu);
+RcppExport SEXP _SpikeInference_fpop_inference_interface_recycle(SEXP dataSEXP, SEXP decay_rateSEXP, SEXP penaltySEXP, SEXP window_sizeSEXP, SEXP sigSEXP, SEXP return_devSEXP, SEXP return_ciSEXP, SEXP two_sidedSEXP, SEXP alphaSEXP, SEXP muSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -39,14 +39,15 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< bool >::type return_ci(return_ciSEXP);
     Rcpp::traits::input_parameter< bool >::type two_sided(two_sidedSEXP);
     Rcpp::traits::input_parameter< double >::type alpha(alphaSEXP);
-    rcpp_result_gen = Rcpp::wrap(fpop_inference_interface_recycle(data, decay_rate, penalty, window_size, sig, return_dev, return_ci, two_sided, alpha));
+    Rcpp::traits::input_parameter< double >::type mu(muSEXP);
+    rcpp_result_gen = Rcpp::wrap(fpop_inference_interface_recycle(data, decay_rate, penalty, window_size, sig, return_dev, return_ci, two_sided, alpha, mu));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"_SpikeInference_fpop_interface2", (DL_FUNC) &_SpikeInference_fpop_interface2, 9},
-    {"_SpikeInference_fpop_inference_interface_recycle", (DL_FUNC) &_SpikeInference_fpop_inference_interface_recycle, 9},
+    {"_SpikeInference_fpop_inference_interface_recycle", (DL_FUNC) &_SpikeInference_fpop_inference_interface_recycle, 10},
     {NULL, NULL, 0}
 };
 

@@ -1393,7 +1393,6 @@ PiecewiseSquareLoss PiecewiseBiSquareLoss::min_over_u() {
             if (verbose) {
                 printf("min is .... \t");
                 cost_cur.print();
-
                 printf("=cost current\n");
                 cost_cur.print();
                 printf("=cost previous\n");

@@ -33,7 +33,8 @@ FpopInference fpop_analytic_inference_recycle(PiecewiseSquareLosses * cost_model
         double sig,
         bool return_ci = false,
         bool two_sided = false,
-        double alpha = 0.05) { // return CI defaults to false
+        double alpha = 0.05,
+        double mu = 0) { // return CI defaults to false
   int verbose = 0;
   //double alpha = 0.05; //default type I error control
   double *data_vec_rev = reverse_data(data_vec, data_count);
@@ -50,13 +51,12 @@ FpopInference fpop_analytic_inference_recycle(PiecewiseSquareLosses * cost_model
           verbose);
   //check_selective_inference(&model, thj, window_size, data_count, data_vec, decay_rate, penalty, sig, verbose);
   free(data_vec_rev); // free the data
-  double pval = calc_p_value(&model, thj, window_size, data_count, data_vec, decay_rate, sig, two_sided, verbose);
+  double pval = calc_p_value(&model, thj, window_size, data_count, data_vec, decay_rate, sig, two_sided, mu);
 //  printf("P value %f \n", pval);
   double approximation_error = 0.0;
   if (return_ci){
       std::vector<double> thj_CI =  compute_CI(&model, thj,  window_size, data_count, data_vec, decay_rate, sig, alpha);
       //  printf("Constructed CI [%f, %f] \n", thj_CI[0], thj_CI[1]);
-
       return FpopInference(pval, approximation_error, model, thj, thj_CI);
   }else{
       return FpopInference(pval, approximation_error, model, thj);

@@ -93,7 +93,8 @@ List fpop_inference_interface_recycle
          int return_dev = 0,
          bool return_ci = true,
          bool two_sided = false,
-         double alpha = 0.05) {
+         double alpha = 0.05,
+         double mu = 0) {
 
 
   double *data_ptr = data.begin();
@@ -127,7 +128,7 @@ List fpop_inference_interface_recycle
     try {
       if (it > 0) {
         FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, data_ptr, data_count, decay_rate, penalty, it,
-                window_size, sig, return_ci, two_sided, alpha);
+                window_size, sig, return_ci, two_sided, alpha, mu);
         out_mat(row_i, 0) = out.thj + 1;
         out_mat(row_i, 1) = out.pval;
         out_mat(row_i, 2) = out.approximation_error;

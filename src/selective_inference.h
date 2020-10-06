@@ -83,7 +83,7 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
                     double decay_rate, // AR1 decay rate
                     double sig, // noise variance
                     bool two_sided, // two sided p-val?
-                    int verbose);
+                    double mu);
 
 // new helper functions for CI computation
 double calc_surv_prob(PiecewiseSquareLoss * analytic_phi,
