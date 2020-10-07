@@ -35,7 +35,7 @@ FpopInference fpop_analytic_inference_recycle(PiecewiseSquareLosses * cost_model
         bool two_sided = false,
         double alpha = 0.05,
         double mu = 0) { // return CI defaults to false
-  int verbose = 0;
+  int verbose = 1;
   //double alpha = 0.05; //default type I error control
   double *data_vec_rev = reverse_data(data_vec, data_count);
   PiecewiseSquareLoss model = thj_in_model(
@@ -49,7 +49,7 @@ FpopInference fpop_analytic_inference_recycle(PiecewiseSquareLosses * cost_model
           decay_rate, // AR1 decay parameter
           penalty, // tuning parameter to penalize the number of spikes
           verbose);
-  //check_selective_inference(&model, thj, window_size, data_count, data_vec, decay_rate, penalty, sig, verbose);
+  check_selective_inference(&model, thj, window_size, data_count, data_vec, decay_rate, penalty, sig, verbose);
   free(data_vec_rev); // free the data
   double pval = calc_p_value(&model, thj, window_size, data_count, data_vec, decay_rate, sig, two_sided, mu);
 //  printf("P value %f \n", pval);

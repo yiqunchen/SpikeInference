@@ -202,7 +202,7 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
 
   for (it = analytic_phi->piece_list.begin(); it != analytic_phi->piece_list.end(); it++) {
     phi_eval = MidMean(it -> min_mean, it -> max_mean);
-
+//    printf("phi_eval %f",phi_eval,"\n");
     if (phi_eval > MIN && phi_eval < MAX) {
       analytic_cost = it -> getCost(phi_eval);
       // run fpop on yphi

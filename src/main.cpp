@@ -217,8 +217,8 @@ void toy_example_3(){
 
 void toy_example_4(){
 
-    const int data_count = 4; // # of data points
-    double y[data_count] = {8, 4, 2, 5};
+    const int data_count = 5; // # of data points
+    double y[data_count] = {8, 4, 6, 3, 1.5};
 
     // print out y data
     double penalty = 1;
@@ -541,8 +541,57 @@ void specific_example_4() {
 }
 
 
+
+void paper_example(){
+
+    const int data_count = 5; // # of data points
+    double y[data_count] = {8, 4, 6, 3, 1.5};
+
+    // print out y data
+    double penalty = 1;
+    for (auto x : y) {printf("%f \t", x);}
+    printf("\n");
+
+    int thj = 2;
+    int window_size = 1;
+    double decay_rate = 0.5;
+    const double sig = 1;
+
+
+    double * v_test = construct_v(data_count, thj, window_size, decay_rate);
+
+    for(int data_i=0; data_i < data_count; data_i++){
+        printf("%f \t", v_test[data_i]);
+    }
+    printf("\n");
+
+    double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
+    double vTv = construct_vTy(v_test, v_test, data_count, thj, window_size);
+    printf("vTy %f vTv %f\n", vTy,vTv);
+
+    // forward pass
+    PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
+    // backward pass
+    double *data_vec_rev = reverse_data(y, data_count);
+    PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
+    FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate, penalty, thj, window_size, sig, true, false, 0.05, 0);
+
+
+    printf("true vTc %f \n", y[thj+1]-y[thj]);
+
+
+
+
+//
+//    printf("Cost model, longer data, 1 true cp \n");
+//    out.model.print();
+//    printf("Cost on original data = \t %f\n", out.model.findCost(vTy));
+
+}
+
+
 int main(int argc, char *argv[]) {
- //toy_example_1();
+ toy_example_1();
  //toy_example_2();
  //toy_example_3();
  //toy_example_4();
@@ -552,7 +601,8 @@ int main(int argc, char *argv[]) {
  //    random_example_test(70000, 0.95, 0.01, 0.1,true, 0.5, 5, i, false);
  // }
 // specific_example_1();
-specific_example_4();
+//specific_example_4();
+    //paper_example();
  return 0;
 }
 
