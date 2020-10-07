@@ -21,11 +21,8 @@ FpopInference fpop_analytic_inference_recycle(PiecewiseSquareLosses * cost_model
                                        int window_size,
                                        double sig,
                                        bool return_ci,
-<<<<<<< HEAD
-                                       bool two_sided,
-                                       double alpha,
-                                       double mu);
-=======
+//                                       bool two_sided,
+//                                       double alpha,
+//                                       double mu);
                                        double alpha);
->>>>>>> parent of 5fd0abd... h file changes
 

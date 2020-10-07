@@ -4,14 +4,9 @@
 #include <vector>
 #include <stdexcept>
 #define NEWTON_EPSILON 1e-20
-<<<<<<< HEAD
 #define DIFF_EPS 1e-3
 #define BISECTION_EPS 1e-3
 #define CI_LIMIT 1e2
-=======
-#define DIFF_EPS 1e-5
-#define BISECTION_EPS 1e-4
->>>>>>> parent of 5fd0abd... h file changes
 #define PREV_NOT_SET (-3)
 #define MACHINE_MIN 0//-INFINITY
 #define MACHINE_MAX INFINITY
