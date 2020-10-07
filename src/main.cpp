@@ -542,7 +542,7 @@ void specific_example_4() {
 
 
 int main(int argc, char *argv[]) {
- //toy_example_1();
+ toy_example_1();
  //toy_example_2();
  //toy_example_3();
  //toy_example_4();
@@ -552,7 +552,7 @@ int main(int argc, char *argv[]) {
  //    random_example_test(70000, 0.95, 0.01, 0.1,true, 0.5, 5, i, false);
  // }
 // specific_example_1();
-specific_example_4();
+//specific_example_4();
  return 0;
 }
 

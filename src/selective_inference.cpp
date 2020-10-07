@@ -192,9 +192,9 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
   double v_norm2 = construct_nu_norm(data_count, thj, window_size, decay_rate);
   double * v = construct_v(data_count, thj, window_size, decay_rate);
   double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
-  free(v);
   const double MIN = -1*std::max(10*sqrt(v_norm2*sig),fabs(vTy));
   const double MAX = std::max(10*sqrt(v_norm2*sig),fabs(vTy));
+//  printf("check min %f \n",MIN);
 //  printf("check max %f \n",MAX);
 
   SquareLossPieceList::iterator it;
@@ -202,10 +202,11 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
 
   for (it = analytic_phi->piece_list.begin(); it != analytic_phi->piece_list.end(); it++) {
     phi_eval = MidMean(it -> min_mean, it -> max_mean);
-
+//    printf("phi_eval %f", phi_eval,"\n");
     if (phi_eval > MIN && phi_eval < MAX) {
       analytic_cost = it -> getCost(phi_eval);
       // run fpop on yphi
+//      printf("analytic_cost %f", analytic_cost,"\n");
 
       PiecewiseSquareLoss *cost_prev;
       PiecewiseSquareLosses cost_model_mat(data_count);
@@ -228,6 +229,8 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
       }
     }
   }
+  free(v);
+
 }
 
 // for one-sided p-val, this computes P(X\geq vTy | X \in S) where S is the truncation set

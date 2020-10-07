@@ -50,9 +50,9 @@ FpopInference fpop_analytic_inference_recycle(PiecewiseSquareLosses * cost_model
           penalty, // tuning parameter to penalize the number of spikes
           verbose);
   //check_selective_inference(&model, thj, window_size, data_count, data_vec, decay_rate, penalty, sig, verbose);
-  free(data_vec_rev); // free the data
   double pval = calc_p_value(&model, thj, window_size, data_count, data_vec, decay_rate, sig, two_sided, mu);
-//  printf("P value %f \n", pval);
+  free(data_vec_rev); // free the data
+  printf("P value %f \n", pval);
   double approximation_error = 0.0;
   if (return_ci){
       std::vector<double> thj_CI =  compute_CI(&model, thj,  window_size, data_count, data_vec, decay_rate, sig, alpha);
