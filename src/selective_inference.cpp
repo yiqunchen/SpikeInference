@@ -77,7 +77,6 @@ PiecewiseSquareLoss thj_in_model(
 
   if (window_size < 1) throw;
 
-
   int sub_f_start = std::max(thj - window_size + 1, 0); // tL
   int n_sub_f = thj - sub_f_start + 1; // number of points in forward direction
   double * sub_data_f = subset_array(data_vec, sub_f_start, thj + 1); // subsets the original data to tL:thj
@@ -120,22 +119,28 @@ PiecewiseSquareLoss thj_in_model(
   PiecewiseSquareLoss fwd_min, rev_min, c_change_at_thj;
 //    printf("fwd_2d\n");
 //    fwd_2d.print();
+//    printf("rev_2d\n");
+//    rev_2d.print();
+
   fwd_min = fwd_2d.min_u().get_univariate_p();
   rev_min = rev_2d.min_u().get_univariate_p();
-//  printf("forward\n");
+
+//   printf("forward min u\n");
 //    fwd_min.print();
-//    printf("reverse\n");
-//    rev_min.print();
+//    printf("reverse min u\n");
+//    rev_2d.min_u().print();
+
   c_change_at_thj.set_to_addition_of(&fwd_min, &rev_min, 0);
 
+//  printf("change at thj \n");
+//  c_change_at_thj.print();
 
   c_change_at_thj.add(0, 0, penalty); // add penalty at the end
   c_change_at_thj.set_prev_seg_end(1); // there is a changepoint at thj
 
 
-//    printf("change at thj\n");
-//    c_change_at_thj.print();
-//
+
+
 //  printf("eval at baseline (change)= %f\n", c_change_at_thj.findCost(vTy));
 
   PiecewiseBiSquareLosses c_no_change_at_thj;
@@ -148,20 +153,25 @@ PiecewiseSquareLoss thj_in_model(
 
   rev_2d.rescale(0, decay_rate); //rescaling for addition - same as scaling fwd since we are minimizing over u
 
-//  printf("reverse collection after rescaling\n");
+  //printf("reverse collection after rescaling\n");
 //  printf("forward\n");
 //  fwd_2d.print();
 //  printf("reverse\n");
 //  rev_2d.print();
 
   c_no_change_at_thj.set_to_addition_of(&fwd_2d, &rev_2d, 0);
+  //printf("c_no_change_at_thj \n");
+  //c_no_change_at_thj.print();
 
   PiecewiseSquareLoss c_no_change;
 
   c_no_change = c_no_change_at_thj.min_u().get_univariate_p();
 
-//  printf("printing c_no_change...min over u\n");
-//  c_no_change.print();
+//  printf("change at thj min over u\n");
+//  c_change_at_thj.print();
+
+  //printf("printing c_no_change...min over u\n");
+  //c_no_change.print();
 //  printf("eval at baseline (no change)= %f\n", c_no_change.findCost(-1.0));
 
 //  PiecewiseBiSquareLoss c_no_change;
@@ -192,20 +202,19 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
   double v_norm2 = construct_nu_norm(data_count, thj, window_size, decay_rate);
   double * v = construct_v(data_count, thj, window_size, decay_rate);
   double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
-  free(v);
   const double MIN = -1*std::max(10*sqrt(v_norm2*sig),fabs(vTy));
   const double MAX = std::max(10*sqrt(v_norm2*sig),fabs(vTy));
-//  printf("check max %f \n",MAX);
+
 
   SquareLossPieceList::iterator it;
   double phi_eval, analytic_cost, manual_cost;
 
   for (it = analytic_phi->piece_list.begin(); it != analytic_phi->piece_list.end(); it++) {
     phi_eval = MidMean(it -> min_mean, it -> max_mean);
-//    printf("phi_eval %f",phi_eval,"\n");
     if (phi_eval > MIN && phi_eval < MAX) {
       analytic_cost = it -> getCost(phi_eval);
       // run fpop on yphi
+//      printf("analytic_cost %f", analytic_cost,"\n");
 
       PiecewiseSquareLoss *cost_prev;
       PiecewiseSquareLosses cost_model_mat(data_count);
@@ -228,6 +237,7 @@ void check_selective_inference(PiecewiseSquareLoss * analytic_phi,
       }
     }
   }
+  free(v);
 }
 
 // for one-sided p-val, this computes P(X\geq vTy | X \in S) where S is the truncation set
@@ -239,7 +249,9 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
                     double decay_rate, // AR1 decay rate
                     double sig, // noise variance
                     bool two_sided, // whether calc 2 sided alternative or one sided (default to >)
-                    double mu = 0) {
+                    double mu = 0,
+                    double lower_trunc = -INFINITY) {
+
 
   double * v = construct_v(data_count, thj, window_size, decay_rate);
   double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
@@ -250,41 +262,58 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
   double n1 = -INFINITY;
   double d1 = -INFINITY;
   double arg2;
+  // truncation constant set to be 10||nu||sigma
+  double C_stable = 0;//std::max(10*sqrt(nu_norm*sig),fabs(vTy));
 
   for (it = analytic_phi->piece_list.begin(); it != analytic_phi->piece_list.end(); it++) {
-    if (it->data_i == 1) { // this segment is contained
+    if ((it->data_i == 1) & (it -> max_mean > lower_trunc)){ // this segment is contained and above the truncation limit
+
+      it -> min_mean = std::max(it -> min_mean, lower_trunc);
       double a, b;
-      a = pnorm_log((it -> max_mean - mu) / sqrt(nu_norm * sig));
-      b = pnorm_log((it -> min_mean - mu) / sqrt(nu_norm * sig));
+      a = pnorm_log((it -> max_mean - mu ) / sqrt(nu_norm * sig) );
+      b = pnorm_log((it -> min_mean - mu ) / sqrt(nu_norm * sig) );
+
+//      printf("a %f\n",a);
+//      printf("b %f\n",b);
+//      printf("max_mean %f\n",it -> max_mean );
+//      printf("min_mean %f\n",it -> min_mean );
       arg2 = log_subtract(a, b);
       d1 = log_sum_exp(d1, arg2);
+//      printf("d1 %f\n",d1);
+//      printf("arg2 %f\n",arg2);
 
-      if (two_sided){
+        if (two_sided){
           if ((it->max_mean - mu) >= (ABS(vTy)-mu)) {
-              arg2 = log_subtract(pnorm_log((it -> max_mean - mu) / sqrt(nu_norm * sig)),
+              arg2 = log_subtract(pnorm_log((it -> max_mean - mu) / sqrt(nu_norm * sig) ),
                                   pnorm_log(std::max(it -> min_mean - mu, ABS(vTy)-mu) / sqrt(nu_norm * sig)));
               n1 = log_sum_exp(n1, arg2);
           }
           if ((it->min_mean - mu) <= (-1 * ABS(vTy)-mu)) {
-              arg2 = log_subtract(pnorm_log(std::min(it -> max_mean - mu , -ABS(vTy) - mu) / sqrt(nu_norm * sig)),
+              arg2 = log_subtract(pnorm_log(std::min(it -> max_mean - mu , -ABS(vTy) - mu) / sqrt(nu_norm * sig) ),
                                   pnorm_log((it -> min_mean - mu) / sqrt(nu_norm * sig)));
               n1 = log_sum_exp(n1, arg2);
           }
       } else {//one sided p-value
           if ((it->max_mean-mu) >= (vTy-mu)) {
-              arg2 = log_subtract(pnorm_log((it -> max_mean - mu) / sqrt(nu_norm * sig)),
-                                  pnorm_log(std::max(it -> min_mean - mu, (vTy-mu)) / sqrt(nu_norm * sig)));
+              arg2 = log_subtract(pnorm_log((it -> max_mean - mu) / sqrt(nu_norm * sig) ),
+                                  pnorm_log(std::max(it -> min_mean - mu, (vTy-mu)) / sqrt(nu_norm * sig) ));
+//              printf("arg2 %f \n",arg2);
               n1 = log_sum_exp(n1, arg2);
           }
       }
 
     }
+
   }
 
   double p_val_result;
+  printf("p_val_result %f\n",p_val_result);
 
   if (isnan(exp(n1-d1))){
-      p_val_result=1.0;
+//      printf("n1 %f\n",n1);
+//      printf("d1 %f\n",d1);
+      p_val_result=1.0; // numerical instability -> conservative
+
   }else{
       p_val_result = exp(n1 - d1);
   }
@@ -296,7 +325,8 @@ double calc_surv_prob(PiecewiseSquareLoss * analytic_phi,
                     double mu, // mean of the truncated gaussian
                     double vTy, //
                     double nu_norm,
-                    double sig) {
+                    double sig,
+                    double lower_trunc) {
 
     SquareLossPieceList::iterator it;
 
@@ -305,7 +335,8 @@ double calc_surv_prob(PiecewiseSquareLoss * analytic_phi,
     double d1 = -INFINITY;
     double arg2;
     for (it = analytic_phi->piece_list.begin(); it != analytic_phi->piece_list.end(); it++) {
-        if (it->data_i == 1) { // this segment is contained
+        if ((it->data_i == 1)  & (it -> max_mean > lower_trunc)) { // this segment is contained
+            it -> min_mean = std::max(it -> min_mean, lower_trunc);
             double a, b;
             a = pnorm_log((it -> max_mean - mu) / sqrt(nu_norm * sig));
             b = pnorm_log((it -> min_mean - mu) / sqrt(nu_norm * sig));
@@ -316,7 +347,6 @@ double calc_surv_prob(PiecewiseSquareLoss * analytic_phi,
                                     pnorm_log(std::max(it -> min_mean - mu, vTy - mu) / sqrt(nu_norm * sig)));
                 n1 = log_sum_exp(n1, arg2);
             }
-
         }
     }
 
@@ -337,13 +367,15 @@ double tn_lower_surv(PiecewiseSquareLoss * analytic_phi,
                      double vTy,
                      double nu_norm,
                      double sig, // noise variance
-                    double alpha_1){
+                     double alpha_1,
+                     double lower_trunc){
 
      double result = calc_surv_prob(analytic_phi,
              mu,
              vTy,
              nu_norm,
-             sig)-alpha_1;
+             sig,
+             lower_trunc)-alpha_1;
 
      return(result);
 }
@@ -354,12 +386,14 @@ double tn_upper_surv(PiecewiseSquareLoss * analytic_phi,
                      double vTy,
                      double nu_norm,
                      double sig, // noise variance
-                     double alpha_2){
+                     double alpha_2,
+                     double lower_trunc){
     double result = calc_surv_prob(analytic_phi,
             mu,
             vTy,
             nu_norm,
-            sig)-(1-alpha_2);
+            sig,
+            lower_trunc)-(1-alpha_2);
     return(result);
 
 }
@@ -374,17 +408,18 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
                     double *data_vec, // original data
                     double decay_rate, // AR1 decay rate
                     double sig, // noise variance
-                    double alpha = 0.05 // desired type I error rate control, default to 0.05
+                    double alpha = 0.05, // desired type I error rate control, default to 0.05
+                    double lower_trunc = -INFINITY// lower_trunc to guide numerically stable CI computation
                    ){
 
     //BISECTION_EPS
     double alpha_1 = alpha/2.0;
     double alpha_2 = alpha-alpha_1;
     double lower_CI, upper_CI;
-    double xL_1 = -20;
-    double xR_1 = -20;
-    double xL_2 = 20;
-    double xR_2 = 20;
+    double xL_1 = 0;
+    double xR_1 = 1;
+    double xL_2 = 0;
+    double xR_2 = 1;
     double f_lower_neg, f_upper_neg, delta, f_lower_pos, f_upper_pos;
 
     // recycle these computation
@@ -393,12 +428,14 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
     double nu_norm = construct_vTy(v, v, data_count, thj, window_size);
     free(v); // free memory
 
+
     f_lower_neg = tn_lower_surv(analytic_phi,
             xL_1,
             vTy,
             nu_norm,
             sig, // noise variance
-            alpha_1); // ideally this is <= 0
+            alpha_1,
+            lower_trunc); // ideally this is <= 0
 
     if (f_lower_neg < 0){
         f_lower_pos = tn_lower_surv(analytic_phi,
@@ -406,7 +443,8 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
                                     vTy,
                                     nu_norm,
                                     sig, // noise variance
-                                    alpha_1);
+                                    alpha_1,
+                                    lower_trunc);
         while (f_lower_pos < 0 && xL_2 <= 1E3){
             delta = 0.01*std::max(1e-3, fabs(f_lower_pos));
             xL_2 = xL_2+delta;
@@ -415,7 +453,8 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
                                         vTy,
                                         nu_norm,
                                         sig, // noise variance
-                                        alpha_1);
+                                        alpha_1,
+                                        lower_trunc);
         }
     }else{
         while (f_lower_neg > 0 && xL_1 >= -1E3){
@@ -427,7 +466,8 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
                                     vTy,
                                     nu_norm,
                                     sig, // noise variance
-                                    alpha_1);
+                                    alpha_1,
+                                    lower_trunc);
         }
     }
 
@@ -436,7 +476,8 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
                             vTy,
                             nu_norm,
                             sig, // noise variance
-                            alpha_2);
+                            alpha_2,
+                            lower_trunc);
 
     if (f_upper_neg < 0){
         f_upper_pos = tn_upper_surv(analytic_phi,
@@ -444,7 +485,8 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
                                     vTy,
                                     nu_norm,
                                     sig, // noise variance
-                                    alpha_2);
+                                    alpha_2,
+                                    lower_trunc);
 
         while (f_upper_pos < 0 && xR_2 <= 1E3){
             delta = 0.01*std::max(1e-3, (double) fabs(f_upper_pos));
@@ -454,7 +496,8 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
                                         vTy,
                                         nu_norm,
                                         sig, // noise variance
-                                        alpha_2);
+                                        alpha_2,
+                                        lower_trunc);
         }
 
     }else{
@@ -466,12 +509,14 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
                                         vTy,
                                         nu_norm,
                                         sig, // noise variance
-                                        alpha_2);
+                                        alpha_2,
+                                        lower_trunc);
         }
     }
 
     // xL_1, xL_2, xR_1, xR_2 are ready to pass into the root finding eqs
     // Bisection to find lower_CI
+//    printf("bisection %f, %f, %f, %f \n",xL_1,xL_2,xR_1,xR_2);
     double f_midpoint, f_1;
     while (xL_2 - xL_1 >= BISECTION_EPS){
         double mid_point = (xL_1 + xL_2)/2.0;
@@ -480,14 +525,16 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
                             vTy,
                             nu_norm,
                             sig, // noise variance
-                            alpha_1);
+                            alpha_1,
+                            lower_trunc);
 
         f_midpoint = tn_lower_surv(analytic_phi,
                                           mid_point,
                                           vTy,
                                           nu_norm,
                                           sig,
-                                          alpha_1);
+                                          alpha_1,
+                                   lower_trunc);
 
         if (f_1*f_midpoint>=0){ // same sign
             xL_1 = mid_point;
@@ -506,14 +553,16 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
                             vTy,
                             nu_norm,
                             sig,
-                            alpha_2);
+                            alpha_2,
+                            lower_trunc);
 
         f_midpoint = tn_upper_surv(analytic_phi,
                                    mid_point,
                                    vTy,
                                    nu_norm,
                                    sig, // noise variance
-                                   alpha_2);
+                                   alpha_2,
+                                   lower_trunc);
 
         if (f_1*f_midpoint>=0){ // same sign
             xR_1 = mid_point;
@@ -525,6 +574,7 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
     upper_CI = (xR_1 + xR_2)/2.0;
 
     std::vector<double> CI_result = {lower_CI,upper_CI};
-    //printf("lower_CI %f upper_CI %f \n",lower_CI,upper_CI);
+
+//    printf("lower_CI %f upper_CI %f \n",lower_CI,upper_CI);
     return (CI_result);
 }

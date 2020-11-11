@@ -1,38 +1,44 @@
-#' Estimate spikes via L0 segmentation
+#' Estimate spikes with an L0 penalty
 #'
-#' @param dat observed data
-#' @param decay_rate specifies AR(1) decay rate
-#' @param tuning_parameter L0 segmentation: tuning parameter \eqn{\lambda};
-#'   Binary segmentation: number of segments K.
-#' @param functional_pruning_out boolean specifying whether, in the case of L0
-#'   segmentation, cost functions are returned. Defaults to FALSE.
+#' @param dat Numeric vector; observed data.
+#' @param decay_rate Numeric; specified AR(1) decay rate \eqn{\gamma}, a 
+#' number between 0 and 1 (non-inclusive).
+#' @param tuning_parameter Numeric; tuning parameter \eqn{\lambda} for 
+#' L0 spike estimation, a nonnegative number.
+#' @param functional_pruning_out Logical; if TRUE, return
+#' cost functions for L0 spike estimation. Defaults to FALSE.
 #'
 #'
-#' @return For L0 segmentation, returns a list with elements:
-#' @return \code{estimated_means} estimated means
-#' @return \code{change_pts} the set of changepoints
-#' @return \code{cost} the cost at each time point
-#' @return \code{n_intervals} the number of piecewise quadratics used at each
+#' @return For L0 spkie estimation, returns a list with elements:
+#' @return \code{estimated_calcium} Estimated calcium levels
+#' @return \code{spikes} The set of estimated spikes
+#' @return \code{spike_sign} Signs associated with the set of estimated spikes
+#' @return \code{cost} The cost at each time point
+#' @return \code{n_intervals} The number of piecewise quadratics used at each
 #'   point
-#' @return \code{piecewise_square_losses} dataframe of optimal cost functions
+#' @return \code{piecewise_square_losses} Dataframe of optimal cost functions
 #'   Cost_s*(mu) for s = 1,..., T.
 #'
 #' @details
 #'
 #' Estimation:
-#'
-#' This function estimates changepoints via L0 or binary segmentation based on
-#' noisy observations \eqn{y_t, t = \ldots, T}. In the case of L0 segmentation,
-#' changepoints are estimated by solving the optimization problem
+#'  This function estimates spikes via an L0 penalty based on the following 
+#'  optimization problem:
+#' \deqn{minimize{c_1,...,c_T\geq 0} 0.5 \sum_{t=1}^T ( y_t - c_t )^2 + \lambda \sum_t=2^T 
+#' 1(c_t != \gamma c_t-1) },
+#' where \eqn{y_t} is the observed fluorescence at the t-th timestep.
+#' 
 #'
 #' @examples
-#'
+#' 
 #' ### Generate sample data
-#'
+#' sim <- simulate_ar1(n = 500, gam = 0.998, poisMean = 0.01, sd = 0.05, seed = 1)
+#' fit_spike <- spike_estimates(sim$fl, 
+#' decay_rate = 0.998, tuning_parameter = 0.01)
+#' 
 #' @references
-#'
-#' Jewell, S., Fearnhead, P., and Witten, D. (2019+). Testing for a change in
-#' mean after changepoint detection. Technical report.
+#' Jewell, S. W., Hocking, T. D., Fearnhead, P., & Witten, D. M. (2019). 
+#' Fast nonconvex deconvolution of calcium imaging data. Biostatistics. 
 #'
 #' Maidstone, R., Hocking, T., Rigaill, G., & Fearnhead, P. (2017). On optimal
 #' multiple changepoint algorithms for large data. Statistics and Computing,
@@ -79,7 +85,6 @@ spike_estimates <- structure(function(dat, decay_rate, tuning_parameter, functio
   
   spike_sign <- rep("Positive", times = length(change_pts))
   spike_sign[est_spike_size<0] <- "Negative"
-  
   out <-
       list(
         estimated_means = estimated_means,

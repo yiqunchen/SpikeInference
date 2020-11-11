@@ -83,28 +83,32 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
                     double decay_rate, // AR1 decay rate
                     double sig, // noise variance
                     bool two_sided, // two sided p-val?
-                    double mu);
+                    double mu,
+                    double lower_trunc);
 
 // new helper functions for CI computation
 double calc_surv_prob(PiecewiseSquareLoss * analytic_phi,
                       double mu, // mean of the truncated gaussian
                       double vTy, //
                       double nu_norm,
-                      double sig);
+                      double sig,
+                      double lower_trunc);
 
 double tn_lower_surv(PiecewiseSquareLoss * analytic_phi,
                      double mu, // mean of the truncated gaussian
                      double vTy, //
                      double nu_norm,
                      double sig, // noise variance
-                     double alpha_1);
+                     double alpha_1,
+                     double lower_trunc);
 
 double tn_upper_surv(PiecewiseSquareLoss * analytic_phi,
                      double mu, // mean of the truncated gaussian
                      double vTy,
                      double nu_norm,
                      double sig, // noise variance
-                     double alpha_2);
+                     double alpha_2,
+                     double lower_trunc);
 
 std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
                              int thj, // changepoint of interest
@@ -113,5 +117,5 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
                              double *data_vec, // original data
                              double decay_rate, // AR1 decay rate
                              double sig, // noise variance
-                             double alpha // desired type I error rate control, default to 0.05
-                            );
+                             double alpha, // desired type I error rate control, default to 0.05
+                             double lower_trunc);
