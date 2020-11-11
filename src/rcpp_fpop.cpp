@@ -1,6 +1,7 @@
 #include "fpop.h"
 #include "fpop_inference.h"
 #include "funPieceList.h"
+#include "selective_inference.h"
 #include "utils.h"
 #include <vector>
 #include <Rcpp.h>
@@ -42,7 +43,6 @@ NumericMatrix convert_loss(PiecewiseSquareLoss *p, int s) {
  * Estimation functions
  *
  */
-
 
 // [[Rcpp::export(name = ".fpop")]]
 List fpop_interface2
@@ -94,8 +94,8 @@ List fpop_inference_interface_recycle
          bool return_ci = true,
          bool two_sided = false,
          double alpha = 0.05,
-         double mu = 0) {
-
+         double mu = 0,
+         double lower_trunc = -1e6) {
 
   double *data_ptr = data.begin();
   int data_count = data.size();
@@ -109,8 +109,8 @@ List fpop_inference_interface_recycle
   double *data_vec_rev = reverse_data(data_ptr, data_count);
   PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
 
-  free(data_vec_rev); //free reverse vector
-  std::list<int> ll = extract_changepoints(cost_model_fwd, data_count);
+  //free(data_vec_rev); //free reverse vector
+  std::list<int> ll = extract_changepoints(cost_model_fwd, data_count); //extract changepoints
   std::list<int>::iterator it;
 
   const int ncols = 5;// changepoint + 1 (in R notation), pval, approximation error, LCB, UCB
@@ -127,23 +127,29 @@ List fpop_inference_interface_recycle
     int it = ll_vec[k];
     try {
       if (it > 0) {
-        FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, data_ptr, data_count, decay_rate, penalty, it,
-                window_size, sig, return_ci, two_sided, alpha, mu);
-        out_mat(row_i, 0) = out.thj + 1;
-        out_mat(row_i, 1) = out.pval;
-        out_mat(row_i, 2) = out.approximation_error;
-        if (return_ci){
-            out_mat(row_i, 3) = out.confidence_interval[0];
-            out_mat(row_i, 4) = out.confidence_interval[1];
-        }
+          double *v = construct_v(data_count, it, window_size, decay_rate);
+          double vTy = construct_vTy(data_ptr, v, data_count, it, window_size);
+          free(v);
+          if (vTy >= lower_trunc) {
+              FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, data_ptr,
+                                                                  data_count, decay_rate, penalty, it,
+                                                                  window_size, sig, return_ci, two_sided, alpha, mu,
+                                                                  lower_trunc);
+              out_mat(row_i, 0) = out.thj + 1;
+              out_mat(row_i, 1) = out.pval;
+              out_mat(row_i, 2) = out.approximation_error;
+              if (return_ci) {
+                  out_mat(row_i, 3) = out.confidence_interval[0];
+                  out_mat(row_i, 4) = out.confidence_interval[1];
+              }
+              if (return_dev) {
+                  phi_intervals[row_i] = convert_loss(&out.model, 0);
+              } else {
+                  phi_intervals[row_i] = nullptr;
+              }
 
-        if (return_dev) {
-          phi_intervals[row_i] = convert_loss(&out.model, 0);
-        } else {
-          phi_intervals[row_i] = nullptr;
-        }
-
-        row_i++;
+              row_i++;
+          }
       }
     } catch (std::exception &ex) {
       forward_exception_to_r(ex);
@@ -152,6 +158,6 @@ List fpop_inference_interface_recycle
     }
   }
 
-  return List::create(out_mat, phi_intervals);
+  return List::create(out_mat, phi_intervals, row_i);
 
 }

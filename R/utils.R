@@ -1,3 +1,16 @@
+MAD_var_estimator <- function(y, decay_rate){
+  lag_1_diff <- (y[2:length(y)]-decay_rate*y[1:(length(y)-1)])/sqrt(2)
+  sigma_hat <- stats::mad(lag_1_diff)
+  return(sigma_hat)
+}
+
+JNFL_var_estimator <- function(y, decay_rate){
+  lag_1_diff <- (y[2:length(y)]-decay_rate*y[1:(length(y)-1)])/sqrt(2)
+  lag_2_diff <- (y[3:length(y)]-decay_rate*decay_rate*y[1:(length(y)-2)])/sqrt(2)
+  sigma_hat <- sqrt(max(0, 2*var(lag_1_diff)-var(lag_2_diff)))
+  return(sigma_hat)
+}
+
 #' @export
 construct_v <- function(n, thj, window_size, gam) {
   tL <- max(1, thj-window_size+1)
@@ -12,10 +25,6 @@ construct_v <- function(n, thj, window_size, gam) {
   return(v)
 }
 
-
-
-
-#' @export
 nearest_changepoint <- function(pt, cps) {
   M <- length(pt)
   out <- numeric(M)
@@ -25,7 +34,6 @@ nearest_changepoint <- function(pt, cps) {
   return(out)
 }
 
-#' @export
 loss_function_n_spikes <- function(lam, gcamp, decay_rate, num_spikes_target){
   fit <- spike_estimates(dat = gcamp, decay_rate = decay_rate, tuning_parameter = lam, 
                          functional_pruning_out = FALSE)
@@ -34,7 +42,9 @@ loss_function_n_spikes <- function(lam, gcamp, decay_rate, num_spikes_target){
   return(spike_num_diff)
 }
 
-#' @export
+###
+### 
+###
 one_d_binary_search <- function(gcamp, decay_rate, lam_min, lam_max, 
                                 num_spikes_target, max_iters=50, tolerance=5){
   iter_i <- 0
@@ -107,40 +117,6 @@ fpop_inference_intervals_formatter <- function(phi_list) {
   return(phi_outs) 
 }
 
-#' Plot the solution to an L0 segmentation problem
-#' @param x output from running estimate_spikes
-#' @param xlims optional parameter to specify the x-axis limits
-#' @param ... arguments to be passed to methods
-#'
-#' @seealso
-#' \code{\link{estimate_spikes}},
-#' \code{\link{estimate_calcium}},
-#' @export
-#' @import graphics
-#'
-plot.SpikeInference_estimated_changes <- function(x, xlims = NULL, ...) {
-  if (sum(is.na(x$estimated_calcium))) {
-    warning("Calcium concentration must be estimated before plotting. Automatically running estimate_calcium(fit), however estimated_calicum is not saved.)")
-    x <- estimate_calcium(x)
-  }
-  ind <- 1:length(x$dat)
-  rng <- range(c(x$dat, x$estimated_calcium))
-  ylims <- rng 
-  if (is.null(xlims)){
-    plot(ind, x$dat, cex = 0.5, pch = 20, col = "darkgrey", ylab = "", ylim = ylims, xlab = "Index")
-  } else {
-    plot(ind, x$dat, cex = 0.5, pch = 20, col = "darkgrey", ylab = "", ylim = ylims, xlim = xlims, xlab = "Time")
-  }
-  # estimated calcium curve
-  lines(ind, x$estimated_calcium, col = "blue", lwd = 2)
-
-  hh <- 0.01 * diff(ylims)
-  for (spike in x$change_pts)
-  {
-    segments(x0 = ind[spike], x1 = ind[spike], y0 = ylims[1] - hh,
-             y1 = hh + ylims[1], col = "blue", lwd = 1)
-  }
-}
 
 #' Plot simulated data
 #' @param x output data from simulate_ar1

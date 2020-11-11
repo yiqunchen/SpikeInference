@@ -3,17 +3,17 @@
 #' @details
 #' Simulate fluorescence trace based on simple AR(1) generative model
 #'
-#' y_t = c_t + eps, eps ~ N(0, sd)
+#' \deqn{y_t = c_t + \epsilon_t, \epsilon_t \sim N(0, \sigma^2)}
 #'
-#' c_t = gam * c_{t-1} + s_t
+#' \deqn{c_t = gam * c_{t-1} + s_t}
 #'
-#' s_t ~ Pois(poisMean)
+#' \deqn{s_t ~ Pois(poisMean)}
 #'
-#' @param n number of timesteps
-#' @param seed random seed
-#' @param gam AR(1) decay rate
-#' @param poisMean mean for Poisson distributed spikes
-#' @param sd standard deviation
+#' @param n Numeric; number of timesteps
+#' @param seed Numeric; random seed
+#' @param gam Numeric; AR(1) decay rate
+#' @param poisMean Numeric; mean for Poisson distributed spikes
+#' @param sd Numeric; standard deviation
 #'
 #' @return spikes, fluorescence, and calcium concentration
 #'
@@ -26,6 +26,8 @@
 simulate_ar1 <- function(n, gam, poisMean, sd, seed)
 {
   set.seed(seed)
+  stopifnot(poisMean>=0)
+  stopifnot(sd>=0)
   eta <- numeric(n)
   c <- numeric(n)
   f <- numeric(n)

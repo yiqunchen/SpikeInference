@@ -1,3 +1,6 @@
+
+
+
 expand_fpop_intervals <- function(df, PLOT_MIN, PLOT_MAX, ni) {
   n_segments <- dim(df)[[1]]
   df_plot <- NULL
