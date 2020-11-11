@@ -596,16 +596,16 @@ void paper_example(){
 }
 
 int main(int argc, char *argv[]) {
- toy_example_1();
+ //toy_example_1();
  //toy_example_2();
  //toy_example_3();
  //toy_example_4();
  //toy_example_5();
-
+printf("exp %f \n", exp(-1*50));
  int test_times = 1;
  //paper_example();
  for (int i = 0; i < test_times; i++){
-     random_example_test(100, 0.95, 0.01, 1,true, 0.01, 2, i, false);
+     random_example_test(100, 0.95, 0.01, 1,true, 1, 20, i, false);
   }
  //specific_example_4();
 //specific_example_4();

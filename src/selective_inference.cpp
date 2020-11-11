@@ -256,6 +256,8 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
   double * v = construct_v(data_count, thj, window_size, decay_rate);
   double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
   double nu_norm = construct_vTy(v, v, data_count, thj, window_size);
+
+
   SquareLossPieceList::iterator it;
   free(v); // free memory
   // numerically safe
@@ -263,7 +265,8 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
   double d1 = -INFINITY;
   double arg2;
   // truncation constant set to be 10||nu||sigma
-  double C_stable = 0;//std::max(10*sqrt(nu_norm*sig),fabs(vTy));
+  double C_stable = 0;//std::max(20*sqrt(nu_norm*sig),fabs(vTy));
+  double p_val_result;
 
   for (it = analytic_phi->piece_list.begin(); it != analytic_phi->piece_list.end(); it++) {
     if ((it->data_i == 1) & (it -> max_mean > lower_trunc)){ // this segment is contained and above the truncation limit
@@ -301,23 +304,20 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
               n1 = log_sum_exp(n1, arg2);
           }
       }
-
     }
-
   }
 
-  double p_val_result;
-  printf("p_val_result %f\n",p_val_result);
 
-  if (isnan(exp(n1-d1))){
-//      printf("n1 %f\n",n1);
-//      printf("d1 %f\n",d1);
-      p_val_result=1.0; // numerical instability -> conservative
+//  printf("p_val_result %f\n",p_val_result);
 
-  }else{
-      p_val_result = exp(n1 - d1);
-  }
-  return (p_val_result);
+
+    if (isnan(exp(n1-d1))){
+          p_val_result=0.0; // numerical instability -> conservative
+      }else{
+          p_val_result = exp(n1 - d1);
+      }
+//    printf("p_val_result %f\n",p_val_result);
+    return (p_val_result);
 }
 
 
@@ -329,7 +329,7 @@ double calc_surv_prob(PiecewiseSquareLoss * analytic_phi,
                     double lower_trunc) {
 
     SquareLossPieceList::iterator it;
-
+    double p_val_result;
     // numerically safe
     double n1 = -INFINITY;
     double d1 = -INFINITY;
@@ -350,10 +350,10 @@ double calc_surv_prob(PiecewiseSquareLoss * analytic_phi,
         }
     }
 
-    double p_val_result;
+
 
     if (isnan(exp(n1-d1))){
-        p_val_result=1.0;
+        p_val_result=0.0;
     }else{
         p_val_result = exp(n1 - d1);
     }
@@ -574,7 +574,6 @@ std::vector<double> compute_CI(PiecewiseSquareLoss * analytic_phi,
     upper_CI = (xR_1 + xR_2)/2.0;
 
     std::vector<double> CI_result = {lower_CI,upper_CI};
-
 //    printf("lower_CI %f upper_CI %f \n",lower_CI,upper_CI);
     return (CI_result);
 }
