@@ -1,4 +1,4 @@
-# SpikeInference <img src="spike_inference_hex.png" align="right" width="200px"/>
+# SpikeInference <img src="spike_inference_hex.png" align="right" width="150px"/>
 Quantifying uncertainty for spikes estimated from calcium imaging data
 
 `SpikeInference` is an `R` package for quantifying uncertainty (i.e., obtaining valid p-values and confidence intervals) for spikes estimated from calcium imaging data via an <img src="https://render.githubusercontent.com/render/math?math=\ell_0"> penalized algorithm described in Jewell and Witten (2018) and Jewell et al. (2019).
@@ -12,7 +12,7 @@ devtools::install_github("yiqunchen/SpikeInference")
 library(SpikeInference)
 ```
 
-Note that `SpikeInference` imports Rcpp. If the installation process fails on MAC OS due to issues on `R` compiler tools, this [post](https://thecoatlessprofessor.com/programming/cpp/r-compiler-tools-for-rcpp-on-macos/) might provide a useful reference.
+Note that `SpikeInference` imports the package `Rcpp`. If the installation process fails on MAC OS due to issues related to `R` and `cpp` compiler tools, this [post](https://thecoatlessprofessor.com/programming/cpp/r-compiler-tools-for-rcpp-on-macos/) might provide some useful information.
 
 ## Use
 
@@ -23,8 +23,6 @@ devtools::install_github("yiqunchen/SpikeInference",
 	build_vignette = TRUE, build_opts = c())
 
 ```
-
-Note that R does not allow variable names to start with numbers. Sometimes, when going directly from QIIME2 to phyloseq objects, taxa names will be a large string starting with numbers. To clean these taxa names for use with corncob, use  `clean_taxa_names(my_phyloseq_object)`, see `?clean_taxa_names` for details.
 
 ## Citation
 
