@@ -21,7 +21,6 @@ The vignette demonstrates example usage of all main functions. Please [file an i
 # install.packages("devtools")
 devtools::install_github("yiqunchen/SpikeInference", 
 	build_vignette = TRUE, build_opts = c())
-
 ```
 
 ## Citation

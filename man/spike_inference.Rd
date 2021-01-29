@@ -11,7 +11,7 @@ spike_inference(
   window_size,
   sig = NULL,
   return_conditioning_sets = FALSE,
-  return_ci = TRUE,
+  return_ci = FALSE,
   two_sided = FALSE,
   alpha = 0.05,
   mu = 0,

@@ -3,8 +3,8 @@ Maintainer: Yiqun Chen <yiqunc@uw.edu>
 Author: Yiqun Chen, Sean Jewell
 Version: 1.0
 License: GPL-3
-Title: Testing for a Change in Calcium Concentration after Spike Inference 
-Description: An implementation of selective inference for spikes detected via an L0 penalty as described in Chen et al. (2020)
+Title: Quantifying uncertainty for spikes estimated from calcium imaging data
+Description: An implementation of selective inference for spikes detected via an L0 penalty as described in Chen et al (2021)
 Depends: R (>= 3.5)
 Imports: 
     Rcpp, latex2exp, ggplot2, dplyr, magrittr

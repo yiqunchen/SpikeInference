@@ -4,7 +4,7 @@
 \alias{simulate_ar1}
 \title{Simulate fluorescence trace based on simple AR(1) generative model}
 \usage{
-simulate_ar1(n, gam, poisMean, sd, seed)
+simulate_ar1(n, gam, poisMean, sd, seed, c0 = 0)
 }
 \arguments{
 \item{n}{Numeric; number of timesteps}

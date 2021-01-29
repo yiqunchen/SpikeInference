@@ -5,7 +5,7 @@
     .Call(`_SpikeInference_fpop_interface2`, data, gam, penalty, min_mean, max_mean, cost_mat_r, end_vec_r, mean_vec_r, intervals_mat_r)
 }
 
-.fpop_inference <- function(data, decay_rate, penalty, window_size, sig, return_dev = 0L, return_ci = TRUE, two_sided = FALSE, alpha = 0.05, mu = 0, lower_trunc = -1e6) {
+.fpop_inference <- function(data, decay_rate, penalty, window_size, sig, return_dev = 0L, return_ci = FALSE, two_sided = FALSE, alpha = 0.05, mu = 0, lower_trunc = -1e6) {
     .Call(`_SpikeInference_fpop_inference_interface_recycle`, data, decay_rate, penalty, window_size, sig, return_dev, return_ci, two_sided, alpha, mu, lower_trunc)
 }
 

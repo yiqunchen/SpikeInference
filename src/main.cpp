@@ -270,14 +270,14 @@ void toy_example_5(){
     double y[data_count] = {3, 2.7, 2.43, 2.18, 2.7, 2.43};
 
     // print out y data
-    double penalty = 1;
+    double penalty = 0.1;
     for (auto x : y) {printf("%f \t", x);}
     printf("\n");
 
-    int thj = 2;
-    int window_size = 1;
+    int thj = 3;
+    int window_size = 2;
     double decay_rate = 0.9;
-    const double sig = 1;
+    const double sig = 0.5;
 
     // forward pass
     PiecewiseSquareLosses cost_model_fwd = fpop(y, data_count, decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
@@ -286,7 +286,7 @@ void toy_example_5(){
     PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
     FpopInference out = fpop_analytic_inference_recycle(&cost_model_fwd, &cost_model_rev, y, data_count, decay_rate,
             penalty, thj, window_size, sig, true, false, 0.05, 0, -INFINITY);
-
+    printf("p val %f", out.pval);
 //    double * v_test = construct_v(data_count, thj, window_size, decay_rate);
 
 //    for(int data_i=0; data_i < data_count; data_i++){
@@ -295,7 +295,7 @@ void toy_example_5(){
 //    }
 //    double vTy = construct_vTy(y, v_test, data_count, thj, window_size);
 
-    printf("true vTc %f \n", y[thj+1]-decay_rate*y[thj]);
+//    printf("true vTc %f \n", y[thj+1]-decay_rate*y[thj]);
 
 
 //    printf("Cost model, longer data, 1 true cp \n");
@@ -552,7 +552,7 @@ void paper_example(){
     double y[data_count] = {8, 4, 2, 3};
 
     // print out y data
-    double penalty = 1;
+    double penalty = 0.1;
     //for (auto x : y) {printf("%f \t", x);}
     //printf("\n");
 
@@ -600,13 +600,13 @@ int main(int argc, char *argv[]) {
  //toy_example_2();
  //toy_example_3();
  //toy_example_4();
- //toy_example_5();
-printf("exp %f \n", exp(-1*50));
+ toy_example_5();
+//printf("exp %f \n", exp(-1*50));
  int test_times = 1;
  //paper_example();
- for (int i = 0; i < test_times; i++){
-     random_example_test(100, 0.95, 0.01, 1,true, 1, 20, i, false);
-  }
+ //for (int i = 0; i < test_times; i++){
+ //    random_example_test(100, 0.95, 0.01, 1,true, 1, 20, i, false);
+ // }
  //specific_example_4();
 //specific_example_4();
  return 0;

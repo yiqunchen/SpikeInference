@@ -152,43 +152,6 @@ plot.simdata <- function(x, xlims = NULL, ...) {
   }
 }
 
-#' Plot number of spikes vs. tuning parameter
-#' @param x output from running estimate_spike_paths
-#' @param xlims optional parameter to specify the x-axis limits
-#' @param ... arguments to be passed to methods
-#'
-#' @seealso
-#' \code{\link{estimate_spike_paths}},
-#' \code{\link{estimate_spikes}},
-#' \code{\link{estimate_calcium}},
-#' @export
-#' @import graphics
-#'
-plot.estimated_spike_paths <- function(x, xlims = NULL, ...) {
-  ind <- sort.int(x$path_stats[, 1], index.return = T)$ix
-  
-  xx <- x$path_stats[ind, 1]
-  y <- x$path_stats[ind, 2]
-  
-  if (x$approximate_path) {
-    title_str = "Approximate # spikes vs tuning parameter"
-  } else {
-    title_str = "# spikes vs tuning parameter"
-  }
-  
-  if (is.null(xlims)) {
-    plot(xx,y,type="n", ylab = "Number of spikes",
-         xlab = "Tuning parameter (lambda)", main = title_str)
-  } else {
-    plot(xx,y,type="n", xlim = xlims, ylab = "Number of spikes",
-         xlab = "Tuning parameter (lambda)", main = title_str)  
-  }
-  
-  segments(xx[-length(xx)],y[-length(xx)],xx[-1],y[-length(xx)])
-  points(xx[-length(xx)],y[-length(xx)],pch=16)
-  points(xx[-1],y[-length(xx)],pch=1)
-}
-
 #' Print simulated data
 #' @param x simulated data
 #' @param ... arguments to be passed to methods

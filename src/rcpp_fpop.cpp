@@ -91,7 +91,7 @@ List fpop_inference_interface_recycle
          int window_size,
          double sig,
          int return_dev = 0,
-         bool return_ci = true,
+         bool return_ci = false,
          bool two_sided = false,
          double alpha = 0.05,
          double mu = 0,
@@ -109,21 +109,17 @@ List fpop_inference_interface_recycle
   double *data_vec_rev = reverse_data(data_ptr, data_count);
   PiecewiseSquareLosses cost_model_rev = fpop(data_vec_rev, data_count, 1 / decay_rate, penalty, MACHINE_MIN, MACHINE_MAX);
 
-  //free(data_vec_rev); //free reverse vector
   std::list<int> ll = extract_changepoints(cost_model_fwd, data_count); //extract changepoints
   std::list<int>::iterator it;
 
   const int ncols = 5;// changepoint + 1 (in R notation), pval, approximation error, LCB, UCB
-  const int nrows = ll.size() - 1;
+  const int nrows =  ll.size() ;
   NumericMatrix out_mat(nrows, ncols);
   List phi_intervals(nrows);
 
   int row_i = 0;
-  //omp_set_num_threads(3); //make this an argument?
-  //#pragma omp parallel for
   std::vector<int> ll_vec(ll.begin(), ll.end());
   for (int k = 0; k < ll_vec.size(); ++k){
-  //for (it = ll.begin(); it != ll.end(); ++it) {
     int it = ll_vec[k];
     try {
       if (it > 0) {
@@ -147,7 +143,6 @@ List fpop_inference_interface_recycle
               } else {
                   phi_intervals[row_i] = nullptr;
               }
-
               row_i++;
           }
       }

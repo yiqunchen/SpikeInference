@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <fstream>
 #include <math.h>
+#include "funPieceList.h"
 #include <stdexcept>
 
 void print_array(double *ary, int data_count) {
@@ -167,19 +168,33 @@ double log_sum_exp(double logx, double logy) {
 
 // https://cran.r-project.org/web/packages/Rmpfr/vignettes/log1mexp-note.pdf
 double log1mexp(double a) {
-        if (a >= 0 && a <= log(2)) {
+//    printf("a %f \n",a);
+    if (a >= 0 && a <= log(2)) {
           return(log(-expm1(-a)));
         } else if (a > log(2)) {
           return(log1p(-exp(-a)));
         } else {
-          std::range_error("log1mexp:: input a must be positive");
+            if(a >= (-1E-6)){
+                return(log(-expm1(1E-6)));
+            }else {
+                std::range_error("log1mexp:: input a must be positive");
+            }
         }
 }
 
 
 double log_subtract(double x, double y) {
-if (x < y) {
-  std::range_error("log_subtract:: cannot take log of (-)ve number");
-}
-  return(x + log1mexp(fabs(y - x)));
+// x should be larger than y; a couple possibilites: both finite ok
+// x finite, y -inf; x +inf & y -inf.
+    if (isfinite(x) && isfinite(y)){
+        if (x < (y - 1E-6)) {
+            //printf("x %f, y %f\n",x ,y);
+            std::range_error("log_subtract:: cannot take log of (-)ve number");
+        }
+        return(x + log1mexp(fabs(y - x)));
+    } else if (y < 0 && (!isfinite(y))){
+        return(x);
+    } else{
+        return(0);
+    }
 }

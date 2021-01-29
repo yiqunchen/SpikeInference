@@ -121,7 +121,7 @@
 #' @export
 spike_inference <- structure(function(dat, decay_rate, tuning_parameter, 
                                       window_size, sig = NULL, 
-                                      return_conditioning_sets = FALSE, return_ci = TRUE, 
+                                      return_conditioning_sets = FALSE, return_ci = FALSE, 
                                       two_sided = FALSE, alpha = 0.05, mu = 0, lower_trunc = -Inf
                                     ){
   stopifnot(decay_rate > 0)
@@ -144,6 +144,8 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter,
                                                  functional_pruning_out = FALSE)
     sig <- var(dat-fit_spike$estimated_calcium)
     }
+    
+    #sig <- max(sig,1e-5) #truncate sigma2 for numerical stability
     
     out_fpop_inference <- .fpop_inference(dat, decay_rate, tuning_parameter, window_size, sig,
                                           return_conditioning_sets, return_ci, two_sided, alpha,

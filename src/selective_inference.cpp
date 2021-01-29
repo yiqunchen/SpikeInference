@@ -257,7 +257,6 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
   double vTy = construct_vTy(data_vec, v, data_count, thj, window_size);
   double nu_norm = construct_vTy(v, v, data_count, thj, window_size);
 
-
   SquareLossPieceList::iterator it;
   free(v); // free memory
   // numerically safe
@@ -267,52 +266,50 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
   // truncation constant set to be 10||nu||sigma
   double C_stable = 0;//std::max(20*sqrt(nu_norm*sig),fabs(vTy));
   double p_val_result;
+//  printf("sqrt(nu_norm * sig) %f", sqrt(nu_norm * sig));
 
   for (it = analytic_phi->piece_list.begin(); it != analytic_phi->piece_list.end(); it++) {
     if ((it->data_i == 1) & (it -> max_mean > lower_trunc)){ // this segment is contained and above the truncation limit
 
       it -> min_mean = std::max(it -> min_mean, lower_trunc);
       double a, b;
-      a = pnorm_log((it -> max_mean - mu ) / sqrt(nu_norm * sig) );
-      b = pnorm_log((it -> min_mean - mu ) / sqrt(nu_norm * sig) );
+      a = pnorm_log((it -> max_mean - mu ) / sqrt(nu_norm * sig));
+      b = pnorm_log((it -> min_mean - mu ) / sqrt(nu_norm * sig));
+//      printf("max %f, min %f, sig %f \n", it -> max_mean, it -> min_mean,  sqrt(nu_norm * sig));
 
-//      printf("a %f\n",a);
-//      printf("b %f\n",b);
-//      printf("max_mean %f\n",it -> max_mean );
-//      printf("min_mean %f\n",it -> min_mean );
+
       arg2 = log_subtract(a, b);
+      //printf("a %f, b %f, arg2 %f \n", a, b, arg2);
+
       d1 = log_sum_exp(d1, arg2);
-//      printf("d1 %f\n",d1);
-//      printf("arg2 %f\n",arg2);
 
         if (two_sided){
           if ((it->max_mean - mu) >= (ABS(vTy)-mu)) {
-              arg2 = log_subtract(pnorm_log((it -> max_mean - mu) / sqrt(nu_norm * sig) ),
+              arg2 = log_subtract(pnorm_log((it -> max_mean - mu) / sqrt(nu_norm * sig)),
                                   pnorm_log(std::max(it -> min_mean - mu, ABS(vTy)-mu) / sqrt(nu_norm * sig)));
               n1 = log_sum_exp(n1, arg2);
           }
           if ((it->min_mean - mu) <= (-1 * ABS(vTy)-mu)) {
-              arg2 = log_subtract(pnorm_log(std::min(it -> max_mean - mu , -ABS(vTy) - mu) / sqrt(nu_norm * sig) ),
+              arg2 = log_subtract(pnorm_log(std::min(it -> max_mean - mu , -ABS(vTy) - mu) / sqrt(nu_norm * sig)),
                                   pnorm_log((it -> min_mean - mu) / sqrt(nu_norm * sig)));
               n1 = log_sum_exp(n1, arg2);
           }
-      } else {//one sided p-value
+      } else { //one sided p-value
           if ((it->max_mean-mu) >= (vTy-mu)) {
-              arg2 = log_subtract(pnorm_log((it -> max_mean - mu) / sqrt(nu_norm * sig) ),
-                                  pnorm_log(std::max(it -> min_mean - mu, (vTy-mu)) / sqrt(nu_norm * sig) ));
-//              printf("arg2 %f \n",arg2);
+              arg2 = log_subtract(pnorm_log((it -> max_mean - mu) / sqrt(nu_norm * sig)),
+                                  pnorm_log(std::max(it -> min_mean - mu, (vTy-mu)) / sqrt(nu_norm * sig)));
               n1 = log_sum_exp(n1, arg2);
           }
       }
+
     }
   }
 
 
-//  printf("p_val_result %f\n",p_val_result);
-
+//   printf("n1 %f d1 %f\n",n1,d1);
 
     if (isnan(exp(n1-d1))){
-          p_val_result=0.0; // numerical instability -> conservative
+          p_val_result = 0.0; // numerical instability; long tail
       }else{
           p_val_result = exp(n1 - d1);
       }
@@ -351,13 +348,12 @@ double calc_surv_prob(PiecewiseSquareLoss * analytic_phi,
     }
 
 
-
     if (isnan(exp(n1-d1))){
         p_val_result=0.0;
     }else{
         p_val_result = exp(n1 - d1);
     }
-    return (p_val_result);
+    return (exp(n1 - d1));
 
 }
 

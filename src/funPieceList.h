@@ -3,7 +3,7 @@
 #include <list>
 #include <vector>
 #include <stdexcept>
-#define NEWTON_EPSILON 1e-20
+#define NEWTON_EPSILON 1e-10
 #define DIFF_EPS 1e-3
 #define BISECTION_EPS 1e-3
 #define CI_LIMIT 1e2
