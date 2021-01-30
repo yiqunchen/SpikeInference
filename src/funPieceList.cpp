@@ -32,7 +32,7 @@ bool SquareLossPiece::has_two_roots(double equals){
     // Square * u ^ 2 +
     // Linear * u + Constant = equals ?
     double delta = Linear * Linear - 4 * Square * (Constant - equals);
-    if (delta > 0 && !isinf(delta)) {
+    if (delta > 0) {
         return true;
     } else {
         return false;
