@@ -1,4 +1,4 @@
-# SpikeInference <img src="https://github.com/yiqunchen/SpikeInference/blob/main/spike_inference_hex.png" align="right" width="150px"/>
+# SpikeInference <img src="spike_inference_hex.png" align="right" width="150px"/>
 Quantifying uncertainty for spikes estimated from calcium imaging data
 
 `SpikeInference` is an `R` package for quantifying uncertainty (i.e., obtaining valid p-values and confidence intervals) for spikes estimated from calcium imaging data via an <img src="https://render.githubusercontent.com/render/math?math=\ell_0"> penalized algorithm described in Jewell and Witten (2018) and Jewell et al. (2019).
