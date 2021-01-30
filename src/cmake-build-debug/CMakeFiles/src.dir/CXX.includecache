@@ -1,0 +1,34 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/tonyyiqunchen/Desktop/dissertation/ell_0_project/SpikeInference/src/funPieceList.h
+list
+-
+vector
+-
+stdexcept
+-
+
+/Users/tonyyiqunchen/Desktop/dissertation/ell_0_project/SpikeInference/src/utils.cpp
+stdio.h
+-
+iostream
+-
+string
+-
+cstdlib
+-
+fstream
+-
+math.h
+-
+funPieceList.h
+/Users/tonyyiqunchen/Desktop/dissertation/ell_0_project/SpikeInference/src/funPieceList.h
+stdexcept
+-
+
