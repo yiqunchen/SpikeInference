@@ -9,6 +9,7 @@
 #include <set>
 #include <algorithm>
 
+
 #define SGN(x) ((x > 0) ? 1 : ((x < 0) ? -1 : 0))
 
 #define SET_DIFF(x) ((ABS(x) > DIFF_EPS) ? x : 0)

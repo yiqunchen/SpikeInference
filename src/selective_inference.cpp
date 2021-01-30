@@ -6,6 +6,7 @@
 #include <algorithm>    // std::min
 #include <math.h>
 #include <stdexcept>
+
 /*
  * Contrast vector v
  *
