@@ -3,13 +3,19 @@
 language: r
 cache: packages
 
+os:
+  - linux
+  - osx
 
-
+compiler:
+  - gcc
+  - clang
+  
 addons:
   apt:
     sources:
       - ubuntu-toolchain-r-test
     packages:
-      - gcc-4
-      - g++-4
-      - gfortran-4
+      - gcc-4.8
+      - g++-4.8
+      - gfortran-4.8
