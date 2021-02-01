@@ -309,7 +309,9 @@ double calc_p_value(PiecewiseSquareLoss * analytic_phi,
 
 //   printf("n1 %f d1 %f\n",n1,d1);
 
-    if (std::isnan(exp(n1-d1))){
+    double result = exp(n1-d1);
+
+    if (result!=result){
           p_val_result = 0.0; // numerical instability; long tail
       }else{
           p_val_result = exp(n1 - d1);
@@ -348,8 +350,9 @@ double calc_surv_prob(PiecewiseSquareLoss * analytic_phi,
         }
     }
 
+    double result = exp(n1-d1);
 
-    if (std::isnan(exp(n1-d1))){
+    if (result!=result){
         p_val_result=0.0;
     }else{
         p_val_result = exp(n1 - d1);
