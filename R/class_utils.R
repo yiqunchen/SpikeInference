@@ -31,7 +31,8 @@ expand_fpop_intervals <- function(df, PLOT_MIN, PLOT_MAX, ni) {
 #' @param ni number of values to calculate the optimal cost at in each segment 
 #'
 #' @importFrom magrittr %>%
-#' @export
+#' 
+#' 
 plot.SpikeInference <- function(x, thj, plot_cost = TRUE, PLOT_MIN = -10, PLOT_MAX = 10, ni = 1000, ...) {
   if (is.null(x$conditioning_sets)) { 
     stop("Re-run changepoint_inference with parameter 'return_conditioning_sets' set to true")
@@ -79,7 +80,7 @@ plot.SpikeInference <- function(x, thj, plot_cost = TRUE, PLOT_MIN = -10, PLOT_M
 #' @param thj changepoint 
 #' @param phi evaluate cost at pertubation phi 
 #' 
-#' @export
+#'
 eval_cost_at.SpikeInference <- function(x, thj, phi) {
   ind <- which(x$change_pts == thj)
   stopifnot(ind > 0)

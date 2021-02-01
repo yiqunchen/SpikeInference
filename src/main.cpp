@@ -13,7 +13,6 @@
 #include "selective_inference.h"
 #include "fpop_inference.h"
 #include "test_utils.h" // for unit test purposes
-//#include "omp.h"
 #include <cassert>
 
 typedef std::vector<double> VecDouble;

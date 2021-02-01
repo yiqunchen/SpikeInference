@@ -7,7 +7,6 @@
 #include <Rcpp.h>
 #include <algorithm>    // std::min
 #include <math.h>
-#include <omp.h> // open mp
 
 using namespace Rcpp;
 
