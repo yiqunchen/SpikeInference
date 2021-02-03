@@ -90,7 +90,7 @@
 <a href="#why-do-we-need-spikeinference" class="anchor"></a>Why do we need SpikeInference?</h3>
 <p>Double dipping — or more formally, generating a hypothesis based on your data, and then testing the hypothesis on that same data — renders classical hypothesis tests (e.g., z-test or t-test or Wilcoxon-rank for a difference-in-means; and in general any likelihood or Wald-based tests) invalid.</p>
 <p>In the case of spike estimation on calcium imaging data, our hypothesis is a function of the estimated spike locations, which in turn is a function of data. As an example, we generate a time series of calcium imaging data according to a model with no spikes at all (See Figure below), the <img src="https://render.githubusercontent.com/render/math?math=%5Cell_0"> algorithm estimated a spike at timepoint 1793, which has a naive (Wald) p-value &lt;0.001 (anti-conservative!); in contrast, our double-dippling-adjusted method yields a p-value of 0.24.</p>
-<p><img src="http://url/to/img.png" alt="alt text"></p>
+<p><img src="reference/figures/demo_fig_pkg.png" alt="Illustrative example" width="300" class="center"></p>
 </div>
 <div id="link-to-additional-resources" class="section level3">
 <h3 class="hasAnchor">
