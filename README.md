@@ -17,13 +17,7 @@ library(SpikeInference)
 Note that `SpikeInference` imports the package `Rcpp`. If the installation process fails on MAC OS due to issues related to `R` and `cpp` compiler tools, this [post](https://thecoatlessprofessor.com/programming/cpp/r-compiler-tools-for-rcpp-on-macos/) might provide some useful information.
 
 ## Use
-
-The vignette demonstrates example usage of all main functions. Please [file an issue](https://github.com/yiqunchen/SpikeInference/issues) if you have a request for a tutorial that is not currently included. You can see the vignette by using the following code (note that this requires a TeX installation to view properly):
-``` r
-# install.packages("devtools")
-devtools::install_github("yiqunchen/SpikeInference", 
-	build_vignette = TRUE, build_opts = c())
-```
+See [here]( https://yiqunchen.github.io/SpikeInference/) for tutorials and examples.  Please [file an issue](https://github.com/yiqunchen/SpikeInference/issues) if you have a request for a tutorial that is not currently included.
 
 ## Citation
 
