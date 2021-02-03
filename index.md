@@ -23,9 +23,9 @@ In the case of spike estimation on calcium imaging data, our hypothesis is a fun
 <img src="man/figures/demo_fig_pkg.png" alt="Illustrative example" width="300" class="center">
 
 ### Link to additional resources
-* You can learn more about the technical details in our manuscript and in the technical setup section here. 
-* You can learn more about how to use our software here.
-* Finally, code and steps to reproduce the figures in our manuscript can be found in the GitHub repo here. 
+* You can learn more about the technical details in our manuscript and in the technical setup section [here](https://yiqunchen.github.io/SpikeInference/articles/technical_details.html). 
+* You can learn more about how to use our software [here](https://yiqunchen.github.io/SpikeInference/articles/Tutorials.html).
+* Finally, code and steps to reproduce the figures in our manuscript can be found in the GitHub repo [here](https://github.com/yiqunchen/SpikeInference-experiments). 
 
 ### Citation
 
