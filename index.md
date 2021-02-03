@@ -20,7 +20,7 @@ Double dipping — or more formally, generating a hypothesis based on your data,
 
 In the case of spike estimation on calcium imaging data, our hypothesis is a function of the estimated spike locations, which in turn is a function of data. As an example, we generate a time series of calcium imaging data according to a model with no spikes at all (See Figure below), the <img src="https://render.githubusercontent.com/render/math?math=\ell_0"> algorithm estimated a spike at timepoint 1793, which has a naive (Wald) p-value <0.001 (anti-conservative!); in contrast, our double-dippling-adjusted method yields a p-value of 0.24.
 
-![Figure 1: Illustrative example](https://github.com/yiqunchen/SpikeInference/blob/main/man/figures/demo_fig_pkg.png)
+<img src="man/figures/demo_fig_pkg.png" alt="Illustrative example" width="100"/>
 
 ### Link to additional resources
 * You can learn more about the technical details in our manuscript and in the technical setup section here. 
