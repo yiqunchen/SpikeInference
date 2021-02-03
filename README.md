@@ -40,3 +40,5 @@ If you encounter a bug or would like make a change request, please file it as an
 Jewell, S. and Witten, D. (2018). Exact spike train inference via l0 optimization. Ann. Appl. Stat., 12(4):2457–2482.
 
 Jewell, S. W., Hocking, T. D., Fearnhead, P., and Witten, D. M. (2019b). Fast nonconvex deconvolution of calcium imaging data. Biostatistics.
+
+![](https://github.com/yiqunchen/SpikeInference/blob/main/man/figures/combined_plot_exp_7_cell_29_paper_example.png)
