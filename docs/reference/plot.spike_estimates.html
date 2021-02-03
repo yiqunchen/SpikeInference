@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot optimal cost and/or S as a function of \(\phi\) — plot.SpikeInference • SpikeInference</title>
+<title>Plot the solution to an L0 segmentation problem — plot.spike_estimates • SpikeInference</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Plot optimal cost and/or S as a function of \(\phi\) — plot.SpikeInference" />
-<meta property="og:description" content="Plot optimal cost and/or S as a function of \(\phi\)" />
+<meta property="og:title" content="Plot the solution to an L0 segmentation problem — plot.spike_estimates" />
+<meta property="og:description" content="Plot the solution to an L0 segmentation problem" />
 
 
 
@@ -109,48 +109,36 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot optimal cost and/or S as a function of \(\phi\)</h1>
+    <h1>Plot the solution to an L0 segmentation problem</h1>
     
-    <div class="hidden name"><code>plot.SpikeInference.Rd</code></div>
+    <div class="hidden name"><code>plot.spike_estimates.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Plot optimal cost and/or S as a function of \(\phi\)</p>
+    <p>Plot the solution to an L0 segmentation problem</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for SpikeInference</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>thj</span>, plot_cost <span class='op'>=</span> <span class='cn'>TRUE</span>, PLOT_MIN <span class='op'>=</span> <span class='op'>-</span><span class='fl'>10</span>, PLOT_MAX <span class='op'>=</span> <span class='fl'>10</span>, ni <span class='op'>=</span> <span class='fl'>1000</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='co'># S3 method for spike_estimates</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>, xlims <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>ChangepointInference_L0_changepoints_pvals</p></td>
+      <td><p>output from running estimate_spikes</p></td>
     </tr>
     <tr>
-      <th>thj</th>
-      <td><p>changepoint</p></td>
-    </tr>
-    <tr>
-      <th>plot_cost</th>
-      <td><p>plot the optimal cost (TRUE), or plot S (FALSE)</p></td>
-    </tr>
-    <tr>
-      <th>PLOT_MIN</th>
-      <td><p>minimum phi</p></td>
-    </tr>
-    <tr>
-      <th>PLOT_MAX</th>
-      <td><p>maximum phi</p></td>
-    </tr>
-    <tr>
-      <th>ni</th>
-      <td><p>number of values to calculate the optimal cost at in each segment</p></td>
+      <th>xlims</th>
+      <td><p>optional parameter to specify the x-axis limits</p></td>
     </tr>
     <tr>
       <th>...</th>
       <td><p>arguments to be passed to methods</p></td>
+    </tr>
+    <tr>
+      <th>arguments</th>
+      <td><p>to be passed to methods</p></td>
     </tr>
     </table>
 

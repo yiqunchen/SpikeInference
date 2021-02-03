@@ -11,7 +11,7 @@
 
 \item{xlims}{optional parameter to specify the x-axis limits}
 
-\item{...}{arguments to be passed to methods}
+\item{...}{to be passed to methods}
 }
 \value{
 Plot with simulated fluorescence (dark grey circles), calcium concentration (dark green line) and spikes (dark green tick marks on x-axis)
@@ -24,8 +24,4 @@ Plot simulated data
 sim <- simulate_ar1(n = 500, gam = 0.998, poisMean = 0.009, sd = 0.05, seed = 1)
 plot(sim)
 
-}
-\seealso{
-\code{\link{estimate_spikes}},
-\code{\link{estimate_calcium}},
 }

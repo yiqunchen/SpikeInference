@@ -85,19 +85,13 @@
   </a>
 </li>
 <li>
-  <a href="../reference/index.html">Reference</a>
+  <a href="../articles/technical_details.html">Technical details</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
-    <li>
-      <a href="../articles/my-vignette.html">Getting started with SpikeInference</a>
-    </li>
-  </ul>
+<li>
+  <a href="../articles/Tutorials.html">Software tutorials</a>
+</li>
+<li>
+  <a href="../reference/index.html">Reference</a>
 </li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
@@ -166,6 +160,10 @@ a nonnegative integer.</p></td>
 If unknown (NULL), sample variance of residuals is used instead.</p></td>
     </tr>
     <tr>
+      <th>return_conditioning_sets</th>
+      <td><p>Logical; Should the conditioning set S be returned?</p></td>
+    </tr>
+    <tr>
       <th>return_ci</th>
       <td><p>Logical; if TRUE, the confidence interval for the change in calcium 
 is computed and returned.</p></td>
@@ -181,11 +179,11 @@ a number between 0 and 1 (non-inclusive).</p></td>
     </tr>
     <tr>
       <th>mu</th>
-      <td><p>Numeric; parameter for the test  \(\nu^{T}c\leq 0\).</p></td>
+      <td><p>Numeric; parameter for the test  \(\nu^{T}c\leq mu\).</p></td>
     </tr>
     <tr>
-      <th>return_conditioning_sets.</th>
-      <td><p>Logical; Should the conditioning set S be returned?</p></td>
+      <th>lower_trunc</th>
+      <td><p>Numeric; parameter for selection procedure: \(\nu^{T}c\geq lower_trunc\).</p></td>
     </tr>
     </table>
 
@@ -282,7 +280,7 @@ Francaise de Statistique, 156(4), 180-205.</p>
 
       <footer>
       <div class="copyright">
-  <p>Developed by Yiqun Chen.</p>
+  <p>Developed by Yiqun Chen, Sean Jewell.</p>
 </div>
 
 <div class="pkgdown">

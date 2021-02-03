@@ -14,6 +14,7 @@
 #' @param gam Numeric; AR(1) decay rate
 #' @param poisMean Numeric; mean for Poisson distributed spikes
 #' @param sd Numeric; standard deviation
+#' @param c0 Numeric; initial calcium concentration, default to 0
 #'
 #' @return spikes, fluorescence, and calcium concentration
 #'
@@ -28,6 +29,7 @@ simulate_ar1 <- function(n, gam, poisMean, sd, seed, c0 = 0)
   set.seed(seed)
   stopifnot(poisMean>=0)
   stopifnot(sd>=0)
+  stopifnot(c0>=0)
   eta <- numeric(n)
   c <- numeric(n)
   f <- numeric(n)

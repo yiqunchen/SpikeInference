@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot optimal cost and/or S as a function of \(\phi\) — plot.SpikeInference • SpikeInference</title>
+<title>search for the right lambda to meet the targeting firing rate — estimate_spike_by_spike_number • SpikeInference</title>
 
 
 <!-- jquery -->
@@ -39,8 +39,8 @@
 
 
 
-<meta property="og:title" content="Plot optimal cost and/or S as a function of \(\phi\) — plot.SpikeInference" />
-<meta property="og:description" content="Plot optimal cost and/or S as a function of \(\phi\)" />
+<meta property="og:title" content="search for the right lambda to meet the targeting firing rate — estimate_spike_by_spike_number" />
+<meta property="og:description" content="search for the right lambda to meet the targeting firing rate" />
 
 
 
@@ -109,48 +109,57 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot optimal cost and/or S as a function of \(\phi\)</h1>
+    <h1>search for the right lambda to meet the targeting firing rate</h1>
     
-    <div class="hidden name"><code>plot.SpikeInference.Rd</code></div>
+    <div class="hidden name"><code>estimate_spike_by_spike_number.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Plot optimal cost and/or S as a function of \(\phi\)</p>
+    <p>search for the right lambda to meet the targeting firing rate</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for SpikeInference</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>, <span class='va'>thj</span>, plot_cost <span class='op'>=</span> <span class='cn'>TRUE</span>, PLOT_MIN <span class='op'>=</span> <span class='op'>-</span><span class='fl'>10</span>, PLOT_MAX <span class='op'>=</span> <span class='fl'>10</span>, ni <span class='op'>=</span> <span class='fl'>1000</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='fu'>estimate_spike_by_spike_number</span><span class='op'>(</span>
+  <span class='va'>dat</span>,
+  <span class='va'>decay_rate</span>,
+  <span class='va'>target_firing_rate</span>,
+  lam_min <span class='op'>=</span> <span class='fl'>1e-06</span>,
+  lam_max <span class='op'>=</span> <span class='fl'>1</span>,
+  max_iters <span class='op'>=</span> <span class='fl'>50</span>,
+  tolerance <span class='op'>=</span> <span class='fl'>5</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
-      <td><p>ChangepointInference_L0_changepoints_pvals</p></td>
+      <th>dat</th>
+      <td><p>Numeric vector; observed data.</p></td>
     </tr>
     <tr>
-      <th>thj</th>
-      <td><p>changepoint</p></td>
+      <th>decay_rate</th>
+      <td><p>Numeric; specified AR(1) decay rate \(\gamma\), a 
+number between 0 and 1 (non-inclusive).</p></td>
     </tr>
     <tr>
-      <th>plot_cost</th>
-      <td><p>plot the optimal cost (TRUE), or plot S (FALSE)</p></td>
+      <th>target_firing_rate</th>
+      <td><p>Numeric; a number between 0 to 1 
+indicating the average probability of firing</p></td>
     </tr>
     <tr>
-      <th>PLOT_MIN</th>
-      <td><p>minimum phi</p></td>
+      <th>lam_min</th>
+      <td><p>Numeric; minimal lambda to consider</p></td>
     </tr>
     <tr>
-      <th>PLOT_MAX</th>
-      <td><p>maximum phi</p></td>
+      <th>lam_max</th>
+      <td><p>Numeric; maximal lambda to consider</p></td>
     </tr>
     <tr>
-      <th>ni</th>
-      <td><p>number of values to calculate the optimal cost at in each segment</p></td>
+      <th>max_iters</th>
+      <td><p>Numeric; maximal iterations to search</p></td>
     </tr>
     <tr>
-      <th>...</th>
-      <td><p>arguments to be passed to methods</p></td>
+      <th>tolerance</th>
+      <td><p>Numeric; tolerance level for differences in firing rate</p></td>
     </tr>
     </table>
 

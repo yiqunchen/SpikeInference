@@ -5,13 +5,13 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>technical_details • SpikeInference</title>
+<title>Technical details • SpikeInference</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="../bootstrap-toc.css">
 <script src="../bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
-<script src="../pkgdown.js"></script><meta property="og:title" content="technical_details">
+<script src="../pkgdown.js"></script><meta property="og:title" content="Technical details">
 <meta property="og:description" content="SpikeInference">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
@@ -44,6 +44,12 @@
   </a>
 </li>
 <li>
+  <a href="../articles/technical_details.html">Technical details</a>
+</li>
+<li>
+  <a href="../articles/Tutorials.html">Software tutorials</a>
+</li>
+<li>
   <a href="../reference/index.html">Reference</a>
 </li>
       </ul>
@@ -57,14 +63,14 @@
 
       
 
-      </header><script src="my-vignette_files/header-attrs-2.6/header-attrs.js"></script><div class="row">
+      </header><script src="technical_details_files/header-attrs-2.6/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
-      <h1 data-toc-skip>technical_details</h1>
+      <h1 data-toc-skip>Technical details</h1>
             
       
       
-      <div class="hidden name"><code>my-vignette.Rmd</code></div>
+      <div class="hidden name"><code>technical_details.Rmd</code></div>
 
     </div>
 
@@ -75,9 +81,9 @@
 <a href="#overview" class="anchor"></a>Overview</h3>
 <p>In this tutorial, we illustrate our framework for testing the hypothesis that the calcium is decaying exponentially (i.e., there is no true spikes) near spikes estimated via an <span class="math inline">\(\ell_0\)</span> penalized problem, as described in our manuscript.</p>
 </div>
-<div id="technical-details" class="section level3">
+<div id="model-setup" class="section level3">
 <h3 class="hasAnchor">
-<a href="#technical-details" class="anchor"></a>Technical details</h3>
+<a href="#model-setup" class="anchor"></a>Model setup</h3>
 <p>We consider the AR(1) generative model <span class="math display">\[Y_t = c_t + \epsilon_t, \epsilon_t \sim N(0, \sigma^2)\]</span> where <span class="math display">\[c_t = \gamma  c_{t-1} + z_t, z_t\geq 0\]</span>. In words, this says that between spikes (when <span class="math inline">\(z_t=0\)</span>), calcium decays exponentially at a (known) rate <span class="math inline">\(\gamma\in(0,1)\)</span>. We denote the locations of true spikes, <span class="math inline">\(\{t:z_t\geq 0\}\)</span> as <span class="math inline">\(0 = \tau_0 &lt; \tau_1 &lt; \ldots &lt; \tau_K &lt; \tau_{K+1} = T\)</span>.</p>
 <div id="ell_0-spike-estimation" class="section level4">
 <h4 class="hasAnchor">
@@ -102,29 +108,19 @@
 \end{cases}\]</span></p>
 <p>Intuitively, the larger the value of <span class="math inline">\(h\)</span> in defining the contrast vector <span class="math inline">\(\nu\)</span> in, the more data will be used to test the null hypothesis of interest, resulting in larger power.</p>
 <p>Now suppose that we test for the presence of a spike only at timepoints at which 1. we estimate a spike, 2. there is an increase in fluorescence associated with this estimated spike.</p>
-<p>This motivates the following <span class="math inline">\(p\)</span>-value: <span class="math display">\[\mathbb{P}_{H_0}\left(\nu^{\top} Y \geq \nu^{\top} y \;\middle\vert\; \hat\tau_j \in \mathcal{M}(Y) , \nu^{\top}Y &gt; 0, \Pi_{\nu}^{\perp} Y= \Pi_{\nu}^{\perp} \right),\]</span> where <span class="math inline">\(\mathcal{M}(y)\)</span> denote the set of estimated spikes from <span class="math inline">\(y\)</span> via the <span class="math inline">\(\ell_0\)</span> problem; and <span class="math inline">\(\Pi_{\nu}^{\perp}\)</span> is the orthogonal projection operator used to eliminate the nuisance parameter. We show in our manuscript that this p-value for testing <span class="math inline">\(H_0\)</span> can be written as <span class="math display">\[\mathbb{P}\left(\phi \geq \nu^\top y \middle|  \hat{\tau}_j \in \mathcal{M}(y'(\phi), \phi\geq 0\right),\]</span> where <span class="math inline">\(\phi\sim \mathcal{N}(0,\sigma^2||\nu||_2^2)\)</span>, and <span class="math display">\[y'(\phi) = (I-\Pi_\nu)y+\phi\cdot \frac{\nu}{||\nu||_2^2} = y+\left(\frac{\phi-\nu^{\top}y}{||\nu||_2^2}\right)\nu\]</span> is a perturbation of the observed data <span class="math inline">\(y\)</span>. Our software implements an efficient calculation of this <span class="math inline">\(p\)</span>-value. More details can be found in Sections 2 and 3 of our paper (Chen, Jewell, and Witten, 2021).</p>
-<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">SpikeInference</span><span class="op">)</span></code></pre></div>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R">
- <span class="va">gam</span> <span class="op">&lt;-</span> <span class="fl">0.98</span>
- <span class="va">LAMBDA</span> <span class="op">&lt;-</span> <span class="fl">0.7</span>
- <span class="va">sigma</span> <span class="op">&lt;-</span> <span class="fl">0.3</span>
- <span class="va">n_length</span> <span class="op">&lt;-</span> <span class="fl">1000</span>
- <span class="va">curr_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_ar1.html">simulate_ar1</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">n_length</span>, gam <span class="op">=</span> <span class="va">gam</span>, poisMean <span class="op">=</span> <span class="fl">0.01</span>, sd <span class="op">=</span> <span class="va">sigma</span>, seed <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
- <span class="va">curr_fit_spike</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/spike_estimates.html">spike_estimates</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">curr_sim</span><span class="op">$</span><span class="va">fl</span>, decay_rate <span class="op">=</span> <span class="va">gam</span>, tuning_parameter <span class="op">=</span> <span class="va">LAMBDA</span><span class="op">)</span>
- <span class="va">curr_inference_spike</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/spike_inference.html">spike_inference</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">curr_sim</span><span class="op">$</span><span class="va">fl</span>, decay_rate <span class="op">=</span> <span class="va">gam</span>,
-  tuning_parameter <span class="op">=</span> <span class="va">LAMBDA</span>, window_size <span class="op">=</span> <span class="fl">2</span>,
-   sig <span class="op">=</span> <span class="va">sigma</span><span class="op">*</span><span class="va">sigma</span>, return_ci <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
+<p>This motivates the following <span class="math inline">\(p\)</span>-value: <span class="math display">\[\mathbb{P}_{H_0}\left(\nu^{\top} Y \geq \nu^{\top} y \;\middle\vert\; \hat\tau_j \in \mathcal{M}(Y) , \nu^{\top}Y &gt; 0, \Pi_{\nu}^{\perp} Y= \Pi_{\nu}^{\perp} \right),\]</span> where <span class="math inline">\(\mathcal{M}(y)\)</span> denote the set of estimated spikes from <span class="math inline">\(y\)</span> via the <span class="math inline">\(\ell_0\)</span> problem; and <span class="math inline">\(\Pi_{\nu}^{\perp}\)</span> is the orthogonal projection operator used to eliminate the nuisance parameter. We show in our manuscript that this p-value for testing <span class="math inline">\(H_0\)</span> can be written as <span class="math display">\[\mathbb{P}\left(\phi \geq \nu^\top y \middle|  \hat{\tau}_j \in \mathcal{M}(y'(\phi)), \phi\geq 0\right),\]</span> where <span class="math inline">\(\phi\sim \mathcal{N}(0,\sigma^2||\nu||_2^2)\)</span>, and <span class="math display">\[y'(\phi) = (I-\Pi_\nu)y+\phi\cdot \frac{\nu}{||\nu||_2^2} = y+\left(\frac{\phi-\nu^{\top}y}{||\nu||_2^2}\right)\nu\]</span> is a perturbation of the observed data <span class="math inline">\(y\)</span>.</p>
+<p>Moreover, if we denote <span class="math inline">\(\mathcal{S}=\{\phi: \hat\tau_j \in \mathcal{M}(y'(\phi))\}\)</span>, then the p-value can be equivalently expressed as <span class="math display">\[\mathbb{P}\left(\phi \geq \nu^\top y \middle | \phi \in \mathcal{S}\cap(0,\infty)\right)\]</span>. Now since <span class="math inline">\(\phi\sim \mathcal{N}(0,\sigma^2||\nu||_2^2)\)</span>, the <span class="math inline">\(\phi | \phi \in mathcal{S}\cap(0,\infty))\)</span> will follow a truncated normal distribution, and the computation of the p-value boils down to characterizing the set <span class="math inline">\(\mathcal{S}\)</span>.</p>
+<p>Our software implements an efficient calculation of this <span class="math inline">\(p\)</span>-value by analytically characterizing set <span class="math inline">\(\mathcal{S}\)</span>; more details can be found in Sections 2 and 3 of our paper (Chen, Jewell, and Witten, 2021).</p>
+<p>Remark: by constrast, a naive (Wald) p-value would take the form <span class="math display">\[\mathbb{P}\left(\phi \geq \nu^\top y \right),\]</span> where the data-adaptive choice of hypothesis is not accounted for.</p>
 </div>
-<div id="references" class="section level3">
+<div id="extensions" class="section level3">
 <h3 class="hasAnchor">
-<a href="#references" class="anchor"></a>references</h3>
+<a href="#extensions" class="anchor"></a>Extensions</h3>
+<p>Our implemented function also allows for the following extensions:</p>
 <ol style="list-style-type: decimal">
-<li><p>Chen, Y., Jewell, S., and Witten, D. (2021+). Uncertainty quantification for spikes estimated from calcium imaging data. Technical report.</p></li>
-<li><p>Jewell, S. W., Hocking, T. D., Fearnhead, P., &amp; Witten, D. M. (2019). Fast nonconvex deconvolution of calcium imaging data. Biostatistics.</p></li>
+<li>Generate <span class="math inline">\(1-\alpha\)</span> selective confidence intervals for the parameter <span class="math inline">\(\nu^\top c\)</span>.</li>
+<li>Compute valid p-values for the hypothesis <span class="math inline">\(H_0: \nu^{\top} c \leq \delta \text{ versus } H_1: \nu^\top c &gt; \delta\)</span>, where <span class="math inline">\(\delta &gt; 0\)</span> is a parameter user can specify.</li>
 </ol>
-<!-- 3. Jewell, S., Fearnhead, P., and Witten, D. (2019+). Testing for a change in --><!--  mean after changepoint detection. Technical report. -->
 </div>
   </div>
 

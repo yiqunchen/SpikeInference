@@ -1,3 +1,34 @@
+#' Plot the solution to an L0 segmentation problem
+#' @param x output from running estimate_spikes
+#' @param xlims optional parameter to specify the x-axis limits
+#' @param  arguments to be passed to methods
+#' @param ... arguments to be passed to methods
+#' @export
+#' @import graphics
+#'
+plot.spike_estimates <- function(x, xlims = NULL, ...) {
+  if (sum(is.na(x$estimated_calcium))) {
+    warning("Calcium concentration must be estimated before plotting. Automatically running estimate_calcium(fit), however estimated_calicum is not saved.)")
+    x <- estimate_calcium(x)
+  }
+  ind <- 1:length(x$dat)
+  rng <- range(c(x$dat, x$estimated_calcium))
+  ylims <- rng 
+  if (is.null(xlims)){
+    plot(ind, x$dat, cex = 0.5, pch = 20, col = "darkgrey", ylab = "", ylim = ylims, xlab = "Index")
+  } else {
+    plot(ind, x$dat, cex = 0.5, pch = 20, col = "darkgrey", ylab = "", ylim = ylims, xlim = xlims, xlab = "Time")
+  }
+  lines(ind, x$estimated_calcium, col = "blue", lwd = 2)
+  
+  hh <- 0.01 * diff(ylims)
+  for (spike in x$spikes)
+  {
+    segments(x0 = ind[spike], x1 = ind[spike], y0 = ylims[1] - hh,
+             y1 = hh + ylims[1], col = "blue", lwd = 1)
+  }
+}
+
 MAD_var_estimator <- function(y, decay_rate){
   lag_1_diff <- (y[2:length(y)]-decay_rate*y[1:(length(y)-1)])/sqrt(2)
   sigma_hat <- stats::mad(lag_1_diff)
@@ -11,6 +42,11 @@ JNFL_var_estimator <- function(y, decay_rate){
   return(sigma_hat)
 }
 
+#' Generate the contrast vector for testing the presence of spikes
+#' @param n length of the vector
+#' @param thj location of the spike of interest
+#' @param window_size parameter h
+#' @param gam AR-1 decaying parameter
 #' @export
 construct_v <- function(n, thj, window_size, gam) {
   tL <- max(1, thj-window_size+1)
@@ -44,7 +80,7 @@ loss_function_n_spikes <- function(lam, gcamp, decay_rate, num_spikes_target){
 
 ###
 ### 
-###
+### 
 one_d_binary_search <- function(gcamp, decay_rate, lam_min, lam_max, 
                                 num_spikes_target, max_iters=50, tolerance=5){
   iter_i <- 0
@@ -85,7 +121,20 @@ one_d_binary_search <- function(gcamp, decay_rate, lam_min, lam_max,
   return(lam_star)
 }
 
-#' @export
+
+#' search for the right lambda to meet the targeting firing rate
+#' @param dat Numeric vector; observed data.
+#' @param decay_rate Numeric; specified AR(1) decay rate \eqn{\gamma}, a 
+#' number between 0 and 1 (non-inclusive).
+#' @param target_firing_rate Numeric; a number between 0 to 1 
+#' indicating the average probability of firing
+#' @param lam_min Numeric; minimal lambda to consider
+#' @param lam_max Numeric; maximal lambda to consider
+#' @param max_iters Numeric; maximal iterations to search
+#' @param tolerance Numeric; tolerance level for differences in firing rate
+#' @export 
+
+
 estimate_spike_by_spike_number <- function(dat, decay_rate, target_firing_rate, 
                                            lam_min = 1e-6, lam_max = 1, max_iters=50, tolerance=5){
   
@@ -121,12 +170,8 @@ fpop_inference_intervals_formatter <- function(phi_list) {
 #' Plot simulated data
 #' @param x output data from simulate_ar1
 #' @param xlims optional parameter to specify the x-axis limits
-#' @param ... arguments to be passed to methods
-#' @seealso
-#' \code{\link{estimate_spikes}},
-#' \code{\link{estimate_calcium}},
+#' @param  ... to be passed to methods
 #' @return Plot with simulated fluorescence (dark grey circles), calcium concentration (dark green line) and spikes (dark green tick marks on x-axis)
-#'
 #' @examples
 #'
 #' sim <- simulate_ar1(n = 500, gam = 0.998, poisMean = 0.009, sd = 0.05, seed = 1)
@@ -189,5 +234,95 @@ print.estimated_spikes <- function(x, ...)
 }
 
 
+
+
+
+expand_fpop_intervals <- function(df, PLOT_MIN, PLOT_MAX, ni) {
+  n_segments <- dim(df)[[1]]
+  df_plot <- NULL
+  
+  for (seg_i in 1:n_segments) {
+    if (df$max_mean[seg_i] >= PLOT_MIN && df$min_mean[seg_i] <= PLOT_MAX) {
+      xs <- seq(from = max(PLOT_MIN, df$min_mean[seg_i]), 
+                to = min(df$max_mean[seg_i], PLOT_MAX), 
+                length.out = ni)
+      ys <- df$square[seg_i] * xs ^2 + df$linear[seg_i] * xs + df$constant[seg_i]
+      if (!is.null(df$contained)) {
+        df_tmp <- data.frame(x = xs, y = ys, contained = df$contained[seg_i])  
+      } else { 
+        df_tmp <- data.frame(x = xs, y = ys, data_i = df$data_i[seg_i])
+      }
+      df_plot <- rbind(df_plot, df_tmp)
+    }
+  }
+  return(df_plot)
+}
+
+#' Plot optimal cost and/or S as a function of \eqn{\phi}
+#' 
+#' @param  x ChangepointInference_L0_changepoints_pvals
+#' @param thj changepoint 
+#' @param plot_cost plot the optimal cost (TRUE), or plot S (FALSE)
+#' @param PLOT_MIN minimum phi 
+#' @param PLOT_MAX maximum phi 
+#' @param ni number of values to calculate the optimal cost at in each segment 
+#' @param ... arguments to be passed to methods
+#' @importFrom magrittr %>%
+#' 
+#' 
+plot.SpikeInference <- function(x, thj, plot_cost = TRUE, PLOT_MIN = -10, PLOT_MAX = 10, ni = 1000, ...) {
+  if (is.null(x$conditioning_sets)) { 
+    stop("Re-run changepoint_inference with parameter 'return_conditioning_sets' set to true")
+  }
+  ind <- which(x$change_pts == thj)
+  stopifnot(ind > 0)
+  
+  col_red <- "#d95f02"
+  col_blue <- "#1f78b4"
+  
+  if (plot_cost) {
+    df <- x$conditioning_sets[[ind]]
+    df_plot <- expand_fpop_intervals(df, PLOT_MIN, PLOT_MAX, ni)
+    par(mfrow = c(1, 1))
+    plot(df_plot$x, df_plot$y, pch = 20, cex = 0.1,
+         col = ifelse(df_plot$contained == 1, col_blue, col_red),
+         xlab = latex2exp::TeX("$\\phi$"), 
+         ylab = latex2exp::TeX("Cost$(\\phi)$"))
+    legend("bottomright", 
+           pch = 20,
+           col = c(col_blue, col_red),
+           c(latex2exp::TeX("$\\phi$ in  S"), latex2exp::TeX("$\\phi$ not in S")))
+    
+  } else {
+    x$conditioning_sets[[ind]] %>% dplyr::mutate(y = 1, contained = factor(contained, levels = c(0, 1), labels = c("Not in S", "In S"))) %>% 
+      ggplot2::ggplot() + 
+      ggplot2::geom_rect(ggplot2::aes(xmin = min_mean, xmax = max_mean, ymin = -10, ymax = 10, fill = contained)) +
+      ggplot2::coord_cartesian(xlim = c(PLOT_MIN, PLOT_MAX)) + 
+      ggplot2::xlab(latex2exp::TeX("$\\phi$")) + 
+      ggplot2::ylab('') + 
+      ggplot2::scale_fill_manual(values=c(col_red, col_blue)) +
+      ggplot2::theme_bw() +
+      ggplot2::theme(axis.text.y = ggplot2::element_blank(), axis.ticks = ggplot2::element_blank(), 
+                     panel.grid.major = ggplot2::element_blank(), panel.grid.minor = ggplot2::element_blank(),
+                     panel.background = ggplot2::element_blank(), axis.line = ggplot2::element_line(colour = "black"), 
+                     legend.position="bottom", legend.title = ggplot2::element_blank())
+  }
+}
+
+
+
+#' Evaluate Cost(phi) for any phi 
+#' 
+#' @param x ChangepointInference_L0_changepoints_pvals
+#' @param thj changepoint 
+#' @param phi evaluate cost at pertubation phi 
+#' 
+#'
+eval_cost_at.SpikeInference <- function(x, thj, phi) {
+  ind <- which(x$change_pts == thj)
+  stopifnot(ind > 0)
+  df <- x$conditioning_sets[[ind]]
+  return(eval_cost_at_helper(df, phi))
+}
 
 

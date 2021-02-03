@@ -1,6 +1,10 @@
 Package: SpikeInference
 Maintainer: Yiqun Chen <yiqunc@uw.edu>
 Author: Yiqun Chen, Sean Jewell
+Authors@R: c(person("Yiqun", "Chen", email = "yiqunc@uw.edu",
+                  role = c("aut", "cre")),
+                 person("Sean", "Jewell",
+                  role = c("aut")) )
 Version: 1.0
 License: GPL-3
 Title: Quantifying uncertainty for spikes estimated from calcium imaging data

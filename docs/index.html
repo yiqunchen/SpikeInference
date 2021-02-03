@@ -44,19 +44,13 @@
   </a>
 </li>
 <li>
-  <a href="reference/index.html">Reference</a>
+  <a href="articles/technical_details.html">Technical details</a>
 </li>
-<li class="dropdown">
-  <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">
-    Articles
-     
-    <span class="caret"></span>
-  </a>
-  <ul class="dropdown-menu" role="menu">
 <li>
-      <a href="articles/my-vignette.html">Getting started with SpikeInference</a>
-    </li>
-  </ul>
+  <a href="articles/Tutorials.html">Software tutorials</a>
+</li>
+<li>
+  <a href="reference/index.html">Reference</a>
 </li>
       </ul>
 <ul class="nav navbar-nav navbar-right"></ul>
@@ -75,41 +69,53 @@
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#spikeinference-" class="anchor"></a>SpikeInference <img src="spike_inference_hex.png" align="right" width="150px">
 </h1></div>
-<p>Quantifying uncertainty for spikes estimated from calcium imaging data</p>
+<div id="what-is-spikeinference" class="section level3">
+<h3 class="hasAnchor">
+<a href="#what-is-spikeinference" class="anchor"></a>What is SpikeInference?</h3>
+<p>SpikeInference is an R package that quantifies uncertainty (i.e., calculating p-values and confidence intervals) for spikes estimated from calcium imaging data.</p>
 <p><code>SpikeInference</code> is an <code>R</code> package for quantifying uncertainty (i.e., obtaining valid p-values and confidence intervals) for spikes estimated from calcium imaging data via an <img src="https://render.githubusercontent.com/render/math?math=%5Cell_0"> penalized algorithm described in Jewell and Witten (2018) and Jewell et al. (2019).</p>
-<div id="installation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#installation" class="anchor"></a>Installation</h2>
+</div>
+<div id="how-do-i-install-the-package" class="section level3">
+<h3 class="hasAnchor">
+<a href="#how-do-i-install-the-package" class="anchor"></a>How do I install the package?</h3>
 <p>To download the SpikeInference package, use the code below.</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># install.packages("devtools")</span>
+<code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="st"><a href="https://devtools.r-lib.org/">"devtools"</a></span><span class="op">)</span>
 <span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"yiqunchen/SpikeInference"</span><span class="op">)</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">SpikeInference</span><span class="op">)</span></code></pre></div>
-<p>Note that <code>SpikeInference</code> imports the package <code>Rcpp</code>. If the installation process fails on MAC OS due to issues related to <code>R</code> and <code>cpp</code> compiler tools, this <a href="https://thecoatlessprofessor.com/programming/cpp/r-compiler-tools-for-rcpp-on-macos/">post</a> might provide some useful information.</p>
+<p>Note: <code>SpikeInference</code> imports the package <code>Rcpp</code>. If the installation process fails on MAC OS due to issues related to <code>R</code> and <code>cpp</code> compiler tools, this <a href="https://thecoatlessprofessor.com/programming/cpp/r-compiler-tools-for-rcpp-on-macos/">post</a> might provide some useful information.</p>
 </div>
-<div id="use" class="section level2">
-<h2 class="hasAnchor">
-<a href="#use" class="anchor"></a>Use</h2>
-<p>The vignette demonstrates example usage of all main functions. Please <a href="https://github.com/yiqunchen/SpikeInference/issues">file an issue</a> if you have a request for a tutorial that is not currently included. You can see the vignette by using the following code (note that this requires a TeX installation to view properly):</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="co"># install.packages("devtools")</span>
-<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"yiqunchen/SpikeInference"</span>, 
-    build_vignette <span class="op">=</span> <span class="cn">TRUE</span>, build_opts <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<div id="why-do-we-need-spikeinference" class="section level3">
+<h3 class="hasAnchor">
+<a href="#why-do-we-need-spikeinference" class="anchor"></a>Why do we need SpikeInference?</h3>
+<p>Double dipping — or more formally, generating a hypothesis based on your data, and then testing the hypothesis on that same data — renders classical hypothesis tests (e.g., z-test or t-test or Wilcoxon-rank for a difference-in-means; and in general any likelihood or Wald-based tests) invalid.</p>
+<p>In the case of spike estimation on calcium imaging data, our hypothesis is a function of the estimated spike locations, which in turn is a function of data. As an example, we generate a time series of calcium imaging data according to a model with no spikes at all (See Figure below), the <img src="https://render.githubusercontent.com/render/math?math=%5Cell_0"> algorithm estimated a spike at timepoint 1793, which has a naive (Wald) p-value &lt;0.001 (anti-conservative!); in contrast, our double-dippling-adjusted method yields a p-value of 0.24.</p>
+<p><img src="http://url/to/img.png" alt="alt text"></p>
 </div>
-<div id="citation" class="section level2">
-<h2 class="hasAnchor">
-<a href="#citation" class="anchor"></a>Citation</h2>
+<div id="link-to-additional-resources" class="section level3">
+<h3 class="hasAnchor">
+<a href="#link-to-additional-resources" class="anchor"></a>Link to additional resources</h3>
+<ul>
+<li>You can learn more about the technical details in our manuscript and in the technical setup section here.</li>
+<li>You can learn more about how to use our software here.</li>
+<li>Finally, code and steps to reproduce the figures in our manuscript can be found in the GitHub repo here.</li>
+</ul>
+</div>
+<div id="citation" class="section level3">
+<h3 class="hasAnchor">
+<a href="#citation" class="anchor"></a>Citation</h3>
 <p>If you use <code>SpikeInference</code> for your analysis, please cite our manuscript:</p>
-<p>Yiqun Chen, Sean Jewell, and Daniela Witten. (2021). Uncertainty quantification for spikes estimated from calcium imaging data. (insert arxiv link)</p>
+<p>Yiqun Chen, Sean Jewell, and Daniela Witten. (2021). Uncertainty quantification for spikes estimated from calcium imaging data.</p>
 </div>
-<div id="bug-reports--change-requests" class="section level2">
-<h2 class="hasAnchor">
-<a href="#bug-reports--change-requests" class="anchor"></a>Bug Reports / Change Requests</h2>
+<div id="bug-reports--change-requests" class="section level3">
+<h3 class="hasAnchor">
+<a href="#bug-reports--change-requests" class="anchor"></a>Bug Reports / Change Requests</h3>
 <p>If you encounter a bug or would like make a change request, please file it as an issue <a href="https://github.com/yiqunchen/SpikeInference/issues">here</a>.</p>
 </div>
-<div id="additional-references" class="section level2">
-<h2 class="hasAnchor">
-<a href="#additional-references" class="anchor"></a>Additional References</h2>
+<div id="references" class="section level3">
+<h3 class="hasAnchor">
+<a href="#references" class="anchor"></a>References</h3>
+<p>Yiqun Chen, Sean Jewell, and Daniela Witten. (2021). Uncertainty quantification for spikes estimated from calcium imaging data.</p>
 <p>Jewell, S. and Witten, D. (2018). Exact spike train inference via l0 optimization. Ann. Appl. Stat., 12(4):2457–2482.</p>
 <p>Jewell, S. W., Hocking, T. D., Fearnhead, P., and Witten, D. M. (2019b). Fast nonconvex deconvolution of calcium imaging data. Biostatistics.</p>
 </div>
@@ -126,7 +132,8 @@
 <div class="developers">
 <h2>Developers</h2>
 <ul class="list-unstyled">
-<li>Yiqun Chen <br><small class="roles"> Maintainer </small>  </li>
+<li>Yiqun Chen <br><small class="roles"> Author, maintainer </small>  </li>
+<li>Sean Jewell <br><small class="roles"> Author </small>  </li>
 </ul>
 </div>
 
@@ -135,7 +142,7 @@
 
 
       <footer><div class="copyright">
-  <p>Developed by Yiqun Chen.</p>
+  <p>Developed by Yiqun Chen, Sean Jewell.</p>
 </div>
 
 <div class="pkgdown">

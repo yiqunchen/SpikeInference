@@ -1,0 +1,94 @@
+---
+title: "Software tutorials"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Software tutorials}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+In this tutorial, we demonstrate basic use of the SpikeInference package.
+
+First load the pacakge:
+```{r}
+require(SpikeInference)
+```
+
+To illustrate the use, we will first simulate from a AR-1 model for calcium imaging data according to 
+$$Y_t = c_t + \epsilon_t, \epsilon_t \sim N(0, \sigma^2),$$ where $$c_t = \gamma  c_{t-1} + z_t, z_t\geq 0$$. We will use $\sigma = 0.1, \gamma = 0.98, z_t \overset{i.i.d.}{\sim}\text{Poisson}(0.01)$ for this particular example.
+
+```{r}
+gam <- 0.98
+sigma <- 0.3
+n_length <- 1000
+curr_sim <- simulate_ar1(n = n_length, gam = gam, poisMean = 0.01, sd = sigma, seed = 2)
+plot(curr_sim)
+```
+
+
+
+#### $\ell_0$ spike estimation 
+We estimate spikes using an $\ell_0$ penalty with tuning parameter $\lambda=4$:
+```{r}
+LAMBDA <- 0.7
+fit_spike <- spike_estimates(dat = curr_sim$fl, decay_rate = gam, 
+                             tuning_parameter = LAMBDA, 
+                             functional_pruning_out = FALSE)
+plot(fit_spike)
+```
+
+The `fit_spike` object contains spike fit information:
+```{r}
+str(fit_spike)
+```
+
+Importantly, the first five estimated spike locations are: 
+```{r}
+(fit_spike$spikes)[1:5]
+```
+
+#### $\ell_0$ spike inference 
+
+In this section we demonstrate how to use our software to obtain p-values and confidence intervals for estimated spikes with 2 different window size h (1 and 10); for displaying purposes, we will only consider the first five estimated spikes.
+
+Recall that the p-values we are interested in have the form
+$$\mathbb{P}\left(\phi \geq \nu^\top y \middle | \phi \in \mathcal{S}\cap(0,\infty)\right)$$, for a given $\nu$.
+
+#### For h = 1:
+```{r}
+h <- 1
+inference_spike_toy_example_h_1 <- spike_inference(dat = curr_sim$fl, decay_rate = gam,
+                                       tuning_parameter = LAMBDA, window_size = h, 
+                                       sig = sigma*sigma, return_conditioning_sets = FALSE,return_ci = TRUE,lower_trunc=0)
+
+knitr::kable(data.frame(estimated_spikes = inference_spike_toy_example_h_1$spikes[1:5], 
+                        pvals = inference_spike_toy_example_h_1$pvals[1:5],
+                        LCB = inference_spike_toy_example_h_1$LCB[1:5],
+                        UCB = inference_spike_toy_example_h_1$UCB[1:5]))
+
+```
+
+#### For h = 10:
+```{r}
+h <- 10
+inference_spike_toy_example_h_10 <- spike_inference(dat = curr_sim$fl, decay_rate = gam,
+                                       tuning_parameter = LAMBDA, window_size = h, 
+                                       sig = sigma*sigma, return_conditioning_sets = FALSE,return_ci = TRUE,lower_trunc=0)
+
+knitr::kable(data.frame(estimated_spikes = inference_spike_toy_example_h_10$spikes[1:5], 
+                        pvals = inference_spike_toy_example_h_10$pvals[1:5],
+                        LCB = inference_spike_toy_example_h_10$LCB[1:5],
+                        UCB = inference_spike_toy_example_h_10$UCB[1:5]))
+```
+
+We see the drastic change in p-values (power) for a larger h!
+
+
+

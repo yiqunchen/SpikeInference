@@ -16,6 +16,8 @@ simulate_ar1(n, gam, poisMean, sd, seed, c0 = 0)
 \item{sd}{Numeric; standard deviation}
 
 \item{seed}{Numeric; random seed}
+
+\item{c0}{Numeric; initial calcium concentration, default to 0}
 }
 \value{
 spikes, fluorescence, and calcium concentration

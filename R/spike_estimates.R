@@ -101,7 +101,7 @@ spike_estimates <- structure(function(dat, decay_rate, tuning_parameter, functio
         piecewise_square_losses = piecewise_square_losses,
         spike_sign = spike_sign
       )
-    class(out) <- "SpikeInference_estimated_changes"
+    class(out) <- "spike_estimates"
     return(out)
 })
 

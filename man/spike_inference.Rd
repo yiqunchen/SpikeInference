@@ -33,6 +33,8 @@ a nonnegative integer.}
 \item{sig}{Numeric; noise variance for the observed data, a nonnegative number.
 If unknown (NULL), sample variance of residuals is used instead.}
 
+\item{return_conditioning_sets}{Logical; Should the conditioning set S be returned?}
+
 \item{return_ci}{Logical; if TRUE, the confidence interval for the change in calcium 
 is computed and returned.}
 
@@ -41,9 +43,9 @@ is computed and returned.}
 \item{alpha}{Numeric; significance level for the hypothesis test, 
 a number between 0 and 1 (non-inclusive).}
 
-\item{mu}{Numeric; parameter for the test  \eqn{\nu^{T}c\leq 0}.}
+\item{mu}{Numeric; parameter for the test  \eqn{\nu^{T}c\leq mu}.}
 
-\item{return_conditioning_sets.}{Logical; Should the conditioning set S be returned?}
+\item{lower_trunc}{Numeric; parameter for selection procedure: \eqn{\nu^{T}c\geq lower_trunc}.}
 }
 \value{
 Returns a list with elements:

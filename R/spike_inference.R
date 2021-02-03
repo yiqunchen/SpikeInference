@@ -9,13 +9,14 @@
 #' a nonnegative integer.
 #' @param sig Numeric; noise variance for the observed data, a nonnegative number.
 #'  If unknown (NULL), sample variance of residuals is used instead.
-#' @param return_conditioning_sets. Logical; Should the conditioning set S be returned?
+#' @param return_conditioning_sets Logical; Should the conditioning set S be returned?
 #' @param return_ci Logical; if TRUE, the confidence interval for the change in calcium 
 #' is computed and returned.
 #' @param two_sided Logical; if TRUE, a 2-sided p-value is computed and returned.
 #' @param alpha Numeric; significance level for the hypothesis test, 
 #' a number between 0 and 1 (non-inclusive).
-#' @param mu Numeric; parameter for the test  \eqn{\nu^{T}c\leq 0}.
+#' @param mu Numeric; parameter for the test  \eqn{\nu^{T}c\leq mu}.
+#' @param lower_trunc Numeric; parameter for selection procedure: \eqn{\nu^{T}c\geq lower_trunc}.
 
 #' @return Returns a list with elements:
 #' @return \code{spikes} the set of spikes,
@@ -220,7 +221,7 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter,
       )
       }
     }
-    class(out) <- "SpikeInference"
+    class(out) <- "spike_inference"
     return(out)
   })
 
