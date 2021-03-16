@@ -2,7 +2,7 @@
 
 ### What is SpikeInference?
 
-`SpikeInference` is an `R` package for quantifying uncertainty (i.e., obtaining valid p-values and confidence intervals) for spikes estimated from calcium imaging data via the <img src="https://render.githubusercontent.com/render/math?math=\ell_0"> penalized algorithm described in Jewell and Witten (2018) and Jewell et al. (2020). Details can be found in our manuscript listed in the citation section.
+`SpikeInference` is an `R` package for quantifying uncertainty (i.e., obtaining valid p-values and confidence intervals) for spikes estimated from calcium imaging data via the <img src="https://render.githubusercontent.com/render/math?math=\ell_0"> penalized algorithm described in Jewell and Witten (2018) and Jewell et al. (2020). Details can be found in our manuscript (Chen et al. 2021).
 
 ### How do I install the package?
 
@@ -40,7 +40,7 @@ Chen YT, Jewell SW, Witten DM. (2021) [Quantifying uncertainty in spikes estimat
 If you encounter a bug or would like to make a change request, please file it as an issue [here](https://github.com/yiqunchen/SpikeInference/issues).
 
 ### References
-Chen YT, Jewell SW, Witten DM. (2021) [Quantifying uncertainty in spikes estimated from calcium imaging data](https://arxiv.org/abs/2103.07818v1
+Chen YT, Jewell SW, Witten DM. (2021) Quantifying uncertainty in spikes estimated from calcium imaging data
 ). arXiv:2103.0781 [statME].
 
 Jewell, S. and Witten, D. (2018). Exact spike train inference via l0 optimization. Ann. Appl. Stat., 12(4):2457–2482.
