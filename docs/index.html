@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
 <!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Quantifying uncertainty for spikes estimated from calcium imaging data">
-<meta property="og:description" content="An implementation of selective inference for spikes detected via an L0 penalty as described in Chen et al (2021)">
+<meta property="og:description" content="An implementation of selective inference for spikes detected via an L0 penalty as described in Chen et al. (2021)">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
@@ -72,8 +72,7 @@
 <div id="what-is-spikeinference" class="section level3">
 <h3 class="hasAnchor">
 <a href="#what-is-spikeinference" class="anchor"></a>What is SpikeInference?</h3>
-<p>SpikeInference is an R package that quantifies uncertainty (i.e., calculating p-values and confidence intervals) for spikes estimated from calcium imaging data.</p>
-<p><code>SpikeInference</code> is an <code>R</code> package for quantifying uncertainty (i.e., obtaining valid p-values and confidence intervals) for spikes estimated from calcium imaging data via an <img src="https://render.githubusercontent.com/render/math?math=%5Cell_0"> penalized algorithm described in Jewell and Witten (2018) and Jewell et al. (2019).</p>
+<p><code>SpikeInference</code> is an <code>R</code> package for quantifying uncertainty (i.e., obtaining valid p-values and confidence intervals) for spikes estimated from calcium imaging data via the <img src="https://render.githubusercontent.com/render/math?math=%5Cell_0"> penalized algorithm described in Jewell and Witten (2018) and Jewell et al. (2020). Details can be found in our manuscript listed in the citation section.</p>
 </div>
 <div id="how-do-i-install-the-package" class="section level3">
 <h3 class="hasAnchor">
@@ -88,36 +87,37 @@
 <div id="why-do-we-need-spikeinference" class="section level3">
 <h3 class="hasAnchor">
 <a href="#why-do-we-need-spikeinference" class="anchor"></a>Why do we need SpikeInference?</h3>
-<p>Double dipping — or more formally, generating a hypothesis based on your data, and then testing the hypothesis on that same data — renders classical hypothesis tests (e.g., z-test or t-test or Wilcoxon-rank for a difference-in-means; and in general any likelihood or Wald-based tests) invalid.</p>
-<p>In the case of spike estimation on calcium imaging data, our hypothesis is a function of the estimated spike locations, which in turn is a function of data. As an example, we generate a time series of calcium imaging data according to a model with no spikes at all (See Figure below), the <img src="https://render.githubusercontent.com/render/math?math=%5Cell_0"> algorithm estimated a spike at timepoint 1793, which has a naive (Wald) p-value &lt;0.001 (anti-conservative!); in contrast, our double-dippling-adjusted method yields a p-value of 0.24.</p>
+<p>Double-dipping — or more formally, generating a hypothesis based on your data, and then testing the hypothesis on that same data — renders classical hypothesis tests (e.g., z-test or Wilcoxon-rank for a difference-in-means; and in general any standard hypothesis tests) invalid, in the sense that Type I error is not controlled.</p>
+<p>In the case of spike estimation on calcium imaging data, our goal is to test whether the estimated spikes are, in fact, associated with a true increase in calcium. However, the estimated spikes were obtained from the same data used for testing. Therefore, if we aren’t careful, we will have a problem with double-dipping, and reject the null hypothesis too often.</p>
+<p>As an example, we generate a time series of calcium imaging data according to a model with no spikes at all (see figure below). The <img src="https://render.githubusercontent.com/render/math?math=%5Cell_0"> algorithm estimated a spike at timepoint 1793. If we ignore the issue of double-dipping, and test the null hypothesis that there is no increase in calcium at timepoint 1793 using a Wald test, we get a p-value &lt;0.001. By contrast, our double-dippling-adjusted method yields a p-value of 0.24. Our result makes our sense here, since we simulated data with no true spikes.</p>
 <p><img src="reference/figures/demo_fig_pkg.png" alt="Illustrative example" width="300" class="center"></p>
 </div>
 <div id="link-to-additional-resources" class="section level3">
 <h3 class="hasAnchor">
 <a href="#link-to-additional-resources" class="anchor"></a>Link to additional resources</h3>
 <ul>
-<li>You can learn more about the technical details in our manuscript and in the technical setup section here.</li>
-<li>You can learn more about how to use our software here.</li>
-<li>Finally, code and steps to reproduce the figures in our manuscript can be found in the GitHub repo here.</li>
+<li>You can learn more about the technical details in our manuscript and in the technical setup section <a href="https://yiqunchen.github.io/SpikeInference/articles/technical_details.html">here</a>.</li>
+<li>You can learn more about how to use our software <a href="https://yiqunchen.github.io/SpikeInference/articles/Tutorials.html">here</a>.</li>
+<li>Finally, code and steps to reproduce the figures in our manuscript can be found in the GitHub repo <a href="https://github.com/yiqunchen/SpikeInference-experiments">here</a>.</li>
 </ul>
 </div>
 <div id="citation" class="section level3">
 <h3 class="hasAnchor">
 <a href="#citation" class="anchor"></a>Citation</h3>
 <p>If you use <code>SpikeInference</code> for your analysis, please cite our manuscript:</p>
-<p>Yiqun Chen, Sean Jewell, and Daniela Witten. (2021). Uncertainty quantification for spikes estimated from calcium imaging data.</p>
+<p>Chen YT, Jewell SW, Witten DM. (2021) <a href="https://arxiv.org/abs/2103.07818v1">Quantifying uncertainty in spikes estimated from calcium imaging data</a>. arXiv:2103.0781 [statME].</p>
 </div>
 <div id="bug-reports--change-requests" class="section level3">
 <h3 class="hasAnchor">
 <a href="#bug-reports--change-requests" class="anchor"></a>Bug Reports / Change Requests</h3>
-<p>If you encounter a bug or would like make a change request, please file it as an issue <a href="https://github.com/yiqunchen/SpikeInference/issues">here</a>.</p>
+<p>If you encounter a bug or would like to make a change request, please file it as an issue <a href="https://github.com/yiqunchen/SpikeInference/issues">here</a>.</p>
 </div>
 <div id="references" class="section level3">
 <h3 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h3>
-<p>Yiqun Chen, Sean Jewell, and Daniela Witten. (2021). Uncertainty quantification for spikes estimated from calcium imaging data.</p>
+<p>Chen YT, Jewell SW, Witten DM. (2021) <a href="https://arxiv.org/abs/2103.07818v1">Quantifying uncertainty in spikes estimated from calcium imaging data</a>. arXiv:2103.0781 [statME].</p>
 <p>Jewell, S. and Witten, D. (2018). Exact spike train inference via l0 optimization. Ann. Appl. Stat., 12(4):2457–2482.</p>
-<p>Jewell, S. W., Hocking, T. D., Fearnhead, P., and Witten, D. M. (2019b). Fast nonconvex deconvolution of calcium imaging data. Biostatistics.</p>
+<p>Jewell SW, Hocking TD, Fearnhead P, Witten DM. Fast nonconvex deconvolution of calcium imaging data. Biostatistics. 2020;21(4):709-726. <a href="doi:10.1093/biostatistics/kxy083" class="uri">doi:10.1093/biostatistics/kxy083</a></p>
 </div>
 </div>
   </div>
