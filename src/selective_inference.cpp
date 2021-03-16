@@ -375,7 +375,7 @@ double tn_lower_surv(PiecewiseSquareLoss * analytic_phi,
              vTy,
              nu_norm,
              sig,
-             lower_trunc)-alpha_1;
+             lower_trunc)-(alpha_1);
 
      return(result);
 }
