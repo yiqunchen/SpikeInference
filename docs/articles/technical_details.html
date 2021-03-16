@@ -111,16 +111,21 @@
 <p>This motivates the following <span class="math inline">\(p\)</span>-value: <span class="math display">\[\mathbb{P}_{H_0}\left(\nu^{\top} Y \geq \nu^{\top} y \;\middle\vert\; \hat\tau_j \in \mathcal{M}(Y) , \nu^{\top}Y &gt; 0, \Pi_{\nu}^{\perp} Y= \Pi_{\nu}^{\perp} \right),\]</span> where <span class="math inline">\(\mathcal{M}(y)\)</span> denote the set of estimated spikes from <span class="math inline">\(y\)</span> via the <span class="math inline">\(\ell_0\)</span> problem; and <span class="math inline">\(\Pi_{\nu}^{\perp}\)</span> is the orthogonal projection operator used to eliminate the nuisance parameter. We show in our manuscript that this p-value for testing <span class="math inline">\(H_0\)</span> can be written as <span class="math display">\[\mathbb{P}\left(\phi \geq \nu^\top y \middle|  \hat{\tau}_j \in \mathcal{M}(y'(\phi)), \phi\geq 0\right),\]</span> where <span class="math inline">\(\phi\sim \mathcal{N}(0,\sigma^2||\nu||_2^2)\)</span>, and <span class="math display">\[y'(\phi) = (I-\Pi_\nu)y+\phi\cdot \frac{\nu}{||\nu||_2^2} = y+\left(\frac{\phi-\nu^{\top}y}{||\nu||_2^2}\right)\nu\]</span> is a perturbation of the observed data <span class="math inline">\(y\)</span>.</p>
 <p>Moreover, if we denote <span class="math inline">\(\mathcal{S}=\{\phi: \hat\tau_j \in \mathcal{M}(y'(\phi))\}\)</span>, then the p-value can be equivalently expressed as <span class="math display">\[\mathbb{P}\left(\phi \geq \nu^\top y \middle | \phi \in \mathcal{S}\cap(0,\infty)\right)\]</span>. Now since <span class="math inline">\(\phi\sim \mathcal{N}(0,\sigma^2||\nu||_2^2)\)</span>, the <span class="math inline">\(\phi | \phi \in mathcal{S}\cap(0,\infty))\)</span> will follow a truncated normal distribution, and the computation of the p-value boils down to characterizing the set <span class="math inline">\(\mathcal{S}\)</span>.</p>
 <p>Our software implements an efficient calculation of this <span class="math inline">\(p\)</span>-value by analytically characterizing set <span class="math inline">\(\mathcal{S}\)</span>; more details can be found in Sections 2 and 3 of our paper (Chen, Jewell, and Witten, 2021).</p>
-<p>Remark: by constrast, a naive (Wald) p-value would take the form <span class="math display">\[\mathbb{P}\left(\phi \geq \nu^\top y \right),\]</span> where the data-adaptive choice of hypothesis is not accounted for.</p>
+<p>Remark: by contrast, a naive (Wald) p-value would take the form <span class="math display">\[\mathbb{P}\left(\phi \geq \nu^\top y \right),\]</span> where the data-adaptive choice of hypothesis is not accounted for.</p>
 </div>
 <div id="extensions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#extensions" class="anchor"></a>Extensions</h3>
-<p>Our implemented function also allows for the following extensions:</p>
+<p>Our software also allows for the following extensions:</p>
 <ol style="list-style-type: decimal">
-<li>Generate <span class="math inline">\(1-\alpha\)</span> selective confidence intervals for the parameter <span class="math inline">\(\nu^\top c\)</span>.</li>
-<li>Compute valid p-values for the hypothesis <span class="math inline">\(H_0: \nu^{\top} c \leq \delta \text{ versus } H_1: \nu^\top c &gt; \delta\)</span>, where <span class="math inline">\(\delta &gt; 0\)</span> is a parameter user can specify.</li>
+<li>Generate <span class="math inline">\((1-\alpha)\)</span> selective confidence intervals for the parameter <span class="math inline">\(\nu^\top c\)</span>, the change in calcium associated with an estimated spike.</li>
+<li>Compute valid p-values for the hypothesis <span class="math inline">\(H_0: \nu^{\top} c \leq \delta \text{ versus } H_1: \nu^\top c &gt; \delta\)</span>, where <span class="math inline">\(\delta &gt; 0\)</span> is a user-specified parameter user can specify.</li>
 </ol>
+</div>
+<div id="references" class="section level3">
+<h3 class="hasAnchor">
+<a href="#references" class="anchor"></a>References</h3>
+<p>Chen YT, Jewell SW, Witten DM. (2021) Quantifying uncertainty in spikes estimated from calcium imaging data. <a href="https://arxiv.org/abs/2103.07818">arXiv:2103.0781</a> [statME].</p>
 </div>
   </div>
 

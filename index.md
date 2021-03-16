@@ -32,16 +32,14 @@ As an example, we generate a time series of calcium imaging data according to a 
 
 If you use `SpikeInference` for your analysis, please cite our manuscript:
 
-Chen YT, Jewell SW, Witten DM. (2021) [Quantifying uncertainty in spikes estimated from calcium imaging data](https://arxiv.org/abs/2103.07818v1
-). arXiv:2103.0781 [statME].
+Chen YT, Jewell SW, Witten DM. (2021) [Quantifying uncertainty in spikes estimated from calcium imaging data](https://arxiv.org/abs/2103.07818). arXiv:2103.0781 [statME].
 
 ### Bug Reports / Change Requests
 
 If you encounter a bug or would like to make a change request, please file it as an issue [here](https://github.com/yiqunchen/SpikeInference/issues).
 
 ### References
-Chen YT, Jewell SW, Witten DM. (2021) Quantifying uncertainty in spikes estimated from calcium imaging data
-). arXiv:2103.0781 [statME].
+Chen YT, Jewell SW, Witten DM. (2021) Quantifying uncertainty in spikes estimated from calcium imaging data. arXiv:2103.0781 [statME].
 
 Jewell, S. and Witten, D. (2018). Exact spike train inference via l0 optimization. Ann. Appl. Stat., 12(4):2457–2482.
 

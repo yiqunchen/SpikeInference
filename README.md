@@ -22,8 +22,7 @@ See [here]( https://yiqunchen.github.io/SpikeInference/) for tutorials and examp
 
 If you use `SpikeInference` for your analysis, please cite our manuscript:
 
-Chen YT, Jewell SW, Witten DM. (2021) [Quantifying uncertainty in spikes estimated from calcium imaging data](https://arxiv.org/abs/2103.07818v1
-). arXiv:2103.0781 [statME].
+Chen YT, Jewell SW, Witten DM. (2021) [Quantifying uncertainty in spikes estimated from calcium imaging data](https://arxiv.org/abs/2103.07818). arXiv:2103.0781 [statME].
 
 ## Bug Reports / Change Requests
 

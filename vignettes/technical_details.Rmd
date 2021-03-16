@@ -64,15 +64,18 @@ $$\mathbb{P}\left(\phi \geq \nu^\top y \middle | \phi \in \mathcal{S}\cap(0,\inf
 
 Our software implements an efficient calculation of this $p$-value by analytically characterizing set $\mathcal{S}$; more details can be found in Sections 2 and 3 of our paper (Chen, Jewell, and Witten, 2021). 
 
-Remark: by constrast, a naive (Wald) p-value would take the form
+Remark: by contrast, a naive (Wald) p-value would take the form
 $$\mathbb{P}\left(\phi \geq \nu^\top y \right),$$
 where the data-adaptive choice of hypothesis is not accounted for.
 
 ### Extensions
-Our implemented function also allows for the following extensions:
+Our software also allows for the following extensions:
 
-1. Generate $1-\alpha$ selective confidence intervals for the parameter $\nu^\top c$.
-2. Compute valid p-values for the hypothesis $H_0: \nu^{\top} c \leq \delta \text{ versus } H_1: \nu^\top c > \delta$, where $\delta > 0$ is a parameter user can specify.
+1. Generate $(1-\alpha)$ selective confidence intervals for the parameter $\nu^\top c$, the change in calcium associated with an estimated spike.
+2. Compute valid p-values for the hypothesis $H_0: \nu^{\top} c \leq \delta \text{ versus } H_1: \nu^\top c > \delta$, where $\delta > 0$ is a user-specified parameter user can specify.
+
+### References
+Chen YT, Jewell SW, Witten DM. (2021) Quantifying uncertainty in spikes estimated from calcium imaging data. [arXiv:2103.0781](https://arxiv.org/abs/2103.07818) [statME].
 
 
 
