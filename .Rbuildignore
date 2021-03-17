@@ -8,4 +8,5 @@
 \.out$
 \.bin$
 README.md
+./src/CMakeLists.txt
 
