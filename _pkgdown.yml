@@ -1,4 +1,5 @@
 # Navigation bar
+
 navbar:
   structure:
     left:  [home, articles, tutorials, reference]

@@ -1,4 +1,4 @@
-# SpikeInference <img src="spike_inference_hex.png" align="right" width="150px"/>
+# SpikeInference <img src="man/figures/spike_inference_hex.png" align="right" width="150px"/>
 
 ### What is SpikeInference?
 
@@ -19,14 +19,22 @@ Double-dipping &mdash; or more formally, generating a hypothesis based on your d
 
 In the case of spike estimation on calcium imaging data, our goal is to test whether the estimated spikes are, in fact, associated with a true increase in calcium. However, the estimated spikes were obtained from the same data used for testing. Therefore, if we aren't careful, we will have a problem with double-dipping, and reject the null hypothesis too often.
 
-As an example, we generate a time series of calcium imaging data according to a model with no spikes at all (see figure below). The <img src="https://render.githubusercontent.com/render/math?math=\ell_0"> algorithm estimated a spike at timepoint 1793. If we ignore the issue of double-dipping, and test the null hypothesis that there is no increase in calcium at timepoint 1793 using a Wald test, we get a  p-value <0.001. By contrast, our double-dippling-adjusted method yields a p-value of 0.24. Our result makes our sense here, since we simulated data with no true spikes.
+As an example, we generate a time series of calcium imaging data according to a model with no spikes at all (see the leftmost figure below). The <img src="https://render.githubusercontent.com/render/math?math=\ell_0"> algorithm estimated a spike at timepoint 1793. If we ignore the issue of double-dipping, and test the null hypothesis that there is no increase in calcium at timepoint 1793 using a Wald test, we get a  p-value <0.001. By contrast, our double-dippling-adjusted method yields a p-value of 0.24. Our result makes our sense here, since we simulated data with no true spikes. 
 
-<img src="man/figures/demo_fig_pkg.png" alt="Illustrative example" width="300" class="center">
+In fact, if we repeat this process for a bunch of times (~3,000 tests), we see that the Wald test leads to extremely *inflated Type I error* (see the middle figure below). By contrast, our selective test controls the Type I error at the nominal level (see the rightmost figure below).
+
+<div>
+<figure>
+<img src="man/figures/demo_fig_pkg.png" alt="Illustrative example" width="30%" class="center">
+<img src="man/figures/motivation_type_I_error_Wald.png" alt="1b" width="30%" class="center" alt>
+<img src="man/figures/motivation_type_I_error_select.png" alt="1c" width="30%" class="center">
+</figure>
+</div>
 
 ### Link to additional resources
-* You can learn more about the technical details in our manuscript and in the technical setup section [here](https://yiqunchen.github.io/SpikeInference/articles/technical_details.html). 
-* You can learn more about how to use our software [here](https://yiqunchen.github.io/SpikeInference/articles/Tutorials.html).
-* Finally, code and steps to reproduce the figures in our manuscript can be found in the GitHub repo [here](https://github.com/yiqunchen/SpikeInference-experiments). 
+* You can learn more about the technical details in our manuscript and in the [technical details section](https://yiqunchen.github.io/SpikeInference/articles/technical_details.html). 
+* You can learn more about how to use our software in the  [tutorials section](https://yiqunchen.github.io/SpikeInference/articles/Tutorials.html).
+* Finally, code and steps to reproduce the figures in our manuscript can be found in the GitHub repo [https://github.com/yiqunchen/SpikeInference-experiments](https://github.com/yiqunchen/SpikeInference-experiments). 
 
 ### Citation
 
