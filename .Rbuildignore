@@ -2,3 +2,10 @@
 ^\.Rproj\.user$
 ^\.travis\.yml$
 ^\.github$
+\.o$
+\.so$
+\.dll$
+\.out$
+\.bin$
+README.md
+

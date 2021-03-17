@@ -1,8 +1,7 @@
 #' Plot the solution to an L0 segmentation problem
 #' @param x output from running estimate_spikes
 #' @param xlims optional parameter to specify the x-axis limits
-#' @param  arguments to be passed to methods
-#' @param ... arguments to be passed to methods
+#' @param  ... to be passed to methods
 #' @export
 #' @import graphics
 #'
