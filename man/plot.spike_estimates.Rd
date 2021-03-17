@@ -11,9 +11,7 @@
 
 \item{xlims}{optional parameter to specify the x-axis limits}
 
-\item{...}{arguments to be passed to methods}
-
-\item{arguments}{to be passed to methods}
+\item{...}{to be passed to methods}
 }
 \description{
 Plot the solution to an L0 segmentation problem
