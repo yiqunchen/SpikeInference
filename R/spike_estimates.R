@@ -4,19 +4,18 @@
 #' @param decay_rate Numeric; specified AR(1) decay rate \eqn{\gamma}, a 
 #' number between 0 and 1 (non-inclusive).
 #' @param tuning_parameter Numeric; tuning parameter \eqn{\lambda} for 
-#' L0 spike estimation, a nonnegative number.
+#' L0 spike estimation, a non-negative number.
 #' @param functional_pruning_out Logical; if TRUE, return
 #' cost functions for L0 spike estimation. Defaults to FALSE.
 #'
 #'
-#' @return For L0 spkie estimation, returns a list with elements:
+#' @return For L0 spike estimation, returns a list with elements:
 #' @return \code{estimated_calcium} Estimated calcium levels
 #' @return \code{spikes} The set of estimated spikes
-#' @return \code{spike_sign} Signs associated with the set of estimated spikes
 #' @return \code{cost} The cost at each time point
 #' @return \code{n_intervals} The number of piecewise quadratics used at each
 #'   point
-#' @return \code{piecewise_square_losses} Dataframe of optimal cost functions
+#' @return \code{piecewise_square_losses} A data frame of optimal cost functions
 #'   Cost_s*(mu) for s = 1,..., T.
 #'
 #' @details
@@ -98,9 +97,7 @@ spike_estimates <- structure(function(dat, decay_rate, tuning_parameter, functio
         cost = cost_mat_r,
         n_intervals = intervals_mat_r,
         end_vec = end_vec_r,
-        piecewise_square_losses = piecewise_square_losses,
-        spike_sign = spike_sign
-      )
+        piecewise_square_losses = piecewise_square_losses)
     class(out) <- "spike_estimates"
     return(out)
 })
