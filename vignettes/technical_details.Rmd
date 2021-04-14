@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 ```
 <center>
 
-![Figure 1: Illustrative example for recording 29 from Chen et al. (2013), which uses the GCaMP6f indicator. The cell's fluorescence trace is displayed in gray. Spikes estimated via the $\ell_0$ problem are displayed in orange; the spikes with *selective* $p$-valuesbelow $0.05$ (with $h=20$) are displayed in blue; and the true spike times are shown in black.](../man/figures/combined_plot_exp_7_cell_29_paper_example.png){width=80%}
+![Figure 1: Illustrative example for recording 29 from Chen et al. (2013), which uses the GCaMP6f indicator. The cell's fluorescence trace is displayed in gray. Spikes estimated via the $\ell_0$ problem are displayed in orange; the spikes with *selective* $p$-values below $0.05$ (with $h=20$) are displayed in blue; and the true spike times are shown in black.](../man/figures/combined_plot_exp_7_cell_29_paper_example.png){width=80%}
 
 </center>
 
@@ -23,7 +23,7 @@ knitr::opts_chunk$set(
 ### Overview
 Calcium imaging is an increasingly popular technique in neuroscience for recording the activity of large populations of neurons *in vivo*. When a neuron spikes, calcium floods the cell. Due to the use of fluorescent calcium indicators, this leads to a rapid increase in calcium. Therefore, for each neuron, calcium imaging results in a time series of fluorescence intensities that can be seen as a first-order approximation to its unobserved spike times. As an example, we plot one such recording in grey (see Figure 1). Typically, the scientific interest lies in the unobserved spike times, rather than the observed fluorescence traces. 
 
-After we estimated spikes from the calcium imaging data, it's natural to want to test whether the estimated spikes correspond to a true increase in calcium. However, a naive approach that doesn't account for the fact that the spikes are estimated from the *same data used for testing* will lead to inflated selective Type I error &mdash that is, the probability of falsely rejecting the null hypothesis, *given that we decided to conduct the test*. 
+After we estimated spikes from the calcium imaging data, it's natural to want to test whether the estimated spikes correspond to a true increase in calcium. However, a naive approach that doesn't account for the fact that the spikes are estimated from the *same data used for testing* will lead to inflated selective Type I error &mdash; that is, the probability of falsely rejecting the null hypothesis, *given that we decided to conduct the test*. 
 
 To tackle this problem, we propose a selective inference framework to compute valid $p$-values for hypotheses involving the estimated spikes. In a nutshell, we compute the probability of observing such a large increase in fluorescence  under the null hypothesis, *given that we estimated a spike at this position*. In addition, we develop a computationally-efficient implementation of this framework in the case of the $\ell_0$ spike detection algorithm.
 
@@ -68,6 +68,7 @@ Now suppose that we test for the presence of a spike only at timepoints at a giv
 
 1. we estimate a spike, and
 2. there is an increase in fluorescence at that timepoint. 
+
 This results in a challenging selective inference problem: we need to account for the process that led us to estimate a spike this timepoint!
 
 This motivates the following $p$-value: 
@@ -89,7 +90,6 @@ This approach will not control the selective Type I error, i.e., it will reject 
 Our software also allows for the following extensions:
 
 1. Generate $(1-\alpha)$ selective confidence intervals for the parameter $\nu^\top c$, the change in calcium associated with an estimated spike.
-2. Compute valid $p$-values for the hypothesis $H_0: \nu^{\top} c \leq \delta \text{ versus } H_1: \nu^\top c > \delta$, where $\delta > 0$ is a user-specified parameter user can specify.
 
 ### References
 
