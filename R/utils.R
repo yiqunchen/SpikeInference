@@ -384,7 +384,7 @@ summary.spike_estimates <- function(object, ...){
 #' Summarize the inference result for spikes estimated via an L0 inference problem
 #' @param object output from running spike_estimates
 #' @param  ... to be passed to methods
-#' @return A data frame with a column of estimated spikes with assocaited p-values and confidence intervals.
+#' @return A data frame with a column of estimated spikes with associated p-values and confidence intervals.
 #' @examples
 #' gam <- 0.98
 #' LAMBDA <- 0.7
