@@ -51,7 +51,10 @@ where \eqn{y_t} is the observed fluorescence at the t-th timestep.
 sim <- simulate_ar1(n = 500, gam = 0.998, poisMean = 0.01, sd = 0.05, seed = 1)
 ### Fit the spike
 fit_spike <- spike_estimates(sim$fl, decay_rate = 0.998, tuning_parameter = 0.01)
-
+### Plot estimated spikes
+plot(fit_spike)
+### summarize estimated spike times
+summary_fit_spike <- summary(fit_spike)
 }
 \references{
 Jewell, S. W., Hocking, T. D., Fearnhead, P., & Witten, D. M. (2019). 

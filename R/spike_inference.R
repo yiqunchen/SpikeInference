@@ -14,7 +14,6 @@
 #' @param two_sided Logical; if TRUE, a 2-sided p-value is computed and returned.
 #' @param alpha Numeric; significance level for the hypothesis test, 
 #' a number between 0 and 1 (non-inclusive).
-#' @param mu Numeric; parameter for the test  \eqn{\nu^{T}c\leq mu}.
 
 #' @return Returns a list with elements:
 #' \itemize{
@@ -61,7 +60,8 @@
 #' curr_fit_spike <- spike_estimates(dat = curr_sim$fl, decay_rate = gam, tuning_parameter = LAMBDA)
 #' curr_inference_spike <- spike_inference(dat = curr_sim$fl, decay_rate = gam,
 #'  tuning_parameter = LAMBDA, window_size = 2, sig2 = sigma*sigma, return_ci = TRUE)
-
+#' ### a summary of the inferential results
+#' summary(curr_inference_spike)
 #' @references
 #'
 #' Chen YT, Jewell SW, Witten DM. (2021+) Quantifying uncertainty in spikes estimated from calcium imaging data.
@@ -86,7 +86,7 @@
 spike_inference <- structure(function(dat, decay_rate, tuning_parameter, 
                                       window_size, sig2 = NULL, 
                                       return_conditioning_sets = FALSE, return_ci = FALSE, 
-                                      two_sided = FALSE, alpha = 0.05, mu = 0){
+                                      two_sided = FALSE, alpha = 0.05){
   stopifnot(decay_rate > 0)
   stopifnot(decay_rate < 1)
   stopifnot(tuning_parameter > 0)
@@ -112,7 +112,7 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter,
     
     out_fpop_inference <- .fpop_inference(dat, decay_rate, tuning_parameter, window_size, sig2,
                                           return_conditioning_sets, return_ci, two_sided, alpha,
-                                          mu,0)
+                                          0,0)
     
     if (return_conditioning_sets) { 
       conditioning_sets = fpop_inference_intervals_formatter(out_fpop_inference[[2]])
@@ -138,7 +138,7 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter,
         estimated_variance = estimated,
         two_sided = two_sided,
         alpha = alpha,
-        mu = mu
+        call = match.call()
       )
     }else{
       if (return_ci){
@@ -157,7 +157,7 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter,
           estimated_variance = estimated,
           two_sided = two_sided,
           alpha = alpha,
-          mu = mu
+          call = match.call()
         )
       }else{
       out <- list(
@@ -173,13 +173,14 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter,
         estimated_variance = estimated,
         two_sided = two_sided,
         alpha = alpha,
-        mu = mu
-      )
+        call = match.call()
+        )
       }
     }
     class(out) <- "spike_inference"
     return(out)
   })
+
 
 
 

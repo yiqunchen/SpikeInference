@@ -26,14 +26,16 @@
 #' 1(c_t \neq \gamma c_t-1) ,}
 #' where \eqn{y_t} is the observed fluorescence at the t-th timestep.
 #' 
-#'
 #' @examples
 #' 
 #' ### Generate sample data
 #' sim <- simulate_ar1(n = 500, gam = 0.998, poisMean = 0.01, sd = 0.05, seed = 1)
 #' ### Fit the spike
 #' fit_spike <- spike_estimates(sim$fl, decay_rate = 0.998, tuning_parameter = 0.01)
-#' 
+#' ### Plot estimated spikes
+#' plot(fit_spike)
+#' ### summarize estimated spike times
+#' summary_fit_spike <- summary(fit_spike)
 #' @references
 #' Jewell, S. W., Hocking, T. D., Fearnhead, P., & Witten, D. M. (2019). 
 #' Fast nonconvex deconvolution of calcium imaging data. Biostatistics. 
@@ -47,7 +49,7 @@
 #' Francaise de Statistique, 156(4), 180-205.
 #'
 #' @export
-spike_estimates <- structure(function(dat, decay_rate, tuning_parameter, functional_pruning_out = FALSE) {
+spike_estimates <- structure(function(dat, decay_rate, tuning_parameter, functional_pruning_out = FALSE){
   n.data <- length(dat)
   stopifnot(3 <= n.data)
   stopifnot(is.numeric(tuning_parameter))
@@ -71,13 +73,12 @@ spike_estimates <- structure(function(dat, decay_rate, tuning_parameter, functio
     for (d in fpop_out) {
       piecewise_square_losses <- rbind(piecewise_square_losses, data.frame(d))
     }
-    colnames(piecewise_square_losses) <- c("square", "linear", "constant", "min_mean", "max_mean", "prev_last_mean", "data_i", "s")  
+    colnames(piecewise_square_losses) <- c("square", "linear", "constant", "min_mean", "max_mean", 
+                                           "prev_last_mean", "data_i", "s")  
   }
   
   estimated_means = rev(mean_vec_r)
   change_pts = rev(unique(end_vec_r[end_vec_r > 0]))
-  est_diff_mean <- estimated_means[2:length(estimated_means)]-decay_rate*estimated_means[1:(length(estimated_means)-1)]
-  est_spike_size <- est_diff_mean[change_pts]
   out <-list(estimated_means = estimated_means,
         estimated_calcium = estimated_means,
         dat = dat,

@@ -13,8 +13,7 @@ spike_inference(
   return_conditioning_sets = FALSE,
   return_ci = FALSE,
   two_sided = FALSE,
-  alpha = 0.05,
-  mu = 0
+  alpha = 0.05
 )
 }
 \arguments{
@@ -29,6 +28,9 @@ L0 spike estimation, a non-negative number.}
 \item{window_size}{Numeric; window size for fixed window hypothesis testing,
 a non-negative integer.}
 
+\item{sig2}{Numeric; noise variance for the observed data, a non-negative number.
+If unknown (NULL), sample variance of residuals is used instead.}
+
 \item{return_conditioning_sets}{Logical; Should the conditioning set S be returned?}
 
 \item{return_ci}{Logical; if TRUE, the confidence interval for the change in calcium 
@@ -38,11 +40,6 @@ is computed and returned.}
 
 \item{alpha}{Numeric; significance level for the hypothesis test, 
 a number between 0 and 1 (non-inclusive).}
-
-\item{mu}{Numeric; parameter for the test  \eqn{\nu^{T}c\leq mu}.}
-
-\item{sig}{Numeric; noise variance for the observed data, a non-negative number.
-If unknown (NULL), sample variance of residuals is used instead.}
 }
 \value{
 Returns a list with elements:
@@ -92,6 +89,8 @@ curr_sim <- simulate_ar1(n = n_length, gam = gam, poisMean = 0.01, sd = sigma, s
 curr_fit_spike <- spike_estimates(dat = curr_sim$fl, decay_rate = gam, tuning_parameter = LAMBDA)
 curr_inference_spike <- spike_inference(dat = curr_sim$fl, decay_rate = gam,
  tuning_parameter = LAMBDA, window_size = 2, sig2 = sigma*sigma, return_ci = TRUE)
+### a summary of the inferential results
+summary(curr_inference_spike)
 }
 \references{
 Chen YT, Jewell SW, Witten DM. (2021+) Quantifying uncertainty in spikes estimated from calcium imaging data.

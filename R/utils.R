@@ -1,10 +1,19 @@
 #' Plot the solution to an L0 segmentation problem
-#' @param x output from running estimate_spikes
+#' @param x output from running spike_estimates
 #' @param xlims optional parameter to specify the x-axis limits
 #' @param  ... to be passed to methods
 #' @export
+#' @examples 
+#' ### Generate sample data
+#' sim <- simulate_ar1(n = 500, gam = 0.998, poisMean = 0.01, sd = 0.05, seed = 1)
+#' ### Fit the spike
+#' fit_spike <- spike_estimates(sim$fl, decay_rate = 0.998, tuning_parameter = 0.01)
+#' ### Plot estimated spikes
+#' plot(fit_spike)
+#' ### summarize estimated spike times
+#' summary_fit_spike <- summary(fit_spike)
+#' 
 #' @import graphics
-#'
 plot.spike_estimates <- function(x, xlims = NULL, ...) {
   if (sum(is.na(x$estimated_calcium))) {
     warning("Calcium concentration must be estimated before plotting. Automatically running estimate_calcium(fit), however estimated_calicum is not saved.)")
@@ -20,11 +29,59 @@ plot.spike_estimates <- function(x, xlims = NULL, ...) {
   }
   lines(ind, x$estimated_calcium, col = "blue", lwd = 2)
   
-  hh <- 0.01 * diff(ylims)
+  hh <- 0.03 * diff(ylims)
   for (spike in x$spikes)
   {
     segments(x0 = ind[spike], x1 = ind[spike], y0 = ylims[1] - hh,
              y1 = hh + ylims[1], col = "blue", lwd = 1)
+  }
+}
+
+#' Plot the result of quantifying the uncertainty of spikes estimated via an L0 penalty
+#' @param x output from running spike_inference
+#' @param xlims optional parameter to specify the x-axis limits
+#' @param  ... to be passed to methods
+#' @export
+#' @examples 
+#' gam <- 0.98
+#' LAMBDA <- 0.7
+#' sigma <- 0.3
+#' n_length <- 1000
+#' curr_sim <- simulate_ar1(n = n_length, gam = gam, poisMean = 0.01, sd = sigma, seed = 2)
+#' curr_inference_spike <- spike_inference(dat = curr_sim$fl, decay_rate = gam,
+#'  tuning_parameter = LAMBDA, window_size = 2, sig2 = sigma*sigma, return_ci = TRUE)
+#' ### The observed fluorescence is plotted in gray, along with two sets of 
+#' ### vertical ticks: each orange tick represents an estimated spike associated with 
+#' ### a positive increase in fluorescence, and blue ticks are the subset of spikes 
+#' ### with a selective p-value < 0.05.
+#' plot(curr_inference_spike)
+#' @references
+#' Chen YT, Jewell SW, Witten DM. (2021) Quantifying uncertainty in spikes estimated from calcium imaging data.
+#' arXiv:2103.0781 [statME].
+#' @import graphics
+plot.spike_inference <- function(x, xlims = NULL, ...) {
+  
+  ind <- 1:length(x$dat)
+  rng <- range(c(x$dat))
+  ylims <- rng
+  hh <- 0.03 * diff(ylims)
+  ylims[1] <- ylims-hh*2
+  if (is.null(xlims)){
+    plot(ind, x$dat, cex = 0.5, pch = 20, col = "darkgrey", ylab = "", ylim = ylims, xlab = "Index")
+  } else {
+    plot(ind, x$dat, cex = 0.5, pch = 20, col = "darkgrey", ylab = "", ylim = ylims, xlim = xlims, xlab = "Time")
+  }
+  
+  
+  for (i in seq_along(x$spikes)){
+    spike <- x$spikes[i]
+    pval <- x$pvals[i]
+    segments(x0 = ind[spike], x1 = ind[spike], y0 = rng[1] - hh,
+             y1 = rng[1]+hh, col = "orange", lwd = 1)
+    if(pval<=0.05){
+      segments(x0 = ind[spike], x1 = ind[spike], y0 = rng[1] - 2.5*hh,
+               y1 = rng[1]-0.5*hh, col = "blue", lwd = 1)
+    }
   }
 }
 
@@ -199,7 +256,7 @@ plot.simdata <- function(x, xlims = NULL, ...) {
   }
   lines(x$conc, col = "darkgreen", lwd = 2)
   
-  hh <- 0.01 * diff(ylims)
+  hh <- 0.03 * diff(ylims)
   for (spike in x$spikes)
   {
     segments(x0 = spike, x1 = spike, y0 = ylims[1] - hh,
@@ -210,6 +267,9 @@ plot.simdata <- function(x, xlims = NULL, ...) {
 #' Print simulated data
 #' @param x simulated data
 #' @param ... arguments to be passed to methods
+#' @examples
+#' sim <- simulate_ar1(n = 500, gam = 0.998, poisMean = 0.009, sd = 0.05, seed = 1)
+#' print(sim)
 print.simdata <- function(x, ...){
   cat("\n Call: \n")
   dput(x$call)
@@ -228,8 +288,13 @@ print.simdata <- function(x, ...){
 #'
 #' @param x estimated spikes
 #' @param ... arguments to be passed to methods
-#' @export
-print.estimated_spikes <- function(x, ...)
+#' @examples
+#' ### Generate sample data
+#' sim <- simulate_ar1(n = 500, gam = 0.998, poisMean = 0.01, sd = 0.05, seed = 1)
+#' ### Fit the spike
+#' fit_spike <- spike_estimates(sim$fl, decay_rate = 0.998, tuning_parameter = 0.01)
+#' print(fit_spike)
+print.spike_estimates <- function(x, ...)
 {
   cat("\n Call: \n")
   dput(x$call)
@@ -238,13 +303,34 @@ print.estimated_spikes <- function(x, ...)
   
   cat("\n Settings: \n")
   cat("Data length \t\t", length(x$dat), "\n")
-  cat("Model type \t\t", x$type, "\n")
-  cat("Gamma \t\t\t", x$gam, "\n")
-  cat("Lambda \t\t\t", x$lambda, "\n")
+  cat("Gamma \t\t\t", x$decay_rate, "\n")
+  cat("Lambda \t\t\t", x$tuning_parameter, "\n")
 }
 
 
-
+#' Print estimated spikes
+#'
+#' @param x estimated spikes
+#' @param ... arguments to be passed to methods
+#' @examples
+#' ### Generate sample data
+#' sim <- simulate_ar1(n = 500, gam = 0.998, poisMean = 0.01, sd = 0.05, seed = 1)
+#' ### Fit the spike
+#' fit_spike <- spike_estimates(sim$fl, decay_rate = 0.998, tuning_parameter = 0.01)
+#' print(fit_spike)
+print.spike_inference <- function(x, ...)
+{
+  cat("\n Call: \n")
+  dput(x$call)
+  cat("\n Output: \n")
+  cat("Number of tests \t", length(x$spikes), "\n")
+  
+  cat("\n Settings: \n")
+  cat("Data length \t\t", length(x$dat), "\n")
+  cat("Gamma \t\t", x$decay_rate, "\n")
+  cat("Sigma2 \t\t\t", x$sig2, "\n")
+  cat("Lambda \t\t\t", x$lambda, "\n")
+}
 
 
 expand_fpop_intervals <- function(df, PLOT_MIN, PLOT_MAX, ni) {
@@ -268,54 +354,6 @@ expand_fpop_intervals <- function(df, PLOT_MIN, PLOT_MAX, ni) {
   return(df_plot)
 }
 
-#' Plot optimal cost and/or S as a function of \eqn{\phi}
-#' 
-#' @param  x ChangepointInference_L0_changepoints_pvals
-#' @param thj changepoint 
-#' @param plot_cost plot the optimal cost (TRUE), or plot S (FALSE)
-#' @param PLOT_MIN minimum phi 
-#' @param PLOT_MAX maximum phi 
-#' @param ni number of values to calculate the optimal cost at in each segment 
-#' @param ... arguments to be passed to methods
-#' @importFrom magrittr %>%
-plot.SpikeInference <- function(x, thj, plot_cost = TRUE, PLOT_MIN = -10, PLOT_MAX = 10, ni = 1000, ...) {
-  if (is.null(x$conditioning_sets)) { 
-    stop("Re-run changepoint_inference with parameter 'return_conditioning_sets' set to true")
-  }
-  ind <- which(x$change_pts == thj)
-  stopifnot(ind > 0)
-  
-  col_red <- "#d95f02"
-  col_blue <- "#1f78b4"
-  
-  if (plot_cost) {
-    df <- x$conditioning_sets[[ind]]
-    df_plot <- expand_fpop_intervals(df, PLOT_MIN, PLOT_MAX, ni)
-    par(mfrow = c(1, 1))
-    plot(df_plot$x, df_plot$y, pch = 20, cex = 0.1,
-         col = ifelse(df_plot$contained == 1, col_blue, col_red),
-         xlab = latex2exp::TeX("$\\phi$"), 
-         ylab = latex2exp::TeX("Cost$(\\phi)$"))
-    legend("bottomright", 
-           pch = 20,
-           col = c(col_blue, col_red),
-           c(latex2exp::TeX("$\\phi$ in  S"), latex2exp::TeX("$\\phi$ not in S")))
-    
-  } else {
-    x$conditioning_sets[[ind]] %>% dplyr::mutate(y = 1, contained = factor(contained, levels = c(0, 1), labels = c("Not in S", "In S"))) %>% 
-      ggplot2::ggplot() + 
-      ggplot2::geom_rect(ggplot2::aes(xmin = min_mean, xmax = max_mean, ymin = -10, ymax = 10, fill = contained)) +
-      ggplot2::coord_cartesian(xlim = c(PLOT_MIN, PLOT_MAX)) + 
-      ggplot2::xlab(latex2exp::TeX("$\\phi$")) + 
-      ggplot2::ylab('') + 
-      ggplot2::scale_fill_manual(values=c(col_red, col_blue)) +
-      ggplot2::theme_bw() +
-      ggplot2::theme(axis.text.y = ggplot2::element_blank(), axis.ticks = ggplot2::element_blank(), 
-                     panel.grid.major = ggplot2::element_blank(), panel.grid.minor = ggplot2::element_blank(),
-                     panel.background = ggplot2::element_blank(), axis.line = ggplot2::element_line(colour = "black"), 
-                     legend.position="bottom", legend.title = ggplot2::element_blank())
-  }
-}
 
 
 eval_cost_at.SpikeInference <- function(x, thj, phi) {
@@ -325,4 +363,44 @@ eval_cost_at.SpikeInference <- function(x, thj, phi) {
   return(eval_cost_at_helper(df, phi))
 }
 
+
+#' Summarize the solution to an L0 segmentation problem
+#' @param object output from running spike_estimates
+#' @param  ... to be passed to methods
+#' @return A data frame with a column of estimated spikes
+#' @examples
+#' gam <- 0.98
+#' LAMBDA <- 0.7
+#' sigma <- 0.3
+#' n_length <- 1000
+#' curr_sim <- simulate_ar1(n = n_length, gam = gam, poisMean = 0.01, sd = sigma, seed = 2)
+#' curr_fit_spike <- spike_estimates(dat = curr_sim$fl, decay_rate = gam, tuning_parameter = LAMBDA)
+#' summary(curr_fit_spike)
+#' @export
+summary.spike_estimates <- function(object, ...){
+  return(data.frame(spikes = object$spikes))
+}
+
+#' Summarize the inference result for spikes estimated via an L0 inference problem
+#' @param object output from running spike_estimates
+#' @param  ... to be passed to methods
+#' @return A data frame with a column of estimated spikes with assocaited p-values and confidence intervals.
+#' @examples
+#' gam <- 0.98
+#' LAMBDA <- 0.7
+#' sigma <- 0.3
+#' n_length <- 1000
+#' curr_sim <- simulate_ar1(n = n_length, gam = gam, poisMean = 0.01, sd = sigma, seed = 2)
+#' curr_fit_spike <- spike_estimates(dat = curr_sim$fl, decay_rate = gam, tuning_parameter = LAMBDA)
+#' curr_inference_spike <- spike_inference(dat = curr_sim$fl, decay_rate = gam,
+#' tuning_parameter = LAMBDA, window_size = 2, sig2 = sigma*sigma, return_ci = TRUE)
+#' summary(curr_inference_spike)
+#' @export
+summary.spike_inference <- function(object, ...){
+  result <- data.frame(estimated_spikes = object$spikes, 
+                                  pvals = object$pvals,
+                                  LCB = object$LCB,
+                                  UCB = object$UCB)
+  return(result)
+}
 

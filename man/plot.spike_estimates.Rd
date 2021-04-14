@@ -7,7 +7,7 @@
 \method{plot}{spike_estimates}(x, xlims = NULL, ...)
 }
 \arguments{
-\item{x}{output from running estimate_spikes}
+\item{x}{output from running spike_estimates}
 
 \item{xlims}{optional parameter to specify the x-axis limits}
 
@@ -15,4 +15,15 @@
 }
 \description{
 Plot the solution to an L0 segmentation problem
+}
+\examples{
+### Generate sample data
+sim <- simulate_ar1(n = 500, gam = 0.998, poisMean = 0.01, sd = 0.05, seed = 1)
+### Fit the spike
+fit_spike <- spike_estimates(sim$fl, decay_rate = 0.998, tuning_parameter = 0.01)
+### Plot estimated spikes
+plot(fit_spike)
+### summarize estimated spike times
+summary_fit_spike <- summary(fit_spike)
+
 }
