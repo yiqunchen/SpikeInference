@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot the solution to an L0 segmentation problem — plot.spike_estimates • SpikeInference</title>
+<title>Plot the result of quantifying the uncertainty of spikes estimated via an L0 penalty — plot.spike_inference • SpikeInference</title>
 
 
 <!-- jquery -->
@@ -41,8 +41,8 @@
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="Plot the solution to an L0 segmentation problem — plot.spike_estimates" />
-<meta property="og:description" content="Plot the solution to an L0 segmentation problem" />
+<meta property="og:title" content="Plot the result of quantifying the uncertainty of spikes estimated via an L0 penalty — plot.spike_inference" />
+<meta property="og:description" content="Plot the result of quantifying the uncertainty of spikes estimated via an L0 penalty" />
 
 
 
@@ -111,16 +111,16 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot the solution to an L0 segmentation problem</h1>
+    <h1>Plot the result of quantifying the uncertainty of spikes estimated via an L0 penalty</h1>
     
-    <div class="hidden name"><code>plot.spike_estimates.Rd</code></div>
+    <div class="hidden name"><code>plot.spike_inference.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Plot the solution to an L0 segmentation problem</p>
+    <p>Plot the result of quantifying the uncertainty of spikes estimated via an L0 penalty</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for spike_estimates</span>
+    <pre class="usage"><span class='co'># S3 method for spike_inference</span>
 <span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>, xlims <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
@@ -128,7 +128,7 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>x</th>
-      <td><p>output from running spike_estimates</p></td>
+      <td><p>output from running spike_inference</p></td>
     </tr>
     <tr>
       <th>xlims</th>
@@ -140,18 +140,25 @@
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    <p>Chen YT, Jewell SW, Witten DM. (2021) Quantifying uncertainty in spikes estimated from calcium imaging data.
+arXiv:2103.0781 [statME].</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>### Generate sample data</span>
-<span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='simulate_ar1.html'>simulate_ar1</a></span><span class='op'>(</span>n <span class='op'>=</span> <span class='fl'>500</span>, gam <span class='op'>=</span> <span class='fl'>0.998</span>, poisMean <span class='op'>=</span> <span class='fl'>0.01</span>, sd <span class='op'>=</span> <span class='fl'>0.05</span>, seed <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
-<span class='co'>### Fit the spike</span>
-<span class='va'>fit_spike</span> <span class='op'>&lt;-</span> <span class='fu'><a href='spike_estimates.html'>spike_estimates</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>$</span><span class='va'>fl</span>, decay_rate <span class='op'>=</span> <span class='fl'>0.998</span>, tuning_parameter <span class='op'>=</span> <span class='fl'>0.01</span><span class='op'>)</span>
-<span class='co'>### Plot estimated spikes</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>fit_spike</span><span class='op'>)</span>
-</div><div class='img'><img src='plot.spike_estimates-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'>### summarize estimated spike times</span>
-<span class='va'>summary_fit_spike</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>fit_spike</span><span class='op'>)</span>
-
-</div></pre>
+    <pre class="examples"><div class='input'><span class='va'>gam</span> <span class='op'>&lt;-</span> <span class='fl'>0.98</span>
+<span class='va'>LAMBDA</span> <span class='op'>&lt;-</span> <span class='fl'>0.7</span>
+<span class='va'>sigma</span> <span class='op'>&lt;-</span> <span class='fl'>0.3</span>
+<span class='va'>n_length</span> <span class='op'>&lt;-</span> <span class='fl'>1000</span>
+<span class='va'>curr_sim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='simulate_ar1.html'>simulate_ar1</a></span><span class='op'>(</span>n <span class='op'>=</span> <span class='va'>n_length</span>, gam <span class='op'>=</span> <span class='va'>gam</span>, poisMean <span class='op'>=</span> <span class='fl'>0.01</span>, sd <span class='op'>=</span> <span class='va'>sigma</span>, seed <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
+<span class='va'>curr_inference_spike</span> <span class='op'>&lt;-</span> <span class='fu'><a href='spike_inference.html'>spike_inference</a></span><span class='op'>(</span>dat <span class='op'>=</span> <span class='va'>curr_sim</span><span class='op'>$</span><span class='va'>fl</span>, decay_rate <span class='op'>=</span> <span class='va'>gam</span>,
+ tuning_parameter <span class='op'>=</span> <span class='va'>LAMBDA</span>, window_size <span class='op'>=</span> <span class='fl'>2</span>, sig2 <span class='op'>=</span> <span class='va'>sigma</span><span class='op'>*</span><span class='va'>sigma</span>, return_ci <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='co'>### The observed fluorescence is plotted in gray, along with two sets of </span>
+<span class='co'>### vertical ticks: each orange tick represents an estimated spike associated with </span>
+<span class='co'>### a positive increase in fluorescence, and blue ticks are the subset of spikes </span>
+<span class='co'>### with a selective p-value &lt; 0.05.</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>curr_inference_spike</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; <span class='warning'>Warning: number of items to replace is not a multiple of replacement length</span></div><div class='img'><img src='plot.spike_inference-1.png' alt='' width='700' height='433' /></div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

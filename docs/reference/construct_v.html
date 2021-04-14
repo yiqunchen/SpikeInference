@@ -6,7 +6,8 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Generate the contrast vector for testing the presence of spikes — construct_v • SpikeInference</title>
+<title>Generate the contrast vector for testing the null hypothesis of interest.
+See Section 2 of Chen et al. (2021+) for details. — construct_v • SpikeInference</title>
 
 
 <!-- jquery -->
@@ -41,8 +42,10 @@
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="Generate the contrast vector for testing the presence of spikes — construct_v" />
-<meta property="og:description" content="Generate the contrast vector for testing the presence of spikes" />
+<meta property="og:title" content="Generate the contrast vector for testing the null hypothesis of interest.
+See Section 2 of Chen et al. (2021+) for details. — construct_v" />
+<meta property="og:description" content="Generate the contrast vector for testing the null hypothesis of interest.
+See Section 2 of Chen et al. (2021+) for details." />
 
 
 
@@ -111,13 +114,15 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Generate the contrast vector for testing the presence of spikes</h1>
+    <h1>Generate the contrast vector for testing the null hypothesis of interest.
+See Section 2 of Chen et al. (2021+) for details.</h1>
     
     <div class="hidden name"><code>construct_v.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Generate the contrast vector for testing the presence of spikes</p>
+    <p>Generate the contrast vector for testing the null hypothesis of interest.
+See Section 2 of Chen et al. (2021+) for details.</p>
     </div>
 
     <pre class="usage"><span class='fu'>construct_v</span><span class='op'>(</span><span class='va'>n</span>, <span class='va'>thj</span>, <span class='va'>window_size</span>, <span class='va'>gam</span><span class='op'>)</span></pre>
@@ -131,7 +136,7 @@
     </tr>
     <tr>
       <th>thj</th>
-      <td><p>location of the spike of interest</p></td>
+      <td><p>location of the estimated spike of interest</p></td>
     </tr>
     <tr>
       <th>window_size</th>
@@ -143,7 +148,17 @@
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
+    <p>Returns a vector of length n</p>
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    <p>Chen YT, Jewell SW, Witten DM. (2021) Quantifying uncertainty in spikes estimated from calcium imaging data.
+ arXiv:2103.0781 [statME].</p>
+
+    <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
+    <pre class="examples"><div class='input'><span class='va'>nu_vector</span> <span class='op'>&lt;-</span> <span class='fu'>construct_v</span><span class='op'>(</span>n <span class='op'>=</span> <span class='fl'>100</span>, thj <span class='op'>=</span> <span class='fl'>2</span>, window_size <span class='op'>=</span> <span class='fl'>2</span>, gam <span class='op'>=</span> <span class='fl'>0.95</span><span class='op'>)</span> 
+</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

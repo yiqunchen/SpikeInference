@@ -14,8 +14,8 @@ knitr::opts_chunk$set(
 )
 ```
 
-In this tutorial, we demonstrate basic use of the `SpikeInference` package.
-`
+In this tutorial, we demonstrate basic use of the `SpikeInference` package. 
+
 First we load the package:
 ```{r}
 require(SpikeInference)
@@ -26,7 +26,7 @@ $$Y_t = c_t + \epsilon_t, \epsilon_t \sim N(0, \sigma^2), \; t = 1,\ldots, T,$$ 
 
 In the figure below, we display one such simulation $y_1,\ldots,y_{1,000}$ (gray dots), with  $T=1,000, \sigma = 0.1, \gamma = 0.98, z_t \overset{i.i.d.}{\sim}\text{Poisson}(0.01)$. The true calcium concentration and true spikes are displayed in green lines and vertical bars, respectively.
 
-```{r}
+```{r fig.align="center",  fig.height = 5, fig.width = 5}
 gam <- 0.98
 sigma <- 0.3
 n_length <- 1000
@@ -37,7 +37,7 @@ plot(curr_sim)
 
 ### $\ell_0$ spike estimation 
 In the code below, we call the `spike_estimates` function to estimate spikes using the $\ell_0$-penalized problem with tuning parameter $\lambda=4$. The estimated calcium, $\hat{c_t}$, and the set of estimated spikes, $\{\hat{\tau}_1,\ldots, \hat{\tau}_{\hat{K}}\}$, are displayed in blue lines and vertical bars, respectively.
-```{r}
+```{r fig.align="center",  fig.height = 5, fig.width = 5}
 LAMBDA <- 0.7
 fit_spike <- spike_estimates(dat = curr_sim$fl, decay_rate = gam, 
                              tuning_parameter = LAMBDA, 
@@ -46,14 +46,15 @@ plot(fit_spike)
 ```
 
 
-The `fit_spike` object now contains spike fit information.
+The `fit_spike` object now contains spike fit information, and the estimated spike times can be accessed using the `summary` function.
 ```{r}
-str(fit_spike)
+fit_summary <- summary(fit_spike)
+head(fit_summary)
 ```
 
 Importantly, the first five estimated spike locations are printed below.
 ```{r}
-(fit_spike$spikes)[1:5]
+fit_summary[1:5,]
 ```
 
 ### $\ell_0$ spike inference 
@@ -64,7 +65,7 @@ Recall that for a given $\hat\tau_j$, the $p$-value for testing the null hypothe
 $$\mathbb{P}\left(\phi \geq \nu^\top y \;\middle|\; \phi \in \mathcal{S}\cap(0,\infty)\right),$$
 where $\mathcal{S}$ is the set of perturbations $\phi$ that leads to an estimated spike at $\hat\tau_j$. 
 
-The code below demonstrates how to use the function `spike_inference`, which estimates spikes *and* performs inference on the estimated spikes for input data. 
+The code below demonstrates how to use the function `spike_inference`, which estimates spikes *and* performs inference on the estimated spikes for input data. After performing inference, we can use the `summary` method to get result summaries (in the form of a data frame) of the outputs given by  `spike_inference`. 
 
 #### For h = 1:
 ```{r}
@@ -74,11 +75,8 @@ inference_spike_toy_example_h_1 <- spike_inference(dat = curr_sim$fl, decay_rate
                                        sig2 = sigma*sigma, 
                                        return_conditioning_sets = FALSE,return_ci = TRUE)
 
-knitr::kable(data.frame(estimated_spikes = inference_spike_toy_example_h_1$spikes[1:5], 
-                        pvals = inference_spike_toy_example_h_1$pvals[1:5],
-                        LCB = inference_spike_toy_example_h_1$LCB[1:5],
-                        UCB = inference_spike_toy_example_h_1$UCB[1:5]))
-
+h_1_summary <- summary(inference_spike_toy_example_h_1)
+knitr::kable(head(h_1_summary))
 ```
 
 #### For h = 10:
@@ -89,17 +87,22 @@ inference_spike_toy_example_h_10 <- spike_inference(dat = curr_sim$fl, decay_rat
                                        sig2 = sigma*sigma, 
                                        return_conditioning_sets = FALSE,return_ci = TRUE)
 
-knitr::kable(data.frame(estimated_spikes = inference_spike_toy_example_h_10$spikes[1:5], 
-                        pvals = inference_spike_toy_example_h_10$pvals[1:5],
-                        LCB = inference_spike_toy_example_h_10$LCB[1:5],
-                        UCB = inference_spike_toy_example_h_10$UCB[1:5]))
+h_10_summary <- summary(inference_spike_toy_example_h_10)
+knitr::kable(head(h_10_summary))
+
 ```
 
 We see drastically smaller $p$-values for the five estimated spikes. Since each of the five estimated locations correspond to a true underlying spike, this demonstrates that larger $h$ leads to higher power empirically.
 
+We also provide a plot method for output by `spike_inference`. By default, it plots the estimated spikes associated with a positive change in fluorescence in orange ticks, and the subset with a p-value less than 0.05 in blue ticks.
+```{r fig.align="center",  fig.height = 5, fig.width = 5}
+plot(inference_spike_toy_example_h_10)
+```
+
 ### Miscellaneous functions
 In addition to the aforementioned key functions, the package also includes the following helper functions: `construct_v` and `estimate_spike_by_spike_number`.
 
+### construct_v 
 The function `construct_v` generates the contrast vector $\nu$ for the null hypothesis $H_0:\nu^\top c = 0$. We will demonstrate below that $\nu^\top c$ is indeed the change in calcium in the neighborhood of a given spike $\hat\tau_j$. We consider the case where there is no spike, i.e., the calcium is decaying exponentially, and we would expect $\nu^\top c=0$. In the example below, we set $c_1 = 3$, $c_t = 0.98 c_{t-1}, \; t=2,\ldots, 50$, $\hat\tau_j = 20$, and $h=5$.
 
 ```{r}
@@ -112,6 +115,8 @@ v <- construct_v(length(calcium), thj, h, gam)
 sum(v*calcium)
 ```
 We see that $\nu^\top c$ indeed evaluates to 0, up to machine precision.
+
+### estimate_spike_by_spike_number 
 
 While we have taken $\lambda$ to be known in this tutorial, choosing an appropriate $\lambda$ value is critical to the quality of estimated spikes. One possible approach is to use a grid search over a list of $\lambda$ values. The function  `estimate_spike_by_spike_number` provides an alternative by using an iterative method to find the value of $\lambda$ that yields estimated spikes closest in number to the true spikes. 
 

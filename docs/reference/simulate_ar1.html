@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Simulate fluorescence trace based on simple AR(1) generative model — simulate_ar1 • SpikeInference</title>
+<title>Simulate fluorescence trace based on a simple AR-1 generative model — simulate_ar1 • SpikeInference</title>
 
 
 <!-- jquery -->
@@ -41,8 +41,8 @@
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="Simulate fluorescence trace based on simple AR(1) generative model — simulate_ar1" />
-<meta property="og:description" content="Simulate fluorescence trace based on simple AR(1) generative model" />
+<meta property="og:title" content="Simulate fluorescence trace based on a simple AR-1 generative model — simulate_ar1" />
+<meta property="og:description" content="Simulate fluorescence trace based on a simple AR-1 generative model" />
 
 
 
@@ -111,13 +111,13 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Simulate fluorescence trace based on simple AR(1) generative model</h1>
+    <h1>Simulate fluorescence trace based on a simple AR-1 generative model</h1>
     
     <div class="hidden name"><code>simulate_ar1.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Simulate fluorescence trace based on simple AR(1) generative model</p>
+    <p>Simulate fluorescence trace based on a simple AR-1 generative model</p>
     </div>
 
     <pre class="usage"><span class='fu'>simulate_ar1</span><span class='op'>(</span><span class='va'>n</span>, <span class='va'>gam</span>, <span class='va'>poisMean</span>, <span class='va'>sd</span>, <span class='va'>seed</span>, c0 <span class='op'>=</span> <span class='fl'>0</span><span class='op'>)</span></pre>
@@ -127,11 +127,11 @@
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
       <th>n</th>
-      <td><p>Numeric; number of timesteps</p></td>
+      <td><p>Numeric; length of the time series</p></td>
     </tr>
     <tr>
       <th>gam</th>
-      <td><p>Numeric; AR(1) decay rate</p></td>
+      <td><p>Numeric; AR-1 decay rate</p></td>
     </tr>
     <tr>
       <th>poisMean</th>
@@ -153,13 +153,19 @@
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>spikes, fluorescence, and calcium concentration</p>
+    
+<ul>
+<li><p><code>spikes</code> -- A list of timesteps at which a spike occurs</p></li>
+<li><p><code>fl</code> -- The noisy fluorescence \(y_t\)</p></li>
+<li><p><code>conc</code> -- The true calcium concentration \(c_t\)</p></li>
+</ul>
+
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>Simulate fluorescence trace based on simple AR(1) generative model</p>
-<p>$$y_t = c_t + \epsilon_t, \epsilon_t \sim N(0, \sigma^2)$$</p>
-<p>$$c_t = gam * c_{t-1} + s_t$$</p>
-<p>$$s_t ~ Pois(poisMean)$$</p>
+    <p>Simulate fluorescence trace based on a simple AR-1 generative model:
+$$y_t = c_t + \epsilon_t, \epsilon_t \sim N(0, \sigma^2),$$
+$$c_t = gam * c_{t-1} + s_t,$$
+$$s_t \sim Poisson(poisMean).$$</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'>simulate_ar1</span><span class='op'>(</span>n <span class='op'>=</span> <span class='fl'>500</span>, gam <span class='op'>=</span> <span class='fl'>0.998</span>, poisMean <span class='op'>=</span> <span class='fl'>0.009</span>, sd <span class='op'>=</span> <span class='fl'>0.05</span>, seed <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>

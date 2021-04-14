@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Plot the solution to an L0 segmentation problem — plot.spike_estimates • SpikeInference</title>
+<title>Summarize the inference result for spikes estimated via an L0 inference problem — summary.spike_inference • SpikeInference</title>
 
 
 <!-- jquery -->
@@ -41,8 +41,8 @@
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="Plot the solution to an L0 segmentation problem — plot.spike_estimates" />
-<meta property="og:description" content="Plot the solution to an L0 segmentation problem" />
+<meta property="og:title" content="Summarize the inference result for spikes estimated via an L0 inference problem — summary.spike_inference" />
+<meta property="og:description" content="Summarize the inference result for spikes estimated via an L0 inference problem" />
 
 
 
@@ -111,28 +111,24 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Plot the solution to an L0 segmentation problem</h1>
+    <h1>Summarize the inference result for spikes estimated via an L0 inference problem</h1>
     
-    <div class="hidden name"><code>plot.spike_estimates.Rd</code></div>
+    <div class="hidden name"><code>summary.spike_inference.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Plot the solution to an L0 segmentation problem</p>
+    <p>Summarize the inference result for spikes estimated via an L0 inference problem</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for spike_estimates</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>x</span>, xlims <span class='op'>=</span> <span class='cn'>NULL</span>, <span class='va'>...</span><span class='op'>)</span></pre>
+    <pre class="usage"><span class='co'># S3 method for spike_inference</span>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
     <tr>
-      <th>x</th>
+      <th>object</th>
       <td><p>output from running spike_estimates</p></td>
-    </tr>
-    <tr>
-      <th>xlims</th>
-      <td><p>optional parameter to specify the x-axis limits</p></td>
     </tr>
     <tr>
       <th>...</th>
@@ -140,18 +136,37 @@
     </tr>
     </table>
 
+    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+
+    <p>A data frame with a column of estimated spikes with assocaited p-values and confidence intervals.</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='co'>### Generate sample data</span>
-<span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='simulate_ar1.html'>simulate_ar1</a></span><span class='op'>(</span>n <span class='op'>=</span> <span class='fl'>500</span>, gam <span class='op'>=</span> <span class='fl'>0.998</span>, poisMean <span class='op'>=</span> <span class='fl'>0.01</span>, sd <span class='op'>=</span> <span class='fl'>0.05</span>, seed <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
-<span class='co'>### Fit the spike</span>
-<span class='va'>fit_spike</span> <span class='op'>&lt;-</span> <span class='fu'><a href='spike_estimates.html'>spike_estimates</a></span><span class='op'>(</span><span class='va'>sim</span><span class='op'>$</span><span class='va'>fl</span>, decay_rate <span class='op'>=</span> <span class='fl'>0.998</span>, tuning_parameter <span class='op'>=</span> <span class='fl'>0.01</span><span class='op'>)</span>
-<span class='co'>### Plot estimated spikes</span>
-<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>fit_spike</span><span class='op'>)</span>
-</div><div class='img'><img src='plot.spike_estimates-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'>### summarize estimated spike times</span>
-<span class='va'>summary_fit_spike</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>fit_spike</span><span class='op'>)</span>
-
-</div></pre>
+    <pre class="examples"><div class='input'><span class='va'>gam</span> <span class='op'>&lt;-</span> <span class='fl'>0.98</span>
+<span class='va'>LAMBDA</span> <span class='op'>&lt;-</span> <span class='fl'>0.7</span>
+<span class='va'>sigma</span> <span class='op'>&lt;-</span> <span class='fl'>0.3</span>
+<span class='va'>n_length</span> <span class='op'>&lt;-</span> <span class='fl'>1000</span>
+<span class='va'>curr_sim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='simulate_ar1.html'>simulate_ar1</a></span><span class='op'>(</span>n <span class='op'>=</span> <span class='va'>n_length</span>, gam <span class='op'>=</span> <span class='va'>gam</span>, poisMean <span class='op'>=</span> <span class='fl'>0.01</span>, sd <span class='op'>=</span> <span class='va'>sigma</span>, seed <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
+<span class='va'>curr_fit_spike</span> <span class='op'>&lt;-</span> <span class='fu'><a href='spike_estimates.html'>spike_estimates</a></span><span class='op'>(</span>dat <span class='op'>=</span> <span class='va'>curr_sim</span><span class='op'>$</span><span class='va'>fl</span>, decay_rate <span class='op'>=</span> <span class='va'>gam</span>, tuning_parameter <span class='op'>=</span> <span class='va'>LAMBDA</span><span class='op'>)</span>
+<span class='va'>curr_inference_spike</span> <span class='op'>&lt;-</span> <span class='fu'><a href='spike_inference.html'>spike_inference</a></span><span class='op'>(</span>dat <span class='op'>=</span> <span class='va'>curr_sim</span><span class='op'>$</span><span class='va'>fl</span>, decay_rate <span class='op'>=</span> <span class='va'>gam</span>,
+tuning_parameter <span class='op'>=</span> <span class='va'>LAMBDA</span>, window_size <span class='op'>=</span> <span class='fl'>2</span>, sig2 <span class='op'>=</span> <span class='va'>sigma</span><span class='op'>*</span><span class='va'>sigma</span>, return_ci <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>curr_inference_spike</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;    estimated_spikes        pvals        LCB       UCB
+#&gt; 1                95 0.0026865876  0.3313205 1.5624120
+#&gt; 2               237 0.3080037641 -0.9602564 0.9293162
+#&gt; 3               369 0.0003211625  0.5423357 1.7345743
+#&gt; 4               463 0.0489093674 -0.1322414 1.1940410
+#&gt; 5               503 0.0086375856  0.1706250 1.4210234
+#&gt; 6               515 0.0007364613  0.4639493 1.6659810
+#&gt; 7               538 0.7342421299 -8.5600416 1.0333508
+#&gt; 8               561 0.1274106669 -0.5842248 1.2708549
+#&gt; 9               571 0.0011170360  0.4546186 1.6866898
+#&gt; 10              610 0.0370503683 -0.1092493 1.4964073
+#&gt; 11              627 0.0020417663  0.3977844 1.6573791
+#&gt; 12              662 0.0046657711  0.2894321 1.5793793
+#&gt; 13              781 0.0059471283  0.2203090 1.4564512
+#&gt; 14              914 0.0142668035  0.1420499 1.6782515
+#&gt; 15              924 0.6120957544 -4.3107861 1.0106799
+#&gt; 16              946 0.0011172539  0.4747208 1.7228907</div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <nav id="toc" data-toggle="toc" class="sticky-top">

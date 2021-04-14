@@ -1,0 +1,35 @@
+---
+title: "Real data application"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Real data application}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+In this tutorial, we demonstrate how to apply the functions in the `SpikeInference` package to a calcium imaging dataset collected initially in Chen et al. (2013)
+
+First we load the package and read in data:
+```{r}
+require(SpikeInference)
+
+```
+
+
+
+### References
+
+Chen T-W, Wardill TJ, Sun Y, Pulver SR, Renninger SL, Baohan A, Schreiter ER, Kerr RA, Orger MB, Jayaraman V, Looger LL, Svoboda K, Kim DS. Ultrasensitive fluorescent proteins for imaging neuronal activity. Nature. 2013;499(7458):295-300. doi:10.1038/nature12354
+
+Chen YT, Jewell SW, Witten DM. (2021) Quantifying uncertainty in spikes estimated from calcium imaging data. [arXiv:2103.0781](https://arxiv.org/abs/2103.07818) [statME].
+
+
+
+
+

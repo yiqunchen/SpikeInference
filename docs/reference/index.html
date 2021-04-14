@@ -138,25 +138,14 @@
         <td>
           <p><code><a href="construct_v.html">construct_v()</a></code> </p>
         </td>
-        <td><p>Generate the contrast vector for testing the presence of spikes</p></td>
+        <td><p>Generate the contrast vector for testing the null hypothesis of interest.
+See Section 2 of Chen et al. (2021+) for details.</p></td>
       </tr><tr>
         
         <td>
           <p><code><a href="estimate_spike_by_spike_number.html">estimate_spike_by_spike_number()</a></code> </p>
         </td>
-        <td><p>search for the right lambda to meet the targeting firing rate</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="eval_cost_at.SpikeInference.html">eval_cost_at.SpikeInference()</a></code> </p>
-        </td>
-        <td><p>Evaluate Cost(phi) for any phi</p></td>
-      </tr><tr>
-        
-        <td>
-          <p><code><a href="plot.SpikeInference.html">plot(<i>&lt;SpikeInference&gt;</i>)</a></code> </p>
-        </td>
-        <td><p>Plot optimal cost and/or S as a function of \(\phi\)</p></td>
+        <td><p>Search for the right tuning parameter lambda to meet the target firing rate</p></td>
       </tr><tr>
         
         <td>
@@ -172,9 +161,9 @@
       </tr><tr>
         
         <td>
-          <p><code><a href="print.estimated_spikes.html">print(<i>&lt;estimated_spikes&gt;</i>)</a></code> </p>
+          <p><code><a href="plot.spike_inference.html">plot(<i>&lt;spike_inference&gt;</i>)</a></code> </p>
         </td>
-        <td><p>Print estimated spikes</p></td>
+        <td><p>Plot the result of quantifying the uncertainty of spikes estimated via an L0 penalty</p></td>
       </tr><tr>
         
         <td>
@@ -184,9 +173,21 @@
       </tr><tr>
         
         <td>
+          <p><code><a href="print.spike_estimates.html">print(<i>&lt;spike_estimates&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Print estimated spikes</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="print.spike_inference.html">print(<i>&lt;spike_inference&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Print estimated spikes</p></td>
+      </tr><tr>
+        
+        <td>
           <p><code><a href="simulate_ar1.html">simulate_ar1()</a></code> </p>
         </td>
-        <td><p>Simulate fluorescence trace based on simple AR(1) generative model</p></td>
+        <td><p>Simulate fluorescence trace based on a simple AR-1 generative model</p></td>
       </tr><tr>
         
         <td>
@@ -198,7 +199,19 @@
         <td>
           <p><code><a href="spike_inference.html">spike_inference()</a></code> </p>
         </td>
-        <td><p>Estimation and inference for AR1 spike problem using an L0 penalty</p></td>
+        <td><p>Estimation and inference for AR-1 spike problem using an L0 penalty</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="summary.spike_estimates.html">summary(<i>&lt;spike_estimates&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Summarize the solution to an L0 segmentation problem</p></td>
+      </tr><tr>
+        
+        <td>
+          <p><code><a href="summary.spike_inference.html">summary(<i>&lt;spike_inference&gt;</i>)</a></code> </p>
+        </td>
+        <td><p>Summarize the inference result for spikes estimated via an L0 inference problem</p></td>
       </tr>
     </tbody>
     </table>

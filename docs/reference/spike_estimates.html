@@ -142,7 +142,7 @@ number between 0 and 1 (non-inclusive).</p></td>
     <tr>
       <th>tuning_parameter</th>
       <td><p>Numeric; tuning parameter \(\lambda\) for 
-L0 spike estimation, a nonnegative number.</p></td>
+L0 spike estimation, a non-negative number.</p></td>
     </tr>
     <tr>
       <th>functional_pruning_out</th>
@@ -153,22 +153,22 @@ cost functions for L0 spike estimation. Defaults to FALSE.</p></td>
 
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
-    <p>For L0 spkie estimation, returns a list with elements:</p>
-<p><code>estimated_calcium</code> Estimated calcium levels</p>
-<p><code>spikes</code> The set of estimated spikes</p>
-<p><code>spike_sign</code> Signs associated with the set of estimated spikes</p>
-<p><code>cost</code> The cost at each time point</p>
-<p><code>n_intervals</code> The number of piecewise quadratics used at each
-  point</p>
-<p><code>piecewise_square_losses</code> Dataframe of optimal cost functions
-  Cost_s*(mu) for s = 1,..., T.</p>
+    <p>For L0 spike estimation, returns a list with elements:</p><ul>
+<li><p><code>estimated_calcium</code> Estimated calcium levels</p></li>
+<li><p><code>spikes</code> The set of estimated spikes</p></li>
+<li><p><code>cost</code> The cost at each time point</p></li>
+<li><p><code>n_intervals</code> The number of piecewise quadratics used at each point</p></li>
+<li><p><code>piecewise_square_losses</code> A data frame of optimal cost functions
+ Cost_s*(mu) for s = 1,..., T.</p></li>
+</ul>
+
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>Estimation:
  This function estimates spikes via an L0 penalty based on the following 
  optimization problem:
-$$minimize{c_1,...,c_T\geq 0} 0.5 \sum_{t=1}^T ( y_t - c_t )^2 + \lambda \sum_t=2^T 
-1(c_t != \gamma c_t-1) $$,
+$$minimize_{c_1,...,c_T\geq 0} \frac{1}{2} \sum_{t=1}^T ( y_t - c_t )^2 + \lambda \sum_{t=2}^{T} 
+1(c_t \neq \gamma c_t-1) ,$$
 where \(y_t\) is the observed fluorescence at the t-th timestep.</p>
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
@@ -185,9 +185,12 @@ Francaise de Statistique, 156(4), 180-205.</p>
     <pre class="examples"><div class='input'>
 <span class='co'>### Generate sample data</span>
 <span class='va'>sim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='simulate_ar1.html'>simulate_ar1</a></span><span class='op'>(</span>n <span class='op'>=</span> <span class='fl'>500</span>, gam <span class='op'>=</span> <span class='fl'>0.998</span>, poisMean <span class='op'>=</span> <span class='fl'>0.01</span>, sd <span class='op'>=</span> <span class='fl'>0.05</span>, seed <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
-<span class='va'>fit_spike</span> <span class='op'>&lt;-</span> <span class='fu'>spike_estimates</span><span class='op'>(</span><span class='va'>sim</span><span class='op'>$</span><span class='va'>fl</span>, 
-decay_rate <span class='op'>=</span> <span class='fl'>0.998</span>, tuning_parameter <span class='op'>=</span> <span class='fl'>0.01</span><span class='op'>)</span>
-
+<span class='co'>### Fit the spike</span>
+<span class='va'>fit_spike</span> <span class='op'>&lt;-</span> <span class='fu'>spike_estimates</span><span class='op'>(</span><span class='va'>sim</span><span class='op'>$</span><span class='va'>fl</span>, decay_rate <span class='op'>=</span> <span class='fl'>0.998</span>, tuning_parameter <span class='op'>=</span> <span class='fl'>0.01</span><span class='op'>)</span>
+<span class='co'>### Plot estimated spikes</span>
+<span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span><span class='op'>(</span><span class='va'>fit_spike</span><span class='op'>)</span>
+</div><div class='img'><img src='spike_estimates-1.png' alt='' width='700' height='433' /></div><div class='input'><span class='co'>### summarize estimated spike times</span>
+<span class='va'>summary_fit_spike</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>fit_spike</span><span class='op'>)</span>
 </div></pre>
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">

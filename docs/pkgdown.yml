@@ -3,6 +3,7 @@ pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   Tutorials: Tutorials.html
+  real_data_example: real_data_example.html
   technical_details: technical_details.html
-last_built: 2021-03-17T23:09Z
+last_built: 2021-04-14T06:02Z
 

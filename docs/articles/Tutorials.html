@@ -77,11 +77,12 @@
 
     
     
-<p>In this tutorial, we demonstrate basic use of the <code>SpikeInference</code> package. ` First we load the package:</p>
+<p>In this tutorial, we demonstrate basic use of the <code>SpikeInference</code> package.</p>
+<p>First we load the package:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">SpikeInference</span><span class="op">)</span>
 <span class="co">#&gt; Loading required package: SpikeInference</span></code></pre></div>
-<p>We first use the <code>simulate_ar1</code> function to simulate from an AR(1) model for calcium imaging data according to <span class="math display">\[Y_t = c_t + \epsilon_t, \epsilon_t \sim N(0, \sigma^2), \; t = 1,\ldots, T\]</span> where <span class="math display">\[c_t = \gamma  c_{t-1} + z_t, z_t\geq 0,  \; t = 2,\ldots, T\]</span>. If <span class="math inline">\(z_t&gt;0\)</span>, then there is a spike at the <span class="math inline">\(t\)</span>th timestep. We denote the locations of true spikes, <span class="math inline">\(\{t:z_t&gt; 0\}\)</span>, as <span class="math inline">\(\{\tau_1,\ldots, \tau_K\}\)</span>.</p>
+<p>We first use the <code>simulate_ar1</code> function to simulate from an AR(1) model for calcium imaging data according to <span class="math display">\[Y_t = c_t + \epsilon_t, \epsilon_t \sim N(0, \sigma^2), \; t = 1,\ldots, T,\]</span> where <span class="math display">\[c_t = \gamma  c_{t-1} + z_t, z_t\geq 0,  \; t = 2,\ldots, T.\]</span> If <span class="math inline">\(z_t&gt;0\)</span>, then there is a spike at the <span class="math inline">\(t\)</span>th timestep. We denote the locations of true spikes, <span class="math inline">\(\{t:z_t&gt; 0\}\)</span>, as <span class="math inline">\(\{\tau_1,\ldots, \tau_K\}\)</span>.</p>
 <p>In the figure below, we display one such simulation <span class="math inline">\(y_1,\ldots,y_{1,000}\)</span> (gray dots), with <span class="math inline">\(T=1,000, \sigma = 0.1, \gamma = 0.98, z_t \overset{i.i.d.}{\sim}\text{Poisson}(0.01)\)</span>. The true calcium concentration and true spikes are displayed in green lines and vertical bars, respectively.</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gam</span> <span class="op">&lt;-</span> <span class="fl">0.98</span>
@@ -89,7 +90,7 @@
 <span class="va">n_length</span> <span class="op">&lt;-</span> <span class="fl">1000</span>
 <span class="va">curr_sim</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/simulate_ar1.html">simulate_ar1</a></span><span class="op">(</span>n <span class="op">=</span> <span class="va">n_length</span>, gam <span class="op">=</span> <span class="va">gam</span>, poisMean <span class="op">=</span> <span class="fl">0.01</span>, sd <span class="op">=</span> <span class="va">sigma</span>, seed <span class="op">=</span> <span class="fl">2</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span><span class="op">(</span><span class="va">curr_sim</span><span class="op">)</span></code></pre></div>
-<p><img src="Tutorials_files/figure-html/unnamed-chunk-3-1.png" width="700"></p>
+<p><img src="Tutorials_files/figure-html/unnamed-chunk-3-1.png" width="480" style="display: block; margin: auto;"></p>
 <div id="ell_0-spike-estimation" class="section level3">
 <h3 class="hasAnchor">
 <a href="#ell_0-spike-estimation" class="anchor"></a><span class="math inline">\(\ell_0\)</span> spike estimation</h3>
@@ -100,28 +101,21 @@
                              tuning_parameter <span class="op">=</span> <span class="va">LAMBDA</span>, 
                              functional_pruning_out <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span>
 <span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span><span class="op">(</span><span class="va">fit_spike</span><span class="op">)</span></code></pre></div>
-<p><img src="Tutorials_files/figure-html/unnamed-chunk-4-1.png" width="700"></p>
-<p>The <code>fit_spike</code> object now contains spike fit information.</p>
+<p><img src="Tutorials_files/figure-html/unnamed-chunk-4-1.png" width="480" style="display: block; margin: auto;"></p>
+<p>The <code>fit_spike</code> object now contains spike fit information, and the estimated spike times can be accessed using the <code>summary</code> function.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">fit_spike</span><span class="op">)</span>
-<span class="co">#&gt; List of 13</span>
-<span class="co">#&gt;  $ estimated_means        : num [1:1000] 0.0941 0.0922 0.0903 0.0885 0.0868 ...</span>
-<span class="co">#&gt;  $ estimated_calcium      : num [1:1000] 0.0941 0.0922 0.0903 0.0885 0.0868 ...</span>
-<span class="co">#&gt;  $ dat                    : num [1:1000] 0.1594 0.4764 0.2904 0.0397 -0.2737 ...</span>
-<span class="co">#&gt;  $ decay_rate             : num 0.98</span>
-<span class="co">#&gt;  $ change_pts             : num [1:16] 95 237 369 463 503 515 538 561 571 610 ...</span>
-<span class="co">#&gt;  $ spikes                 : num [1:16] 95 237 369 463 503 515 538 561 571 610 ...</span>
-<span class="co">#&gt;  $ call                   : language spike_estimates(dat = curr_sim$fl, decay_rate = gam, tuning_parameter = LAMBDA,      functional_pruning_out = FALSE)</span>
-<span class="co">#&gt;  $ tuning_parameter       : num 0.7</span>
-<span class="co">#&gt;  $ cost                   : num [1:1000] 0 0.0261 0.0262 0.0513 0.155 ...</span>
-<span class="co">#&gt;  $ n_intervals            : int [1:1000] 1 2 2 2 2 2 3 2 2 2 ...</span>
-<span class="co">#&gt;  $ end_vec                : num [1:1000] 946 946 946 946 946 946 946 946 946 946 ...</span>
-<span class="co">#&gt;  $ piecewise_square_losses: NULL</span>
-<span class="co">#&gt;  $ spike_sign             : chr [1:16] "Positive" "Positive" "Positive" "Positive" ...</span>
-<span class="co">#&gt;  - attr(*, "class")= chr "spike_estimates"</span></code></pre></div>
+<code class="sourceCode R"><span class="va">fit_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">fit_spike</span><span class="op">)</span>
+<span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">fit_summary</span><span class="op">)</span>
+<span class="co">#&gt;   spikes</span>
+<span class="co">#&gt; 1     95</span>
+<span class="co">#&gt; 2    237</span>
+<span class="co">#&gt; 3    369</span>
+<span class="co">#&gt; 4    463</span>
+<span class="co">#&gt; 5    503</span>
+<span class="co">#&gt; 6    515</span></code></pre></div>
 <p>Importantly, the first five estimated spike locations are printed below.</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span class="op">(</span><span class="va">fit_spike</span><span class="op">$</span><span class="va">spikes</span><span class="op">)</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span>
+<code class="sourceCode R"><span class="va">fit_summary</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span>,<span class="op">]</span>
 <span class="co">#&gt; [1]  95 237 369 463 503</span></code></pre></div>
 </div>
 <div id="ell_0-spike-inference" class="section level3">
@@ -129,7 +123,7 @@
 <a href="#ell_0-spike-inference" class="anchor"></a><span class="math inline">\(\ell_0\)</span> spike inference</h3>
 <p>In this section, we demonstrate how to use our software to obtain <span class="math inline">\(p\)</span>-values and confidence intervals for estimated spikes with 2 different window sizes (<span class="math inline">\(h=1\)</span> and <span class="math inline">\(h=10\)</span>); for ease of display, we will only consider the first five estimated spikes.</p>
 <p>Recall that for a given <span class="math inline">\(\hat\tau_j\)</span>, the <span class="math inline">\(p\)</span>-value for testing the null hypothesis <span class="math inline">\(H_0: \nu^\top c = 0\)</span> can be expressed as <span class="math display">\[\mathbb{P}\left(\phi \geq \nu^\top y \;\middle|\; \phi \in \mathcal{S}\cap(0,\infty)\right),\]</span> where <span class="math inline">\(\mathcal{S}\)</span> is the set of perturbations <span class="math inline">\(\phi\)</span> that leads to an estimated spike at <span class="math inline">\(\hat\tau_j\)</span>.</p>
-<p>The code below demonstrates how to use the function <code>spike_inference</code>, which estimates spikes <em>and</em> performs inference on the estimated spikes for input data.</p>
+<p>The code below demonstrates how to use the function <code>spike_inference</code>, which estimates spikes <em>and</em> performs inference on the estimated spikes for input data. After performing inference, we can use the <code>summary</code> method to get result summaries (in the form of a data frame) of the outputs given by <code>spike_inference</code>.</p>
 <div id="for-h-1" class="section level4">
 <h4 class="hasAnchor">
 <a href="#for-h-1" class="anchor"></a>For h = 1:</h4>
@@ -137,12 +131,11 @@
 <code class="sourceCode R"><span class="va">h</span> <span class="op">&lt;-</span> <span class="fl">1</span>
 <span class="va">inference_spike_toy_example_h_1</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/spike_inference.html">spike_inference</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">curr_sim</span><span class="op">$</span><span class="va">fl</span>, decay_rate <span class="op">=</span> <span class="va">gam</span>,
                                        tuning_parameter <span class="op">=</span> <span class="va">LAMBDA</span>, window_size <span class="op">=</span> <span class="va">h</span>, 
-                                       sig <span class="op">=</span> <span class="va">sigma</span><span class="op">*</span><span class="va">sigma</span>, return_conditioning_sets <span class="op">=</span> <span class="cn">FALSE</span>,return_ci <span class="op">=</span> <span class="cn">TRUE</span>,lower_trunc<span class="op">=</span><span class="fl">0</span><span class="op">)</span>
+                                       sig2 <span class="op">=</span> <span class="va">sigma</span><span class="op">*</span><span class="va">sigma</span>, 
+                                       return_conditioning_sets <span class="op">=</span> <span class="cn">FALSE</span>,return_ci <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
-<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>estimated_spikes <span class="op">=</span> <span class="va">inference_spike_toy_example_h_1</span><span class="op">$</span><span class="va">spikes</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span>, 
-                        pvals <span class="op">=</span> <span class="va">inference_spike_toy_example_h_1</span><span class="op">$</span><span class="va">pvals</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span>,
-                        LCB <span class="op">=</span> <span class="va">inference_spike_toy_example_h_1</span><span class="op">$</span><span class="va">LCB</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span>,
-                        UCB <span class="op">=</span> <span class="va">inference_spike_toy_example_h_1</span><span class="op">$</span><span class="va">UCB</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<span class="va">h_1_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">inference_spike_toy_example_h_1</span><span class="op">)</span>
+<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">h_1_summary</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">estimated_spikes</th>
@@ -181,6 +174,12 @@
 <td align="right">-0.2931876</td>
 <td align="right">1.663233</td>
 </tr>
+<tr class="even">
+<td align="right">515</td>
+<td align="right">0.0041533</td>
+<td align="right">0.3526278</td>
+<td align="right">2.056635</td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -191,12 +190,11 @@
 <code class="sourceCode R"><span class="va">h</span> <span class="op">&lt;-</span> <span class="fl">10</span>
 <span class="va">inference_spike_toy_example_h_10</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/spike_inference.html">spike_inference</a></span><span class="op">(</span>dat <span class="op">=</span> <span class="va">curr_sim</span><span class="op">$</span><span class="va">fl</span>, decay_rate <span class="op">=</span> <span class="va">gam</span>,
                                        tuning_parameter <span class="op">=</span> <span class="va">LAMBDA</span>, window_size <span class="op">=</span> <span class="va">h</span>, 
-                                       sig <span class="op">=</span> <span class="va">sigma</span><span class="op">*</span><span class="va">sigma</span>, return_conditioning_sets <span class="op">=</span> <span class="cn">FALSE</span>,return_ci <span class="op">=</span> <span class="cn">TRUE</span>,lower_trunc<span class="op">=</span><span class="fl">0</span><span class="op">)</span>
+                                       sig2 <span class="op">=</span> <span class="va">sigma</span><span class="op">*</span><span class="va">sigma</span>, 
+                                       return_conditioning_sets <span class="op">=</span> <span class="cn">FALSE</span>,return_ci <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
 
-<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>estimated_spikes <span class="op">=</span> <span class="va">inference_spike_toy_example_h_10</span><span class="op">$</span><span class="va">spikes</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span>, 
-                        pvals <span class="op">=</span> <span class="va">inference_spike_toy_example_h_10</span><span class="op">$</span><span class="va">pvals</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span>,
-                        LCB <span class="op">=</span> <span class="va">inference_spike_toy_example_h_10</span><span class="op">$</span><span class="va">LCB</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span>,
-                        UCB <span class="op">=</span> <span class="va">inference_spike_toy_example_h_10</span><span class="op">$</span><span class="va">UCB</span><span class="op">[</span><span class="fl">1</span><span class="op">:</span><span class="fl">5</span><span class="op">]</span><span class="op">)</span><span class="op">)</span></code></pre></div>
+<span class="va">h_10_summary</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">inference_spike_toy_example_h_10</span><span class="op">)</span>
+<span class="fu">knitr</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">h_10_summary</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="right">estimated_spikes</th>
@@ -235,17 +233,33 @@
 <td align="right">0.7885913</td>
 <td align="right">1.313689</td>
 </tr>
+<tr class="even">
+<td align="right">515</td>
+<td align="right">3.5e-06</td>
+<td align="right">0.4963485</td>
+<td align="right">1.038701</td>
+</tr>
 </tbody>
 </table>
 <p>We see drastically smaller <span class="math inline">\(p\)</span>-values for the five estimated spikes. Since each of the five estimated locations correspond to a true underlying spike, this demonstrates that larger <span class="math inline">\(h\)</span> leads to higher power empirically.</p>
+<p>We also provide a plot method for output by <code>spike_inference</code>. By default, it plots the estimated spikes associated with a positive change in fluorescence in orange ticks, and the subset with a p-value less than 0.05 in blue ticks.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/graphics/plot.html">plot</a></span><span class="op">(</span><span class="va">inference_spike_toy_example_h_10</span><span class="op">)</span>
+<span class="co">#&gt; Warning in ylims[1] &lt;- ylims - hh * 2: number of items to replace is not a</span>
+<span class="co">#&gt; multiple of replacement length</span></code></pre></div>
+<p><img src="Tutorials_files/figure-html/unnamed-chunk-9-1.png" width="480" style="display: block; margin: auto;"></p>
 </div>
 </div>
 <div id="miscellaneous-functions" class="section level3">
 <h3 class="hasAnchor">
 <a href="#miscellaneous-functions" class="anchor"></a>Miscellaneous functions</h3>
 <p>In addition to the aforementioned key functions, the package also includes the following helper functions: <code>construct_v</code> and <code>estimate_spike_by_spike_number</code>.</p>
+</div>
+<div id="construct_v" class="section level3">
+<h3 class="hasAnchor">
+<a href="#construct_v" class="anchor"></a>construct_v</h3>
 <p>The function <code>construct_v</code> generates the contrast vector <span class="math inline">\(\nu\)</span> for the null hypothesis <span class="math inline">\(H_0:\nu^\top c = 0\)</span>. We will demonstrate below that <span class="math inline">\(\nu^\top c\)</span> is indeed the change in calcium in the neighborhood of a given spike <span class="math inline">\(\hat\tau_j\)</span>. We consider the case where there is no spike, i.e., the calcium is decaying exponentially, and we would expect <span class="math inline">\(\nu^\top c=0\)</span>. In the example below, we set <span class="math inline">\(c_1 = 3\)</span>, <span class="math inline">\(c_t = 0.98 c_{t-1}, \; t=2,\ldots, 50\)</span>, <span class="math inline">\(\hat\tau_j = 20\)</span>, and <span class="math inline">\(h=5\)</span>.</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gam</span> <span class="op">&lt;-</span> <span class="fl">0.98</span>
 <span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">50</span>
 <span class="va">calcium</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">3</span> <span class="op">*</span> <span class="va">gam</span> <span class="op">^</span><span class="op">(</span><span class="fl">0</span><span class="op">:</span><span class="op">(</span><span class="va">n</span> <span class="op">-</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>
@@ -255,8 +269,12 @@
 <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">v</span><span class="op">*</span><span class="va">calcium</span><span class="op">)</span>
 <span class="co">#&gt; [1] -7.771561e-16</span></code></pre></div>
 <p>We see that <span class="math inline">\(\nu^\top c\)</span> indeed evaluates to 0, up to machine precision.</p>
+</div>
+<div id="estimate_spike_by_spike_number" class="section level3">
+<h3 class="hasAnchor">
+<a href="#estimate_spike_by_spike_number" class="anchor"></a>estimate_spike_by_spike_number</h3>
 <p>While we have taken <span class="math inline">\(\lambda\)</span> to be known in this tutorial, choosing an appropriate <span class="math inline">\(\lambda\)</span> value is critical to the quality of estimated spikes. One possible approach is to use a grid search over a list of <span class="math inline">\(\lambda\)</span> values. The function <code>estimate_spike_by_spike_number</code> provides an alternative by using an iterative method to find the value of <span class="math inline">\(\lambda\)</span> that yields estimated spikes closest in number to the true spikes.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gam</span> <span class="op">&lt;-</span> <span class="fl">0.98</span>
 <span class="va">n</span> <span class="op">&lt;-</span> <span class="fl">1000</span>
 <span class="va">firing_rate</span> <span class="op">&lt;-</span> <span class="fl">0.05</span>
@@ -277,11 +295,11 @@
                                            lam_min <span class="op">=</span> <span class="fl">1e-7</span>, lam_max <span class="op">=</span> <span class="va">lam_max</span>, max_iters<span class="op">=</span><span class="fl">10</span>,
                                            tolerance<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fu"><a href="https://rdrr.io/r/base/Round.html">floor</a></span><span class="op">(</span><span class="va">n</span><span class="op">*</span><span class="va">firing_rate</span><span class="op">*</span><span class="fl">0.05</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>The number of true spikes in the simulation is 48.</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"Number of true spikes, "</span> ,<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">curr_sim</span><span class="op">$</span><span class="va">spikes</span><span class="op">)</span>,<span class="st">"\n"</span><span class="op">)</span>
 <span class="co">#&gt; Number of true spikes,  48</span></code></pre></div>
 <p>The number of estimated spikes, where <span class="math inline">\(\lambda\)</span> is chosen using <code>estimate_spike_by_spike_number</code>, is also 48.</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"Number of estimated spikes, "</span> ,<span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">iter_fit_spike</span><span class="op">$</span><span class="va">spikes</span><span class="op">)</span>,<span class="st">"\n"</span><span class="op">)</span>
 <span class="co">#&gt; Number of estimated spikes,  48</span></code></pre></div>
 </div>
