@@ -10,3 +10,5 @@
 README.md
 ./src/CMakeLists.txt
 
+^doc$
+^Meta$

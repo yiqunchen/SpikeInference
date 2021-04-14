@@ -1,0 +1,15 @@
+citHeader("To cite SpikeInference in publications use:")
+
+citEntry(
+  entry    = "Article",
+  title    = "Quantifying uncertainty in spikes estimated from calcium
+                   imaging data",
+  author   = "Chen, Yiqun T and Jewell, Sean W and Witten, Daniela M",
+  journal  = "arXiv",
+  year     = "2021",
+  url      = "https://arxiv.org/abs/2103.07818",
+  month    =  "mar",
+  textVersion = paste(
+  )
+)
+

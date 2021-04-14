@@ -294,6 +294,7 @@ print.simdata <- function(x, ...){
 #' ### Fit the spike
 #' fit_spike <- spike_estimates(sim$fl, decay_rate = 0.998, tuning_parameter = 0.01)
 #' print(fit_spike)
+#' @keywords internal
 print.spike_estimates <- function(x, ...)
 {
   cat("\n Call: \n")
@@ -318,6 +319,7 @@ print.spike_estimates <- function(x, ...)
 #' ### Fit the spike
 #' fit_spike <- spike_estimates(sim$fl, decay_rate = 0.998, tuning_parameter = 0.01)
 #' print(fit_spike)
+#' @keywords internal
 print.spike_inference <- function(x, ...)
 {
   cat("\n Call: \n")

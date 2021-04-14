@@ -12,7 +12,7 @@
 \item{...}{to be passed to methods}
 }
 \value{
-A data frame with a column of estimated spikes with assocaited p-values and confidence intervals.
+A data frame with a column of estimated spikes with associated p-values and confidence intervals.
 }
 \description{
 Summarize the inference result for spikes estimated via an L0 inference problem

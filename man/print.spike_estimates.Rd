@@ -21,3 +21,4 @@ sim <- simulate_ar1(n = 500, gam = 0.998, poisMean = 0.01, sd = 0.05, seed = 1)
 fit_spike <- spike_estimates(sim$fl, decay_rate = 0.998, tuning_parameter = 0.01)
 print(fit_spike)
 }
+\keyword{internal}
