@@ -8,23 +8,22 @@
 #' @param functional_pruning_out Logical; if TRUE, return
 #' cost functions for L0 spike estimation. Defaults to FALSE.
 #'
-#'
 #' @return For L0 spike estimation, returns a list with elements:
-#' @return \code{estimated_calcium} Estimated calcium levels
-#' @return \code{spikes} The set of estimated spikes
-#' @return \code{cost} The cost at each time point
-#' @return \code{n_intervals} The number of piecewise quadratics used at each
-#'   point
-#' @return \code{piecewise_square_losses} A data frame of optimal cost functions
-#'   Cost_s*(mu) for s = 1,..., T.
-#'
+#' \itemize{
+#' \item \code{estimated_calcium} Estimated calcium levels
+#' \item \code{spikes} The set of estimated spikes
+#' \item \code{cost} The cost at each time point
+#' \item \code{n_intervals} The number of piecewise quadratics used at each point
+#' \item \code{piecewise_square_losses} A data frame of optimal cost functions
+#'  Cost_s*(mu) for s = 1,..., T.
+#'}
 #' @details
 #'
 #' Estimation:
 #'  This function estimates spikes via an L0 penalty based on the following 
 #'  optimization problem:
-#' \deqn{minimize{c_1,...,c_T\geq 0} 0.5 \sum_{t=1}^T ( y_t - c_t )^2 + \lambda \sum_t=2^T 
-#' 1(c_t != \gamma c_t-1) },
+#' \deqn{minimize_{c_1,...,c_T\geq 0} \frac{1}{2} \sum_{t=1}^T ( y_t - c_t )^2 + \lambda \sum_{t=2}^{T} 
+#' 1(c_t \neq \gamma c_t-1) ,}
 #' where \eqn{y_t} is the observed fluorescence at the t-th timestep.
 #' 
 #'
@@ -32,8 +31,8 @@
 #' 
 #' ### Generate sample data
 #' sim <- simulate_ar1(n = 500, gam = 0.998, poisMean = 0.01, sd = 0.05, seed = 1)
-#' fit_spike <- spike_estimates(sim$fl, 
-#' decay_rate = 0.998, tuning_parameter = 0.01)
+#' ### Fit the spike
+#' fit_spike <- spike_estimates(sim$fl, decay_rate = 0.998, tuning_parameter = 0.01)
 #' 
 #' @references
 #' Jewell, S. W., Hocking, T. D., Fearnhead, P., & Witten, D. M. (2019). 
@@ -46,7 +45,6 @@
 #' Rigaill, G. (2015). A pruned dynamic programming algorithm to recover the
 #' best segmentations with 1 to K_max change-points. Journal de la Societe
 #' Francaise de Statistique, 156(4), 180-205.
-#'
 #'
 #' @export
 spike_estimates <- structure(function(dat, decay_rate, tuning_parameter, functional_pruning_out = FALSE) {
@@ -76,17 +74,11 @@ spike_estimates <- structure(function(dat, decay_rate, tuning_parameter, functio
     colnames(piecewise_square_losses) <- c("square", "linear", "constant", "min_mean", "max_mean", "prev_last_mean", "data_i", "s")  
   }
   
-  # edit to encode the positive/negative spike information
   estimated_means = rev(mean_vec_r)
   change_pts = rev(unique(end_vec_r[end_vec_r > 0]))
   est_diff_mean <- estimated_means[2:length(estimated_means)]-decay_rate*estimated_means[1:(length(estimated_means)-1)]
   est_spike_size <- est_diff_mean[change_pts]
-  
-  spike_sign <- rep("Positive", times = length(change_pts))
-  spike_sign[est_spike_size<0] <- "Negative"
-  out <-
-      list(
-        estimated_means = estimated_means,
+  out <-list(estimated_means = estimated_means,
         estimated_calcium = estimated_means,
         dat = dat,
         decay_rate = decay_rate, 
@@ -98,7 +90,10 @@ spike_estimates <- structure(function(dat, decay_rate, tuning_parameter, functio
         n_intervals = intervals_mat_r,
         end_vec = end_vec_r,
         piecewise_square_losses = piecewise_square_losses)
-    class(out) <- "spike_estimates"
-    return(out)
+  class(out) <- "spike_estimates"
+  return(out)
 })
+
+
+
 

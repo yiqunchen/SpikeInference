@@ -8,7 +8,7 @@ Authors@R: c(person("Yiqun", "Chen", email = "yiqunc@uw.edu",
 Version: 1.0
 License: GPL-3
 Title: Quantifying uncertainty for spikes estimated from calcium imaging data
-Description: An implementation of selective inference for spikes detected via an L0 penalty as described in Chen et al. (2021)
+Description: Implements selective inference procedures for spikes estimated via the L0 penalty, as described in Chen, Jewell, and Witten (2021+) <https://arxiv.org/abs/2103.07818>
 Depends: R (>= 3.5)
 Imports: 
     Rcpp, latex2exp, ggplot2, dplyr, magrittr

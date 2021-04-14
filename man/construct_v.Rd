@@ -2,19 +2,31 @@
 % Please edit documentation in R/utils.R
 \name{construct_v}
 \alias{construct_v}
-\title{Generate the contrast vector for testing the presence of spikes}
+\title{Generate the contrast vector for testing the null hypothesis of interest.
+See Section 2 of Chen et al. (2021+) for details.}
 \usage{
 construct_v(n, thj, window_size, gam)
 }
 \arguments{
 \item{n}{length of the vector}
 
-\item{thj}{location of the spike of interest}
+\item{thj}{location of the estimated spike of interest}
 
 \item{window_size}{parameter h}
 
 \item{gam}{AR-1 decaying parameter}
 }
+\value{
+Returns a vector of length n
+}
 \description{
-Generate the contrast vector for testing the presence of spikes
+Generate the contrast vector for testing the null hypothesis of interest.
+See Section 2 of Chen et al. (2021+) for details.
+}
+\examples{
+nu_vector <- construct_v(n = 100, thj = 2, window_size = 2, gam = 0.95) 
+}
+\references{
+Chen YT, Jewell SW, Witten DM. (2021) Quantifying uncertainty in spikes estimated from calcium imaging data.
+ arXiv:2103.0781 [statME].
 }

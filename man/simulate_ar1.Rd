@@ -2,14 +2,14 @@
 % Please edit documentation in R/simulate_ar1.R
 \name{simulate_ar1}
 \alias{simulate_ar1}
-\title{Simulate fluorescence trace based on simple AR(1) generative model}
+\title{Simulate fluorescence trace based on a simple AR-1 generative model}
 \usage{
 simulate_ar1(n, gam, poisMean, sd, seed, c0 = 0)
 }
 \arguments{
-\item{n}{Numeric; number of timesteps}
+\item{n}{Numeric; length of the time series}
 
-\item{gam}{Numeric; AR(1) decay rate}
+\item{gam}{Numeric; AR-1 decay rate}
 
 \item{poisMean}{Numeric; mean for Poisson distributed spikes}
 
@@ -20,19 +20,20 @@ simulate_ar1(n, gam, poisMean, sd, seed, c0 = 0)
 \item{c0}{Numeric; initial calcium concentration, default to 0}
 }
 \value{
-spikes, fluorescence, and calcium concentration
+\itemize{
+  \item \code{spikes} -- A list of timesteps at which a spike occurs
+  \item \code{fl} -- The noisy fluorescence \eqn{y_t}
+  \item \code{conc} -- The true calcium concentration \eqn{c_t}
+}
 }
 \description{
-Simulate fluorescence trace based on simple AR(1) generative model
+Simulate fluorescence trace based on a simple AR-1 generative model
 }
 \details{
-Simulate fluorescence trace based on simple AR(1) generative model
-
-\deqn{y_t = c_t + \epsilon_t, \epsilon_t \sim N(0, \sigma^2)}
-
-\deqn{c_t = gam * c_{t-1} + s_t}
-
-\deqn{s_t ~ Pois(poisMean)}
+Simulate fluorescence trace based on a simple AR-1 generative model:
+\deqn{y_t = c_t + \epsilon_t, \epsilon_t \sim N(0, \sigma^2),}
+\deqn{c_t = gam * c_{t-1} + s_t,}
+\deqn{s_t \sim Poisson(poisMean).}
 }
 \examples{
 sim <- simulate_ar1(n = 500, gam = 0.998, poisMean = 0.009, sd = 0.05, seed = 1)

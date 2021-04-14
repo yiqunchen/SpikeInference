@@ -2,7 +2,7 @@
 % Please edit documentation in R/spike_inference.R
 \name{spike_inference}
 \alias{spike_inference}
-\title{Estimation and inference for AR1 spike problem using an L0 penalty}
+\title{Estimation and inference for AR-1 spike problem using an L0 penalty}
 \usage{
 spike_inference(
   dat,
@@ -21,16 +21,16 @@ spike_inference(
 \arguments{
 \item{dat}{Numeric vector; observed data.}
 
-\item{decay_rate}{Numeric; specified AR(1) decay rate \eqn{\gamma}, a 
+\item{decay_rate}{Numeric; specified AR-1 decay rate \eqn{\gamma}, a 
 number between 0 and 1 (non-inclusive).}
 
 \item{tuning_parameter}{Numeric; tuning parameter \eqn{\lambda} for 
-L0 spike estimation, a nonnegative number.}
+L0 spike estimation, a non-negative number.}
 
 \item{window_size}{Numeric; window size for fixed window hypothesis testing,
-a nonnegative integer.}
+a non-negative integer.}
 
-\item{sig}{Numeric; noise variance for the observed data, a nonnegative number.
+\item{sig}{Numeric; noise variance for the observed data, a non-negative number.
 If unknown (NULL), sample variance of residuals is used instead.}
 
 \item{return_conditioning_sets}{Logical; Should the conditioning set S be returned?}
@@ -49,32 +49,27 @@ a number between 0 and 1 (non-inclusive).}
 }
 \value{
 Returns a list with elements:
-
-\code{spikes} the set of spikes,
-
-\code{pvals}  p-values associated with each spike,
-
-\code{LCB} lower confidence band for each spike,
-
-\code{UCB} upper confidence band for each spike.
+\itemize{
+\item \code{spikes} the set of spikes,
+\item \code{pvals}  p-values associated with each spike,
+\item \code{LCB} lower confidence band for each spike,
+\item \code{UCB} upper confidence band for each spike.
+}
 }
 \description{
-Estimation and inference for AR1 spike problem using an L0 penalty
+Estimation and inference for AR-1 spike problem using an L0 penalty
 }
 \details{
-Consider the AR(1) generative model \deqn{Y_t = c_t + \epsilon_t, \epsilon_t \sim N(0, \sigma^2)}
-where \eqn{c_t = \gamma * c_{t-1} + z_t} and \eqn{z_t ~ Pois(poisMean)}. In words,
+Consider the AR-1 generative model \deqn{Y_t = c_t + \epsilon_t, \epsilon_t \sim N(0, \sigma^2),}
+where \eqn{c_t = \gamma  c_{t-1} + z_t} and \eqn{z_t \sim Poisson(poisMean)}. In words,
 this says between spikes (when \eqn{z_t=0}), calcium decays exponentially at a known rate \eqn{\gamma\in(0,1)}, 
 which is taken to be known. Further denote the locations of true spikes, \eqn{t:z_t\geq 0} as 
 \eqn{0 = \tau_0 < \tau_1 < \ldots < \tau_K < \tau_{K+1} = T}.
-
-Estimation:
-
 This function first estimates spikes via L0 penalty based on
 noisy observations \eqn{y_t, t = 1,  \ldots, T} by solving the optimization problem
 
-\deqn{\hat{c}_1, \cdots, \hat{c}_T \in minimize{c_1,...,c_T\geq 0} 0.5 \sum_{t=1}^T ( y_t - c_t )^2 + \lambda \sum_t=2^T 
-1(c_t != \gamma c_t-1) }.
+\deqn{ minimize_{c_1,...,c_T\geq 0} \frac{1}{2} \sum_{t=1}^T ( y_t - c_t )^2 + \lambda \sum_t=2^T 
+1(c_t != \gamma c_t-1).}
 
 Estimated spikes correspond to the time t such that estimated calcium does not decay exponentially, i.e.,
 \eqn{\{\cdots,\hat{\tau}_j,\cdots\}  = \{t: \hat{c}_{t+1} -\gamma c_{t} \neq 0\} }.
@@ -83,9 +78,7 @@ See Jewell et al. (2019), Rigaill, G. (2015),
 and Maidstone, R. et al. (2017) for more information and discussion of
 the detailed algorithm.
 
-
 Inference:
-
 For each estimated changepoint \eqn{\hat{\tau}_j}, we test the null
 hypothesis that the calcium is decaying exponentially *near* \eqn{\hat{\tau}_j}.
 In particular, near is defined based on a fixed window around

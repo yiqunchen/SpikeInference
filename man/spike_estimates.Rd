@@ -18,27 +18,21 @@ spike_estimates(
 number between 0 and 1 (non-inclusive).}
 
 \item{tuning_parameter}{Numeric; tuning parameter \eqn{\lambda} for 
-L0 spike estimation, a nonnegative number.}
+L0 spike estimation, a non-negative number.}
 
 \item{functional_pruning_out}{Logical; if TRUE, return
 cost functions for L0 spike estimation. Defaults to FALSE.}
 }
 \value{
-For L0 spkie estimation, returns a list with elements:
-
-\code{estimated_calcium} Estimated calcium levels
-
-\code{spikes} The set of estimated spikes
-
-\code{spike_sign} Signs associated with the set of estimated spikes
-
-\code{cost} The cost at each time point
-
-\code{n_intervals} The number of piecewise quadratics used at each
-  point
-
-\code{piecewise_square_losses} Dataframe of optimal cost functions
-  Cost_s*(mu) for s = 1,..., T.
+For L0 spike estimation, returns a list with elements:
+\itemize{
+\item \code{estimated_calcium} Estimated calcium levels
+\item \code{spikes} The set of estimated spikes
+\item \code{cost} The cost at each time point
+\item \code{n_intervals} The number of piecewise quadratics used at each point
+\item \code{piecewise_square_losses} A data frame of optimal cost functions
+ Cost_s*(mu) for s = 1,..., T.
+}
 }
 \description{
 Estimate spikes with an L0 penalty
@@ -47,16 +41,16 @@ Estimate spikes with an L0 penalty
 Estimation:
  This function estimates spikes via an L0 penalty based on the following 
  optimization problem:
-\deqn{minimize{c_1,...,c_T\geq 0} 0.5 \sum_{t=1}^T ( y_t - c_t )^2 + \lambda \sum_t=2^T 
-1(c_t != \gamma c_t-1) },
+\deqn{minimize_{c_1,...,c_T\geq 0} \frac{1}{2} \sum_{t=1}^T ( y_t - c_t )^2 + \lambda \sum_{t=2}^{T} 
+1(c_t \neq \gamma c_t-1) ,}
 where \eqn{y_t} is the observed fluorescence at the t-th timestep.
 }
 \examples{
 
 ### Generate sample data
 sim <- simulate_ar1(n = 500, gam = 0.998, poisMean = 0.01, sd = 0.05, seed = 1)
-fit_spike <- spike_estimates(sim$fl, 
-decay_rate = 0.998, tuning_parameter = 0.01)
+### Fit the spike
+fit_spike <- spike_estimates(sim$fl, decay_rate = 0.998, tuning_parameter = 0.01)
 
 }
 \references{

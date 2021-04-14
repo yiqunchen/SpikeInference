@@ -1,28 +1,27 @@
-#' Simulate fluorescence trace based on simple AR(1) generative model
+#' Simulate fluorescence trace based on a simple AR-1 generative model
 #'
 #' @details
-#' Simulate fluorescence trace based on simple AR(1) generative model
+#' Simulate fluorescence trace based on a simple AR-1 generative model:
+#' \deqn{y_t = c_t + \epsilon_t, \epsilon_t \sim N(0, \sigma^2),}
+#' \deqn{c_t = gam * c_{t-1} + s_t,}
+#' \deqn{s_t \sim Poisson(poisMean).}
 #'
-#' \deqn{y_t = c_t + \epsilon_t, \epsilon_t \sim N(0, \sigma^2)}
-#'
-#' \deqn{c_t = gam * c_{t-1} + s_t}
-#'
-#' \deqn{s_t ~ Pois(poisMean)}
-#'
-#' @param n Numeric; number of timesteps
-#' @param seed Numeric; random seed
-#' @param gam Numeric; AR(1) decay rate
+#' @param n Numeric; length of the time series
+#' @param gam Numeric; AR-1 decay rate
 #' @param poisMean Numeric; mean for Poisson distributed spikes
 #' @param sd Numeric; standard deviation
+#' @param seed Numeric; random seed
 #' @param c0 Numeric; initial calcium concentration, default to 0
-#'
-#' @return spikes, fluorescence, and calcium concentration
-#'
+#' @return 
+#' \itemize{
+#'   \item \code{spikes} -- A list of timesteps at which a spike occurs
+#'   \item \code{fl} -- The noisy fluorescence \eqn{y_t}
+#'   \item \code{conc} -- The true calcium concentration \eqn{c_t}
+#' }
 #' @examples
 #' sim <- simulate_ar1(n = 500, gam = 0.998, poisMean = 0.009, sd = 0.05, seed = 1)
 #' plot(sim)
 #' @import stats
-#' 
 #' @export
 simulate_ar1 <- function(n, gam, poisMean, sd, seed, c0 = 0)
 {
