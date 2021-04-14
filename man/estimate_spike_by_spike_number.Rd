@@ -37,5 +37,5 @@ Search for the right tuning parameter lambda to meet the target firing rate
 \examples{
 curr_sim <- simulate_ar1(n = 1000, gam = 0.95, poisMean = 0.01, sd = 0.1, seed = 1)
 fit_spike <- estimate_spike_by_spike_number(curr_sim, decay_rate = 0.95, 
-target_firing_rate = 0.01, max_iters=10, tolerance=max(5,floor(n_length*firing_rate*0.05)))
+target_firing_rate = 0.01, max_iters=10, tolerance=max(5))
 }

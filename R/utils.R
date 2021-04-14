@@ -143,7 +143,7 @@ one_d_binary_search <- function(gcamp, decay_rate, lam_min, lam_max,
 #' @examples 
 #' curr_sim <- simulate_ar1(n = 1000, gam = 0.95, poisMean = 0.01, sd = 0.1, seed = 1)
 #' fit_spike <- estimate_spike_by_spike_number(curr_sim, decay_rate = 0.95, 
-#' target_firing_rate = 0.01, max_iters=10, tolerance=max(5,floor(n_length*firing_rate*0.05)))
+#' target_firing_rate = 0.01, max_iters=10, tolerance=max(5))
 #' @export 
 estimate_spike_by_spike_number <- function(dat, decay_rate, target_firing_rate, 
                                            lam_min = 1e-6, lam_max = 1, max_iters=50, tolerance=5){

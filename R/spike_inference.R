@@ -6,7 +6,7 @@
 #' L0 spike estimation, a non-negative number.
 #' @param window_size Numeric; window size for fixed window hypothesis testing,
 #' a non-negative integer.
-#' @param sig Numeric; noise variance for the observed data, a non-negative number.
+#' @param sig2 Numeric; noise variance for the observed data, a non-negative number.
 #'  If unknown (NULL), sample variance of residuals is used instead.
 #' @param return_conditioning_sets Logical; Should the conditioning set S be returned?
 #' @param return_ci Logical; if TRUE, the confidence interval for the change in calcium 
@@ -15,7 +15,6 @@
 #' @param alpha Numeric; significance level for the hypothesis test, 
 #' a number between 0 and 1 (non-inclusive).
 #' @param mu Numeric; parameter for the test  \eqn{\nu^{T}c\leq mu}.
-#' @param lower_trunc Numeric; parameter for selection procedure: \eqn{\nu^{T}c\geq lower_trunc}.
 
 #' @return Returns a list with elements:
 #' \itemize{
@@ -29,58 +28,27 @@
 #' Consider the AR-1 generative model \deqn{Y_t = c_t + \epsilon_t, \epsilon_t \sim N(0, \sigma^2),}
 #' where \eqn{c_t = \gamma  c_{t-1} + z_t} and \eqn{z_t \sim Poisson(poisMean)}. In words,
 #' this says between spikes (when \eqn{z_t=0}), calcium decays exponentially at a known rate \eqn{\gamma\in(0,1)}, 
-#' which is taken to be known. Further denote the locations of true spikes, \eqn{t:z_t\geq 0} as 
-#' \eqn{0 = \tau_0 < \tau_1 < \ldots < \tau_K < \tau_{K+1} = T}.
+#' which is taken to be known. Further denote the locations of true spikes, \eqn{\{t:z_t\geq 0\}} as 
+#' \eqn{\{0 = \tau_0 < \tau_1 < \ldots < \tau_K < \tau_{K+1} = T\}}.
+#' 
 #' This function first estimates spikes via L0 penalty based on
-#' noisy observations \eqn{y_t, t = 1,  \ldots, T} by solving the optimization problem
-#'
+#' noisy observations \eqn{y_t, t = 1,  \ldots, T} by solving the following optimization problem
 #' \deqn{ minimize_{c_1,...,c_T\geq 0} \frac{1}{2} \sum_{t=1}^{T} ( y_t - c_t )^2 + \lambda \sum_{t=2}^{T} 
 #' 1(c_t \neq \gamma c_t-1).}
-#'
 #' Estimated spikes correspond to the time t such that estimated calcium does not decay exponentially, i.e.,
 #' \eqn{\{\cdots,\hat{\tau}_j,\cdots\}  = \{t: \hat{c}_{t+1} -\gamma c_{t} \neq 0\} }.
-#'
-#' See Jewell et al. (2019), Rigaill, G. (2015), 
-#' and Maidstone, R. et al. (2017) for more information and discussion of
-#' the detailed algorithm.
-#'
-#' Inference:
-#' For each estimated changepoint \eqn{\hat{\tau}_j}, we test the null
-#' hypothesis that the calcium is decaying exponentially *near* \eqn{\hat{\tau}_j}.
-#' In particular, near is defined based on a fixed window around
-#' \eqn{\hat{\tau}_j} with left endpoint \deqn{tL = max(1, \hat{\tau}_j - window_size + 1),} and
-#' right endpoint \deqn{tR = min(T, \hat{\tau}_j + window_size).}
 #' 
-#' We then test the null hypothesis \eqn{H_0: \sum_t v_t * \mu_t = 0}. 
-#' for a linear contrast vector \eqn{v in R^T} defined as \eqn{v_t = 0}, if
-#' \eqn{t < tL} or \eqn{t > tR}; 
-#' \eqn{v_t = \gamma \cdot (\gamma^2-1)/(\gamma^{2(tL-\hat{\tau}_j)}-\gamma^2) \cdot \gamma^{t-\hat{\tau}_j}}, if
-#' \eqn{tL \le t \le \hat{\tau}_j}; 
-#' and \eqn{v_t = (\gamma^2-1)/(\gamma^{2(tR-\hat{\tau}_j)}-1) \cdot \gamma^{t-(\hat{\tau}_j}+1)}, if
-#' \eqn{\hat{\tau}_j + 1 \le t \le tR}. 
+#' Now suppose that we want to test whether the calcium is exponentially decaying near an estimated spike
+#' \eqn{\hat{\tau}_j}; or equivalently, the null hypothesis of the form \eqn{H_{0}:  \nu^T c = 0} versus 
+#' \eqn{H_{1}:  \nu^T c> 0} for suitably chosen \eqn{\nu} (see Section 2 in Chen et al. (2021+) for details). 
+#' This function computes the following p-value
+#' \deqn{P(\nu^T Y \geq \nu^T y |  \hat{\tau}_j \in M(Y), \nu^T Y> 0, \Pi_\nu^\perp Y  =  \Pi_\nu^\perp y)}
+#' where \eqn{M(Y)} is the set of spikes estimated from Y via the L0 method, \eqn{\Pi_\nu^\perp} is 
+#' the orthogonal projection to the orthogonal complement of \eqn{\nu}. In particular, this p-value controls the 
+#' selective Type I error (see Section 3 in  Chen et al. (2021+) for details). 
 #' 
-#' Our framework allows us to efficiently compute p-values based on the 
-#' test statistic \eqn{t(v) * y = \sum_t v_t \cdot y_t} for conditioning set \eqn{\{ \hat{\tau}_j in
-#' M(y'(\phi)) \} }, where \eqn{\phi = \sum_t v_t * Y_t}. 
-#' 
-#' In Chen et al. (2020+), we show that the p-value corresponding
-#' to the test \eqn{H0: \sum_t v_t * c_t = \mu} can be written as
-#' \deqn{Pr(|\phi| \ge |t(v) * y| | \phi in S)} for a conditioning set S.
-#'
-#' This function computes p-values for the following test statistic and
-#' conditioning set S. In what follows, \eqn{y'(\phi)} is a perturbation of the
-#' observed data y. See Proposition 1 of Chen et al. (2020+) for additional
-#' details.
-#'
-#' \deqn{Pr(\phi >= t(v) * y |  \hat{\tau}_j in M(y'(\phi))}
-#'
-#' Since the observation \eqn{y_t} is normally distributed, \eqn{\phi | S} follows a truncated 
-#' normal distribution, and we obtain the (one-sided or two-sided) p-value associated with  \eqn{ \hat{\tau}_j}
-#' by computing the set S and find the CDF of the resulting truncated normal distribution.
-#'
-#' By the duality of hypothesis testing and confidence interval, we can construct a \eqn{1-\alpha} confidence interval for
-#' the parameter \eqn{t(v) * c = \sum_t v_t \cdot c_t}. This function computes the lower confidence band and upper confidence
-#' band using a bisection method. See Proposition 8 of Chen et al. (2020+) for additional details.
+#' In addition, we implement a \eqn{1-\alpha} confidence interval for the parameter \eqn{ \nu^T c}, the increase
+#' in calcium associated with an estimated spike \eqn{\hat{\tau}_j} (see Section 4 in Chen et al. (2021+) for details).
 #'
 #'
 #' @examples
@@ -92,14 +60,13 @@
 #' curr_sim <- simulate_ar1(n = n_length, gam = gam, poisMean = 0.01, sd = sigma, seed = 2)
 #' curr_fit_spike <- spike_estimates(dat = curr_sim$fl, decay_rate = gam, tuning_parameter = LAMBDA)
 #' curr_inference_spike <- spike_inference(dat = curr_sim$fl, decay_rate = gam,
-#'  tuning_parameter = LAMBDA, window_size = 2,
-#'   sig = sigma*sigma, return_ci = TRUE)
+#'  tuning_parameter = LAMBDA, window_size = 2, sig2 = sigma*sigma, return_ci = TRUE)
 
 #' @references
 #'
-#' Chen, Y., Jewell, S., and Witten, D. (2020+). Uncertainty quantification for
-#' spikes estimated from calcium imaging data. Technical report.
-#'
+#' Chen YT, Jewell SW, Witten DM. (2021+) Quantifying uncertainty in spikes estimated from calcium imaging data.
+#'  arXiv:2103.0781 [statME].
+#'  
 #' Jewell, S. W., Hocking, T. D., Fearnhead, P., & Witten, D. M. (2019). 
 #' Fast nonconvex deconvolution of calcium imaging data. Biostatistics. 
 #'
@@ -117,36 +84,35 @@
 #'
 #' @export
 spike_inference <- structure(function(dat, decay_rate, tuning_parameter, 
-                                      window_size, sig = NULL, 
+                                      window_size, sig2 = NULL, 
                                       return_conditioning_sets = FALSE, return_ci = FALSE, 
-                                      two_sided = FALSE, alpha = 0.05, mu = 0, lower_trunc = -Inf
-                                    ){
+                                      two_sided = FALSE, alpha = 0.05, mu = 0){
   stopifnot(decay_rate > 0)
   stopifnot(decay_rate < 1)
   stopifnot(tuning_parameter > 0)
   stopifnot(sum(is.na(dat))==0)
   
   ## L0 
-  if (is.null(sig)){
+  if (is.null(sig2)){
     estimated = TRUE
   } else {
     estimated = FALSE
-    stopifnot(sig>0)
+    stopifnot(sig2>0)
   }
   
-  if (is.null(sig)){
+  if (is.null(sig2)){
     
     fit_spike <- SpikeInference::spike_estimates(dat, decay_rate,
                                                  tuning_parameter,
                                                  functional_pruning_out = FALSE)
-    sig <- var(dat-fit_spike$estimated_calcium)
+    sig2 <- var(dat-fit_spike$estimated_calcium)
     }
     
     #sig <- max(sig,1e-5) #truncate sigma2 for numerical stability
     
-    out_fpop_inference <- .fpop_inference(dat, decay_rate, tuning_parameter, window_size, sig,
+    out_fpop_inference <- .fpop_inference(dat, decay_rate, tuning_parameter, window_size, sig2,
                                           return_conditioning_sets, return_ci, two_sided, alpha,
-                                          mu,lower_trunc)
+                                          mu,0)
     
     if (return_conditioning_sets) { 
       conditioning_sets = fpop_inference_intervals_formatter(out_fpop_inference[[2]])
@@ -160,10 +126,9 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter,
       out <- list(
         dat = dat,
         decay_rate = decay_rate,
-        call = match.call(),
         tuning_parameter = tuning_parameter,
         window_size = window_size,
-        sig = sig, 
+        sig2 = sig2, 
         change_pts = NA, # thj+1 - thj \neq 0
         spikes = NA,
         pvals = NA,
@@ -173,18 +138,16 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter,
         estimated_variance = estimated,
         two_sided = two_sided,
         alpha = alpha,
-        mu = mu,
-        lower_trunc= lower_trunc
+        mu = mu
       )
     }else{
       if (return_ci){
         out <- list(
           dat = dat,
           decay_rate = decay_rate,
-          call = match.call(),
           tuning_parameter = tuning_parameter,
           window_size = window_size,
-          sig = sig, 
+          sig2 = sig2, 
           change_pts = pmax(out_fpop_inference[[1]][1:n_cps, 1],1), # thj+1 - thj \neq 0
           spikes = pmax(out_fpop_inference[[1]][1:n_cps, 1],1),
           pvals = out_fpop_inference[[1]][1:n_cps, 2],
@@ -194,17 +157,15 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter,
           estimated_variance = estimated,
           two_sided = two_sided,
           alpha = alpha,
-          mu = mu,
-          lower_trunc= lower_trunc
+          mu = mu
         )
       }else{
       out <- list(
         dat = dat,
         decay_rate = decay_rate,
-        call = match.call(),
         tuning_parameter = tuning_parameter,
         window_size = window_size,
-        sig = sig, 
+        sig2 = sig2, 
         change_pts = pmax(out_fpop_inference[[1]][1:n_cps, 1],1), # thj+1 - thj \neq 0
         spikes = pmax(out_fpop_inference[[1]][1:n_cps, 1],1),
         pvals = out_fpop_inference[[1]][1:n_cps, 2],
@@ -212,8 +173,7 @@ spike_inference <- structure(function(dat, decay_rate, tuning_parameter,
         estimated_variance = estimated,
         two_sided = two_sided,
         alpha = alpha,
-        mu = mu,
-        lower_trunc=lower_trunc
+        mu = mu
       )
       }
     }
