@@ -257,8 +257,7 @@
 <p>In addition to the aforementioned key functions, the package also includes the following helper functions: <code>construct_v</code> and <code>estimate_spike_by_firing_rate</code>.</p>
 <div id="construct_v" class="section level4">
 <h4 class="hasAnchor">
-<a href="#construct_v" class="anchor"></a><code>construct_v</code>
-</h4>
+<a href="#construct_v" class="anchor"></a>construct_v</h4>
 <p>The function <code>construct_v</code> generates the contrast vector <span class="math inline">\(\nu\)</span> for the null hypothesis <span class="math inline">\(H_0:\nu^\top c = 0\)</span>. We will demonstrate below that <span class="math inline">\(\nu^\top c\)</span> is indeed the change in calcium in the neighborhood of a given spike <span class="math inline">\(\hat\tau_j\)</span>. We consider the case where there is no spike, i.e., the calcium is decaying exponentially, and we would expect <span class="math inline">\(\nu^\top c=0\)</span>. In the example below, we set <span class="math inline">\(c_1 = 3\)</span>, <span class="math inline">\(c_t = 0.98 c_{t-1}, \; t=2,\ldots, 50\)</span>, <span class="math inline">\(\hat\tau_j = 20\)</span>, and <span class="math inline">\(h=5\)</span>.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">gam</span> <span class="op">&lt;-</span> <span class="fl">0.98</span>
@@ -273,8 +272,7 @@
 </div>
 <div id="estimate_spike_by_firing_rate" class="section level4">
 <h4 class="hasAnchor">
-<a href="#estimate_spike_by_firing_rate" class="anchor"></a><code>estimate_spike_by_firing_rate</code>
-</h4>
+<a href="#estimate_spike_by_firing_rate" class="anchor"></a>estimate_spike_by_firing_rate</h4>
 <p>We have taken <span class="math inline">\(\lambda\)</span> to be known in this tutorial. Choosing an appropriate <span class="math inline">\(\lambda\)</span> value is critical to the quality of estimated spikes. The function <code>estimate_spike_by_firing_rate</code> allows us to specify a target firing rate, and then to find the value of <span class="math inline">\(\lambda\)</span> that yields a number of estimated spikes that is close to that target firing rate.</p>
 <p>In the example below, we simulate from an AR-1 model with firing rate 0.05, i.e., we expect to have 5 spikes per 100 timesteps on average.</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">

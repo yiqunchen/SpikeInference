@@ -102,7 +102,7 @@ plot(inference_spike_toy_example_h_10, alpha=0.05)
 ### Miscellaneous functions
 In addition to the aforementioned key functions, the package also includes the following helper functions: `construct_v` and `estimate_spike_by_firing_rate`.
 
-#### `construct_v` 
+#### construct_v
 The function `construct_v` generates the contrast vector $\nu$ for the null hypothesis $H_0:\nu^\top c = 0$. We will demonstrate below that $\nu^\top c$ is indeed the change in calcium in the neighborhood of a given spike $\hat\tau_j$. We consider the case where there is no spike, i.e., the calcium is decaying exponentially, and we would expect $\nu^\top c=0$. In the example below, we set $c_1 = 3$, $c_t = 0.98 c_{t-1}, \; t=2,\ldots, 50$, $\hat\tau_j = 20$, and $h=5$.
 
 ```{r}
@@ -116,7 +116,7 @@ sum(v*calcium)
 ```
 We see that $\nu^\top c$ indeed evaluates to 0, up to machine precision.
 
-#### `estimate_spike_by_firing_rate`
+#### estimate_spike_by_firing_rate
 
 We have taken $\lambda$ to be known in this tutorial. Choosing an appropriate $\lambda$ value is critical to the quality of estimated spikes. The function  `estimate_spike_by_firing_rate` allows us to specify a target firing rate, and then to find the value of $\lambda$ that yields a number of estimated spikes that is close to that target firing rate.
 
