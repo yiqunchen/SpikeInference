@@ -15,7 +15,7 @@ navbar:
       href: articles/Tutorials.html
 
     example:
-      text: Read data example
+      text: Real data example
       href: articles/real_data_example.html
     
     

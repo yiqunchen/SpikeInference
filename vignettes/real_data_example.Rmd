@@ -44,7 +44,7 @@ gam_star <- 1-(1/100/0.7)
 To account for the non-zero baseline in the recording, we estimate spikes using the following optimization problem with $\lambda = 0.63$ and $\beta_0 = -0.3$:
  \begin{equation}
  \text{minimize}_{c_1,...,c_T\geq 0} \left\{\frac{1}{2}\sum_{t=1}^T ( y_t - c_t + \beta_0)^2 + \lambda \sum_{t=2}^T 
- 1(c_t \neq \gamma c_t-1) \right\}.
+ 1(c_t \neq \gamma c_{t-1}) \right\}.
 \end{equation} 
 These values were chosen using a two-dimensional grid-search on the values of $\lambda$ and $\beta_0$. A function to implement the search can be found [here](https://github.com/yiqunchen/SpikeInference-experiments/blob/main/2d_tuning_param_ell_0.R).
 
