@@ -51,7 +51,7 @@
   <a href="../articles/Tutorials.html">Software tutorials</a>
 </li>
 <li>
-  <a href="../articles/real_data_example.html">Read data example</a>
+  <a href="../articles/real_data_example.html">Real data example</a>
 </li>
 <li>
   <a href="../reference/index.html">Reference</a>
@@ -87,9 +87,9 @@
 <span class="co">#&gt; Loading required package: SpikeInference</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va">RCurl</span><span class="op">)</span>
 <span class="co">#&gt; Loading required package: RCurl</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="http://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span>
 <span class="co">#&gt; Loading required package: ggplot2</span>
-<span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="http://github.com/stefano-meschiari/latex2exp">latex2exp</a></span><span class="op">)</span>
+<span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://github.com/stefano-meschiari/latex2exp">latex2exp</a></span><span class="op">)</span>
 <span class="co">#&gt; Loading required package: latex2exp</span>
 <span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="https://scales.r-lib.org">scales</a></span><span class="op">)</span>
 <span class="co">#&gt; Loading required package: scales</span>
@@ -119,7 +119,7 @@
 <span class="va">gam_star</span> <span class="op">&lt;-</span> <span class="fl">1</span><span class="op">-</span><span class="op">(</span><span class="fl">1</span><span class="op">/</span><span class="fl">100</span><span class="op">/</span><span class="fl">0.7</span><span class="op">)</span></code></pre></div>
 <p>To account for the non-zero baseline in the recording, we estimate spikes using the following optimization problem with <span class="math inline">\(\lambda = 0.63\)</span> and <span class="math inline">\(\beta_0 = -0.3\)</span>: <span class="math display">\[\begin{equation}
  \text{minimize}_{c_1,...,c_T\geq 0} \left\{\frac{1}{2}\sum_{t=1}^T ( y_t - c_t + \beta_0)^2 + \lambda \sum_{t=2}^T 
- 1(c_t \neq \gamma c_t-1) \right\}.
+ 1(c_t \neq \gamma c_{t-1}) \right\}.
 \end{equation}\]</span> These values were chosen using a two-dimensional grid-search on the values of <span class="math inline">\(\lambda\)</span> and <span class="math inline">\(\beta_0\)</span>. A function to implement the search can be found <a href="https://github.com/yiqunchen/SpikeInference-experiments/blob/main/2d_tuning_param_ell_0.R">here</a>.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">curr_lambda</span> <span class="op">&lt;-</span> <span class="fl">0.6309573</span>

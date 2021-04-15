@@ -6,7 +6,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Summarize the inference result for spikes estimated via an L0 inference problem — summary.spike_inference • SpikeInference</title>
+<title>Quantifying uncertainty for spikes estimated from calcium imaging data — SpikeInference • SpikeInference</title>
 
 
 <!-- jquery -->
@@ -41,8 +41,8 @@
   <link href="../extra.css" rel="stylesheet">
   
 
-<meta property="og:title" content="Summarize the inference result for spikes estimated via an L0 inference problem — summary.spike_inference" />
-<meta property="og:description" content="Summarize the inference result for spikes estimated via an L0 inference problem" />
+<meta property="og:title" content="Quantifying uncertainty for spikes estimated from calcium imaging data — SpikeInference" />
+<meta property="og:description" content="SpikeInference is an R package for quantifying uncertainty (i.e., obtaining valid p-values and confidence intervals) for spikes estimated from calcium imaging data via the  penalized algorithm described in Jewell and Witten (2018) and Jewell et al. (2020). Details can be found in our manuscript (Chen et al. 2021). In addition to the manual in R, a detailed tutorial can be found at https://yiqunchen.github.io/SpikeInference/index.html." />
 
 
 
@@ -114,34 +114,26 @@
 <div class="row">
   <div class="col-md-9 contents">
     <div class="page-header">
-    <h1>Summarize the inference result for spikes estimated via an L0 inference problem</h1>
+    <h1>Quantifying uncertainty for spikes estimated from calcium imaging data</h1>
     
-    <div class="hidden name"><code>summary.spike_inference.Rd</code></div>
+    <div class="hidden name"><code>SpikeInference.Rd</code></div>
     </div>
 
     <div class="ref-description">
-    <p>Summarize the inference result for spikes estimated via an L0 inference problem</p>
+    <p>SpikeInference is an R package for quantifying uncertainty (i.e., obtaining valid p-values and confidence intervals) for spikes estimated from calcium imaging data via the  penalized algorithm described in Jewell and Witten (2018) and Jewell et al. (2020). Details can be found in our manuscript (Chen et al. 2021). In addition to the manual in R, a detailed tutorial can be found at https://yiqunchen.github.io/SpikeInference/index.html.</p>
     </div>
 
-    <pre class="usage"><span class='co'># S3 method for spike_inference</span>
-<span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>object</span>, <span class='va'>...</span><span class='op'>)</span></pre>
 
-    <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
-    <table class="ref-arguments">
-    <colgroup><col class="name" /><col class="desc" /></colgroup>
-    <tr>
-      <th>object</th>
-      <td><p>output from running spike_estimates</p></td>
-    </tr>
-    <tr>
-      <th>...</th>
-      <td><p>to be passed to methods</p></td>
-    </tr>
-    </table>
 
-    <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
+    <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
-    <p>A data frame with a column of estimated spikes with associated p-values and confidence intervals.</p>
+    <p>Maintainer: Yiqun Chen &lt;yiqunc@uw.edu&gt;</p>
+<p>The main functions included in the package are: <code><a href='simulate_ar1.html'>simulate_ar1</a></code>, <code><a href='spike_estimates.html'>spike_estimates</a></code>, and <code><a href='spike_inference.html'>spike_inference</a></code>.</p>
+    <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
+
+    <p>Chen YT, Jewell SW, Witten DM. (2021) Quantifying uncertainty in spikes estimated from calcium imaging data. arXiv:2103.0781 [statME].</p>
+<p>Jewell, S. and Witten, D. (2018). Exact spike train inference via l0 optimization. Ann. Appl. Stat., 12(4):2457–2482.</p>
+<p>Jewell SW, Hocking TD, Fearnhead P, Witten DM. Fast nonconvex deconvolution of calcium imaging data. Biostatistics. 2020;21(4):709-726. doi:10.1093/biostatistics/kxy083</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
     <pre class="examples"><div class='input'><span class='va'>gam</span> <span class='op'>&lt;-</span> <span class='fl'>0.98</span>
@@ -151,7 +143,8 @@
 <span class='va'>curr_sim</span> <span class='op'>&lt;-</span> <span class='fu'><a href='simulate_ar1.html'>simulate_ar1</a></span><span class='op'>(</span>n <span class='op'>=</span> <span class='va'>n_length</span>, gam <span class='op'>=</span> <span class='va'>gam</span>, poisMean <span class='op'>=</span> <span class='fl'>0.01</span>, sd <span class='op'>=</span> <span class='va'>sigma</span>, seed <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
 <span class='va'>curr_fit_spike</span> <span class='op'>&lt;-</span> <span class='fu'><a href='spike_estimates.html'>spike_estimates</a></span><span class='op'>(</span>dat <span class='op'>=</span> <span class='va'>curr_sim</span><span class='op'>$</span><span class='va'>fl</span>, decay_rate <span class='op'>=</span> <span class='va'>gam</span>, tuning_parameter <span class='op'>=</span> <span class='va'>LAMBDA</span><span class='op'>)</span>
 <span class='va'>curr_inference_spike</span> <span class='op'>&lt;-</span> <span class='fu'><a href='spike_inference.html'>spike_inference</a></span><span class='op'>(</span>dat <span class='op'>=</span> <span class='va'>curr_sim</span><span class='op'>$</span><span class='va'>fl</span>, decay_rate <span class='op'>=</span> <span class='va'>gam</span>,
-tuning_parameter <span class='op'>=</span> <span class='va'>LAMBDA</span>, window_size <span class='op'>=</span> <span class='fl'>2</span>, sig2 <span class='op'>=</span> <span class='va'>sigma</span><span class='op'>*</span><span class='va'>sigma</span>, return_ci <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+ tuning_parameter <span class='op'>=</span> <span class='va'>LAMBDA</span>, window_size <span class='op'>=</span> <span class='fl'>2</span>, sig2 <span class='op'>=</span> <span class='va'>sigma</span><span class='op'>*</span><span class='va'>sigma</span>, return_ci <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span>
+<span class='co'>### a summary of the inferential results</span>
 <span class='fu'><a href='https://rdrr.io/r/base/summary.html'>summary</a></span><span class='op'>(</span><span class='va'>curr_inference_spike</span><span class='op'>)</span>
 </div><div class='output co'>#&gt;    estimated_spikes        pvals        LCB       UCB
 #&gt; 1                95 0.0026865876  0.3313205 1.5624120
