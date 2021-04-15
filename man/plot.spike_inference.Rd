@@ -4,10 +4,12 @@
 \alias{plot.spike_inference}
 \title{Plot the result of quantifying the uncertainty of spikes estimated via an L0 penalty}
 \usage{
-\method{plot}{spike_inference}(x, xlims = NULL, ...)
+\method{plot}{spike_inference}(x, alpha = 0.05, xlims = NULL, ...)
 }
 \arguments{
 \item{x}{output from running spike_inference}
+
+\item{alpha}{significance threshold for displaying spikes}
 
 \item{xlims}{optional parameter to specify the x-axis limits}
 
@@ -27,7 +29,7 @@ curr_inference_spike <- spike_inference(dat = curr_sim$fl, decay_rate = gam,
 ### The observed fluorescence is plotted in gray, along with two sets of 
 ### vertical ticks: each orange tick represents an estimated spike associated with 
 ### a positive increase in fluorescence, and blue ticks are the subset of spikes 
-### with a selective p-value < 0.05.
+### with a selective p-value < alpha (default to be 0.05).
 plot(curr_inference_spike)
 }
 \references{

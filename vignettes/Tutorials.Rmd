@@ -29,8 +29,8 @@ In the figure below, we display one such simulation $y_1,\ldots,y_{1,000}$ (gray
 ```{r fig.align="center",  fig.height = 5, fig.width = 5}
 gam <- 0.98
 sigma <- 0.3
-n_length <- 1000
-curr_sim <- simulate_ar1(n = n_length, gam = gam, poisMean = 0.01, sd = sigma, seed = 2)
+T_length <- 1000
+curr_sim <- simulate_ar1(n = T_length, gam = gam, poisMean = 0.01, sd = sigma, seed = 2)
 plot(curr_sim)
 ```
 
@@ -96,19 +96,19 @@ We see drastically smaller $p$-values for the five estimated spikes. Since each 
 
 We also provide a plot method for output by `spike_inference`. By default, it plots the estimated spikes associated with a positive change in fluorescence in orange ticks, and the subset with a p-value less than 0.05 in blue ticks.
 ```{r fig.align="center",  fig.height = 5, fig.width = 5}
-plot(inference_spike_toy_example_h_10)
+plot(inference_spike_toy_example_h_10, alpha=0.05)
 ```
 
 ### Miscellaneous functions
-In addition to the aforementioned key functions, the package also includes the following helper functions: `construct_v` and `estimate_spike_by_spike_number`.
+In addition to the aforementioned key functions, the package also includes the following helper functions: `construct_v` and `estimate_spike_by_firing_rate`.
 
-### construct_v 
+#### `construct_v` 
 The function `construct_v` generates the contrast vector $\nu$ for the null hypothesis $H_0:\nu^\top c = 0$. We will demonstrate below that $\nu^\top c$ is indeed the change in calcium in the neighborhood of a given spike $\hat\tau_j$. We consider the case where there is no spike, i.e., the calcium is decaying exponentially, and we would expect $\nu^\top c=0$. In the example below, we set $c_1 = 3$, $c_t = 0.98 c_{t-1}, \; t=2,\ldots, 50$, $\hat\tau_j = 20$, and $h=5$.
 
 ```{r}
 gam <- 0.98
-n <- 50
-calcium <- rep(3 * gam ^(0:(n - 1)))
+T_length <- 50
+calcium <- rep(3 * gam ^(0:(T_length - 1)))
 thj <- 20
 h <- 5
 v <- construct_v(length(calcium), thj, h, gam)
@@ -116,18 +116,19 @@ sum(v*calcium)
 ```
 We see that $\nu^\top c$ indeed evaluates to 0, up to machine precision.
 
-### estimate_spike_by_spike_number 
+#### `estimate_spike_by_firing_rate`
 
-While we have taken $\lambda$ to be known in this tutorial, choosing an appropriate $\lambda$ value is critical to the quality of estimated spikes. One possible approach is to use a grid search over a list of $\lambda$ values. The function  `estimate_spike_by_spike_number` provides an alternative by using an iterative method to find the value of $\lambda$ that yields estimated spikes closest in number to the true spikes. 
+We have taken $\lambda$ to be known in this tutorial. Choosing an appropriate $\lambda$ value is critical to the quality of estimated spikes. The function  `estimate_spike_by_firing_rate` allows us to specify a target firing rate, and then to find the value of $\lambda$ that yields a number of estimated spikes that is close to that target firing rate.
 
+In the example below, we simulate from an AR-1 model with firing rate 0.05, i.e., we expect to have 5 spikes per 100 timesteps on average.
 ```{r}
 gam <- 0.98
-n <- 1000
+T_length <- 1000
 firing_rate <- 0.05
 target_rate <- 0.05
 sigma <- 0.1
 
-curr_sim <- simulate_ar1(n = n, gam = gam, poisMean = firing_rate,
+curr_sim <- simulate_ar1(n = T_length, gam = gam, poisMean = firing_rate,
                          sd = sigma, seed = 1)
 
 if(sigma>=0.5){
@@ -136,18 +137,18 @@ if(sigma>=0.5){
   lam_max = 1
 }
 
-iter_fit_spike <- estimate_spike_by_spike_number(curr_sim, 
+iter_fit_spike <- estimate_spike_by_firing_rate(curr_sim, 
                                            decay_rate = gam, target_firing_rate = target_rate, 
                                            lam_min = 1e-7, lam_max = lam_max, max_iters=10,
-                                           tolerance=max(5,floor(n*firing_rate*0.05)))
+                                           tolerance=max(5,floor(T_length*firing_rate*0.05)))
 ```
 
-The number of true spikes in the simulation is 48.
+The number of true spikes in the simulation is 48 (note: we expect to see 50 spikes on average).
 ```{r}
 cat("Number of true spikes, " ,length(curr_sim$spikes),"\n")
 ```
 
-The number of estimated spikes, where $\lambda$ is chosen using `estimate_spike_by_spike_number`, is also 48.
+We ran `estimate_spike_by_firing_rate` with a target firing rate of 0.05, and so we expect to obtain around 1000*0.05=50 estimated spikes. By chance, on this example, the function resulted in a value of $\lambda$ that gave us 48 estimated spikes.
 ```{r}
 cat("Number of estimated spikes, " ,length(iter_fit_spike$spikes),"\n")
 ```

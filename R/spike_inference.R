@@ -14,7 +14,6 @@
 #' @param two_sided Logical; if TRUE, a 2-sided p-value is computed and returned.
 #' @param alpha Numeric; significance level for the hypothesis test, 
 #' a number between 0 and 1 (non-inclusive).
-
 #' @return Returns a list with elements:
 #' \itemize{
 #' \item \code{spikes} the set of spikes,
@@ -22,7 +21,6 @@
 #' \item \code{LCB} lower confidence band for each spike,
 #' \item \code{UCB} upper confidence band for each spike.
 #' }
-
 #' @details
 #' Consider the AR-1 generative model \deqn{Y_t = c_t + \epsilon_t, \epsilon_t \sim N(0, \sigma^2),}
 #' where \eqn{c_t = \gamma  c_{t-1} + z_t} and \eqn{z_t \sim Poisson(poisMean)}. In words,
@@ -36,7 +34,7 @@
 #' 1(c_t \neq \gamma c_t-1).}
 #' Estimated spikes correspond to the time t such that estimated calcium does not decay exponentially, i.e.,
 #' \eqn{\{\cdots,\hat{\tau}_j,\cdots\}  = \{t: \hat{c}_{t+1} -\gamma c_{t} \neq 0\} }.
-#' 
+#'
 #' Now suppose that we want to test whether the calcium is exponentially decaying near an estimated spike
 #' \eqn{\hat{\tau}_j}; or equivalently, the null hypothesis of the form \eqn{H_{0}:  \nu^T c = 0} versus 
 #' \eqn{H_{1}:  \nu^T c> 0} for suitably chosen \eqn{\nu} (see Section 2 in Chen et al. (2021+) for details). 
