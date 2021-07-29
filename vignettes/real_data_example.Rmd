@@ -50,7 +50,7 @@ These values were chosen using a two-dimensional grid-search on the values of $\
 
 ```{r}
 curr_lambda <- 0.6309573
-beta_0_star <- -0.3
+beta_0_star <- -0.25
 fit_spike <- spike_estimates(calcium_1[1:T_end,curr_cell_num]+beta_0_star,
                              gam_star, curr_lambda)
 fit_calcium <- spike_estimates(calcium_1[1:T_end,curr_cell_num]+beta_0_star,
@@ -185,32 +185,32 @@ current_cell %>%
 ### Zoom level 3; 75-90 seconds
 ```{r fig.align="center",  fig.height = 3, fig.width = 9}
 current_cell %>%
-  filter(cam_time>=75,cam_time<=90) %>%
+  filter(cam_time>=77,cam_time<=94) %>%
   ggplot(aes(x=cam_time,y=calcium))+
   geom_point(color = "grey", size = 0.6, alpha = 0.8)+
   xlab("Time (seconds)") +
   ylab("Fluorescence")+
   coord_cartesian(ylim=c(-4, max(current_cell%>%
-                                   filter(cam_time>=75,cam_time<=90) %>%select(calcium) * 1.001)))+
+                                   filter(cam_time>=77,cam_time<=94) %>%select(calcium) * 1.001)))+
   theme_bw() + 
   theme(panel.border = element_blank(), panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(), axis.line = element_line(colour = "black"))+
   geom_segment(data =  current_cell%>%
                  filter(no_prune_time==1)%>%
-                 filter(cam_time>=75,cam_time<=90) %>%
+                 filter(cam_time>=77,cam_time<=94) %>%
                  select(cam_time), 
                aes(x = cam_time, xend = cam_time,
                    y = -0.5, yend = -1.5, color = "orange"),
                alpha = 0.75)+
   geom_segment(data =  current_cell%>%
-                 filter(cam_time>=75,cam_time<=90) %>%
+                 filter(cam_time>=77,cam_time<=94) %>%
                  filter((no_prune_time==1)&!is.na(selective_p_val)&(selective_p_val<=0.05))%>%
                  select(cam_time), 
                aes(x = cam_time, xend = cam_time,
                    y = -2.0, yend = -3.0,color = "royalblue"),
                alpha = 0.75)+
   geom_segment(data = current_cell%>%
-                 filter(cam_time>=75,cam_time<=90) %>%
+                 filter(cam_time>=77,cam_time<=94) %>%
                  filter(spike>0)%>%
                  select(cam_time), 
                aes(x = cam_time, xend = cam_time,
